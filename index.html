@@ -328,8 +328,14 @@
       footer .footer-sep {
         color: var(--border);
       }
+      @media (max-width: 900px) {
+        .page {
+          zoom: 0.85;
+        }
+      }
       @media (max-width: 480px) {
         .page {
+          zoom: 0.77;
           padding-top: 20px;
         }
         header {
@@ -364,6 +370,22 @@
         }
         footer .footer-desc {
           padding: 0 8px;
+        }
+      }
+      @supports not (zoom: 1) {
+        @media (max-width: 900px) {
+          .page {
+            transform: scale(0.85);
+            transform-origin: top center;
+            width: 117.647%;
+            margin-inline: auto;
+          }
+        }
+        @media (max-width: 480px) {
+          .page {
+            transform: scale(0.77);
+            width: 129.87%;
+          }
         }
       }
     </style>
