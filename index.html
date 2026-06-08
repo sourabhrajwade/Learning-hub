@@ -1,226 +1,441 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Learning Hub</title>
-<style>
-  :root {
-    --bg: #0f1115;
-    --panel: #171a21;
-    --panel2: #1d212b;
-    --text: #e6e8ef;
-    --muted: #9aa3b2;
-    --accent: #7cc4ff;
-    --accent2: #9d7cff;
-    --accent3: #4ad6c0;
-    --border: #2a2f3a;
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(180deg, #0a0e19 0%, var(--bg) 40%, #0f1320 100%);
-    color: var(--text);
-    line-height: 1.6;
-  }
-  .page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 64px 24px 80px;
-  }
-  header {
-    text-align: center;
-    margin-bottom: 56px;
-    padding: 40px 24px;
-    background:
-      radial-gradient(900px 320px at 15% 0%, rgba(124,196,255,0.16), transparent 55%),
-      radial-gradient(700px 280px at 85% 0%, rgba(157,124,255,0.14), transparent 55%),
-      radial-gradient(600px 240px at 50% 100%, rgba(74,214,192,0.1), transparent 60%);
-    border-bottom: 1px solid var(--border);
-    border-radius: 0 0 20px 20px;
-  }
-  .logo {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    font-size: 26px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 32px rgba(124,196,255,0.2);
-  }
-  h1 {
-    margin: 0 0 10px;
-    font-size: 42px;
-    letter-spacing: -0.03em;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .subtitle {
-    margin: 0;
-    color: var(--muted);
-    font-size: 17px;
-    max-width: 520px;
-    margin-inline: auto;
-  }
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
-  }
-  .card {
-    display: flex;
-    flex-direction: column;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.25s;
-    pointer-events: none;
-  }
-  .card:hover {
-    transform: translateY(-4px);
-    text-decoration: none;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-  }
-  .card:hover::before { opacity: 1; }
-  .card-fe::before {
-    background: radial-gradient(400px 200px at 0% 0%, rgba(124,196,255,0.12), transparent 70%);
-  }
-  .card-fe:hover { border-color: rgba(124,196,255,0.45); }
-  .card-genai::before {
-    background: radial-gradient(400px 200px at 100% 0%, rgba(74,214,192,0.12), transparent 70%);
-  }
-  .card-genai:hover { border-color: rgba(74,214,192,0.45); }
-  .card-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 18px;
-    border: 1px solid var(--border);
-  }
-  .card-fe .card-icon {
-    background: rgba(124,196,255,0.1);
-    border-color: rgba(124,196,255,0.25);
-  }
-  .card-genai .card-icon {
-    background: rgba(74,214,192,0.1);
-    border-color: rgba(74,214,192,0.25);
-  }
-  .card h2 {
-    margin: 0 0 8px;
-    font-size: 22px;
-    letter-spacing: -0.02em;
-  }
-  .card-fe h2 { color: var(--accent); }
-  .card-genai h2 { color: var(--accent3); }
-  .card p {
-    margin: 0 0 20px;
-    color: var(--muted);
-    font-size: 14.5px;
-    flex: 1;
-  }
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 20px;
-  }
-  .tag {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-  .card-fe .tag.highlight { color: var(--accent); border-color: rgba(124,196,255,0.3); }
-  .card-genai .tag.highlight { color: var(--accent3); border-color: rgba(74,214,192,0.3); }
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .card-fe .cta { color: var(--accent); }
-  .card-genai .cta { color: var(--accent3); }
-  .cta span { transition: transform 0.2s; }
-  .card:hover .cta span { transform: translateX(4px); }
-  footer {
-    margin-top: 64px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  @media (max-width: 640px) {
-    h1 { font-size: 32px; }
-    .page { padding-top: 40px; }
-    header { padding: 28px 16px; margin-bottom: 40px; }
-  }
-</style>
-</head>
-<body>
-  <div class="page">
-    <header>
-      <div class="logo" aria-hidden="true">📚</div>
-      <h1>Learning Hub</h1>
-      <p class="subtitle">Interview prep and deep-dive courses — pick a track and start learning.</p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning Hub — Interview Prep & Technical Courses</title>
+    <meta
+      name="description"
+      content="Learning Hub is a free study guide for technical interviews. Explore Frontend System Design and GenAI courses with modules, examples, and interview questions."
+    />
+    <meta
+      name="keywords"
+      content="learning hub, interview prep, frontend system design, GenAI, LLM, RAG, technical courses, study guide"
+    />
+    <meta name="author" content="Learning Hub" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f1115" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Learning Hub" />
+    <meta
+      property="og:title"
+      content="Learning Hub — Interview Prep & Technical Courses"
+    />
+    <meta
+      property="og:description"
+      content="Free study guides for Frontend System Design and GenAI interview preparation. Modules, examples, and question banks."
+    />
+    <meta property="og:locale" content="en_US" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="Learning Hub — Interview Prep & Technical Courses"
+    />
+    <meta
+      name="twitter:description"
+      content="Free study guides for Frontend System Design and GenAI interview preparation."
+    />
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #171a21;
+        --panel2: #1d212b;
+        --text: #e6e8ef;
+        --muted: #9aa3b2;
+        --accent: #7cc4ff;
+        --accent2: #9d7cff;
+        --accent3: #4ad6c0;
+        --border: #2a2f3a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        min-height: 100dvh;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background: linear-gradient(
+          180deg,
+          #0a0e19 0%,
+          var(--bg) 40%,
+          #0f1320 100%
+        );
+        color: var(--text);
+        line-height: 1.6;
+        overflow: auto;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+      .page {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        max-width: 960px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 32px clamp(16px, 4vw, 32px) 24px;
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+        min-height: 0;
+      }
+      header {
+        text-align: center;
+        margin-bottom: clamp(24px, 4vw, 40px);
+        padding: clamp(24px, 5vw, 40px) clamp(16px, 4vw, 24px);
+        background:
+          radial-gradient(
+            900px 320px at 15% 0%,
+            rgba(124, 196, 255, 0.16),
+            transparent 55%
+          ),
+          radial-gradient(
+            700px 280px at 85% 0%,
+            rgba(157, 124, 255, 0.14),
+            transparent 55%
+          ),
+          radial-gradient(
+            600px 240px at 50% 100%,
+            rgba(74, 214, 192, 0.1),
+            transparent 60%
+          );
+        border-bottom: 1px solid var(--border);
+        border-radius: 0 0 20px 20px;
+      }
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        font-size: 26px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(124, 196, 255, 0.2);
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(28px, 6vw, 42px);
+        letter-spacing: -0.03em;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(15px, 2.5vw, 17px);
+        max-width: 520px;
+        margin-inline: auto;
+        padding: 0 8px;
+      }
+      .cards {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+        gap: clamp(16px, 3vw, 24px);
+        align-content: center;
+        min-height: 0;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: clamp(20px, 4vw, 28px);
+        text-decoration: none;
+        color: inherit;
+        transition:
+          border-color 0.2s,
+          transform 0.2s,
+          box-shadow 0.2s;
+        position: relative;
+        overflow: hidden;
+        -webkit-tap-highlight-color: transparent;
+        min-height: 44px;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.25s;
+        pointer-events: none;
+      }
+      @media (hover: hover) {
+        .card:hover {
+          transform: translateY(-4px);
+          text-decoration: none;
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        }
+        .card:hover::before {
+          opacity: 1;
+        }
+        .card:hover .cta span {
+          transform: translateX(4px);
+        }
+      }
+      .card:active {
+        transform: scale(0.98);
+        border-color: var(--border);
+      }
+      .card-fe::before {
+        background: radial-gradient(
+          400px 200px at 0% 0%,
+          rgba(124, 196, 255, 0.12),
+          transparent 70%
+        );
+      }
+      .card-fe:hover {
+        border-color: rgba(124, 196, 255, 0.45);
+      }
+      .card-genai::before {
+        background: radial-gradient(
+          400px 200px at 100% 0%,
+          rgba(74, 214, 192, 0.12),
+          transparent 70%
+        );
+      }
+      .card-genai:hover {
+        border-color: rgba(74, 214, 192, 0.45);
+      }
+      .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 18px;
+        border: 1px solid var(--border);
+      }
+      .card-fe .card-icon {
+        background: rgba(124, 196, 255, 0.1);
+        border-color: rgba(124, 196, 255, 0.25);
+      }
+      .card-genai .card-icon {
+        background: rgba(74, 214, 192, 0.1);
+        border-color: rgba(74, 214, 192, 0.25);
+      }
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: clamp(18px, 3vw, 22px);
+        letter-spacing: -0.02em;
+      }
+      .card-fe h2 {
+        color: var(--accent);
+      }
+      .card-genai h2 {
+        color: var(--accent3);
+      }
+      .card p {
+        margin: 0 0 20px;
+        color: var(--muted);
+        font-size: clamp(14px, 2vw, 14.5px);
+        flex: 1;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 20px;
+      }
+      .tag {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: var(--panel2);
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+      .card-fe .tag.highlight {
+        color: var(--accent);
+        border-color: rgba(124, 196, 255, 0.3);
+      }
+      .card-genai .tag.highlight {
+        color: var(--accent3);
+        border-color: rgba(74, 214, 192, 0.3);
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .card-fe .cta {
+        color: var(--accent);
+      }
+      .card-genai .cta {
+        color: var(--accent3);
+      }
+      .cta span {
+        transition: transform 0.2s;
+      }
+      footer {
+        margin-top: auto;
+        flex-shrink: 0;
+        padding-top: 32px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      footer .footer-credit {
+        margin: 0 0 6px;
+        color: var(--text);
+      }
+      footer .footer-credit strong {
+        color: var(--accent);
+      }
+      footer .footer-desc {
+        margin: 0 0 14px;
+        max-width: 480px;
+        margin-inline: auto;
+      }
+      footer .footer-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      footer .footer-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 4px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
+      footer .footer-links a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+      footer .footer-sep {
+        color: var(--border);
+      }
+      @media (max-width: 480px) {
+        .page {
+          padding-top: 20px;
+        }
+        header {
+          border-radius: 12px;
+          margin-bottom: 20px;
+        }
+        .logo {
+          width: 48px;
+          height: 48px;
+          font-size: 22px;
+          margin-bottom: 14px;
+        }
+        .card {
+          padding: 20px 18px;
+        }
+        .card-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+          margin-bottom: 14px;
+        }
+        .tags {
+          margin-bottom: 16px;
+        }
+        .tag {
+          font-size: 10px;
+          padding: 4px 8px;
+        }
+        footer {
+          padding-top: 24px;
+          margin-top: 24px;
+        }
+        footer .footer-desc {
+          padding: 0 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="logo" aria-hidden="true">📚</div>
+        <h1>Learning Hub</h1>
+        <p class="subtitle">
+          Interview prep and deep-dive courses — pick a track and start
+          learning.
+        </p>
+      </header>
 
-    <div class="cards">
-      <a class="card card-fe" href="frontend-system-design-course.html">
-        <div class="card-icon" aria-hidden="true">⚡</div>
-        <h2>Frontend System Design</h2>
-        <p>From the browser rendering pipeline to designing Twitter at scale — modules on architecture, performance, CDNs, security, and interview case studies.</p>
-        <div class="tags">
-          <span class="tag highlight">System Design</span>
-          <span class="tag">React / SPA</span>
-          <span class="tag">Performance</span>
-          <span class="tag">Case Studies</span>
-        </div>
-        <span class="cta">Open course <span>→</span></span>
-      </a>
+      <div class="cards">
+        <a class="card card-fe" href="frontend-system-design-course.html">
+          <div class="card-icon" aria-hidden="true">⚡</div>
+          <h2>Frontend System Design</h2>
+          <p>
+            From the browser rendering pipeline to designing Twitter at scale —
+            modules on architecture, performance, CDNs, security, and interview
+            case studies.
+          </p>
+          <div class="tags">
+            <span class="tag highlight">System Design</span>
+            <!-- <span class="tag">React / SPA</span> -->
+            <span class="tag">Performance</span>
+            <span class="tag">Case Studies</span>
+          </div>
+          <span class="cta">Open course <span>→</span></span>
+        </a>
 
-      <a class="card card-genai" href="interview-prep.html">
-        <div class="card-icon" aria-hidden="true">🤖</div>
-        <h2>GenAI & Emerging Tech</h2>
-        <p>Interview preparation covering Python, Generative AI, Agentic AI, LLMs, RAG, LangChain, cloud-native patterns, and leadership topics.</p>
-        <div class="tags">
-          <span class="tag highlight">GenAI</span>
-          <span class="tag">LLMs / RAG</span>
-          <span class="tag">Agentic AI</span>
-          <span class="tag">Python</span>
+        <a class="card card-genai" href="interview-prep.html">
+          <div class="card-icon" aria-hidden="true">🤖</div>
+          <h2>GenAI & Emerging Tech</h2>
+          <p>
+            Interview preparation covering Python, Generative AI, Agentic AI,
+            LLMs, RAG, LangChain, cloud-native patterns, and leadership topics.
+          </p>
+          <div class="tags">
+            <span class="tag highlight">GenAI</span>
+            <span class="tag">LLMs / RAG</span>
+            <span class="tag">Agentic AI</span>
+            <span class="tag">Python</span>
+          </div>
+          <span class="cta">Open course <span>→</span></span>
+        </a>
+      </div>
+
+      <footer>
+        <p class="footer-credit">Created by <strong>Sourabh Rajwade</strong></p>
+        <p class="footer-desc">
+          Learning Hub — free study guides for Frontend System Design and GenAI
+          interview preparation.
+        </p>
+        <div class="footer-links">
+          <a
+            href="https://x.com/RajwadeSourabh"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Twitter / X</a
+          >
+          <span class="footer-sep">·</span>
+          <a
+            href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >LinkedIn</a
+          >
         </div>
-        <span class="cta">Open course <span>→</span></span>
-      </a>
+      </footer>
     </div>
-
-    <footer>Learning Hub · Static study guides</footer>
-  </div>
-</body>
+  </body>
 </html>

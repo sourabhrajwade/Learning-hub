@@ -4,6 +4,21 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Frontend System Design — Basics to Advanced</title>
+<meta name="description" content="Complete Frontend System Design course from browser fundamentals to scale. Covers CSR/SSR, performance, CDNs, security, micro-frontends, case studies (Twitter, Netflix, Google Docs), and interview questions." />
+<meta name="keywords" content="frontend system design, FE interview, React architecture, CSR SSR SSG, Core Web Vitals, CDN, XSS CSRF, micro-frontends, system design interview, RADIO framework" />
+<meta name="author" content="Learning Hub" />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1115" />
+<!-- Open Graph -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Learning Hub" />
+<meta property="og:title" content="Frontend System Design — Basics to Advanced" />
+<meta property="og:description" content="Practical frontend system design course: rendering pipeline, architecture patterns, performance, CDNs, security, scalability, and real-world case studies with interview Q&amp;A." />
+<meta property="og:locale" content="en_US" />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Frontend System Design — Basics to Advanced" />
+<meta name="twitter:description" content="Frontend system design from browser basics to Twitter-scale architecture. Modules, examples, and interview playbook." />
 <style>
   :root{
     --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --text:#e6e8ef; --muted:#9aa3b2;
@@ -83,6 +98,12 @@
   th{background:var(--panel);color:var(--accent)}
   ul.clean li{margin:4px 0}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  body{padding-bottom:48px}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
   @media (max-width:900px){.layout{grid-template-columns:1fr}aside{position:relative;height:auto}main{padding:20px}.grid2{grid-template-columns:1fr}}
   .hero{padding:24px;border-radius:12px;background:linear-gradient(135deg,#1a1f2e,#241935);border:1px solid var(--border);margin-bottom:20px}
   .hero p{margin:6px 0;color:var(--muted)}
@@ -2082,5 +2103,14 @@ async function search(q: string) {
 
 </main>
 </div>
+
+<footer class="site-footer-bar">
+  <span>Created by <strong>Sourabh Rajwade</strong></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+
 </body>
 </html>

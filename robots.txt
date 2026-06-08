@@ -1,0 +1,6 @@
+# Learning Hub — allow all search engines
+User-agent: *
+Allow: /
+
+# Sitemap (relative path works on any deployed domain)
+Sitemap: /sitemap.xml

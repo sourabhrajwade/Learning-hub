@@ -19,6 +19,8 @@ Learning-hub/
 ├── index.html                          # Homepage
 ├── frontend-system-design-course.html  # Frontend system design course
 ├── interview-prep.html                 # GenAI & emerging tech interview prep
+├── robots.txt                          # Search engine crawl rules
+├── sitemap.xml                         # Page list for Google & other crawlers
 ├── vercel.json                         # Vercel static site config
 └── README.md
 ```
@@ -66,6 +68,17 @@ npx vercel --prod # production deployment
 - `/` → `index.html`
 - `/frontend-system-design-course` → `frontend-system-design-course.html`
 - `/interview-prep` → `interview-prep.html`
+
+## SEO
+
+Each HTML page includes `meta description`, Open Graph, and Twitter Card tags.
+
+| File | Purpose |
+|------|---------|
+| `robots.txt` | Tells crawlers they may index all pages; points to the sitemap |
+| `sitemap.xml` | Lists all public URLs for Google Search Console and other crawlers |
+
+After your first Vercel deploy, update `sitemap.xml` — replace `https://learning-hub.vercel.app` with your live URL (e.g. `https://your-project.vercel.app`). Then submit the sitemap in [Google Search Console](https://search.google.com/search-console): `https://your-project.vercel.app/sitemap.xml`.
 
 ## Tech stack
 

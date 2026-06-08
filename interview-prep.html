@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AVP – Emerging Technology & Transformation | Interview Prep</title>
+<title>GenAI & Emerging Tech Interview Prep — LLMs, RAG, Agentic AI</title>
+<meta name="description" content="Interview preparation for Generative AI and emerging technology roles. Covers Python, LLMs, RAG, Agentic AI, LangChain, LangGraph, cloud-native patterns, SDLC, and leadership topics." />
+<meta name="keywords" content="GenAI interview, LLM interview, RAG, agentic AI, LangChain, LangGraph, Python interview, emerging technology, cloud-native, GitHub Copilot, AVP interview prep" />
+<meta name="author" content="Learning Hub" />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1320" />
+<!-- Open Graph -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Learning Hub" />
+<meta property="og:title" content="GenAI &amp; Emerging Tech Interview Prep — LLMs, RAG, Agentic AI" />
+<meta property="og:description" content="Comprehensive GenAI interview guide: ML foundations, model landscape, RAG deep-dive, agentic AI, LangChain v1, cloud-native SDLC, and banking project examples." />
+<meta property="og:locale" content="en_US" />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="GenAI &amp; Emerging Tech Interview Prep" />
+<meta name="twitter:description" content="Interview prep for GenAI roles: LLMs, RAG, Agentic AI, Python, LangChain, and cloud-native patterns." />
 <style>
   :root {
     --bg: #0f1320;
@@ -158,12 +173,18 @@
   details[open] summary::before { content: "▾ "; }
   details > *:not(summary) { margin-top: 10px; color: var(--muted); }
 
-  footer {
-    padding: 30px 20px 60px;
-    color: var(--muted);
-    text-align: center;
-    font-size: 13px;
+  body { padding-bottom: 48px; }
+  .site-footer-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    padding: 10px 16px;
+    background: var(--surface);
+    text-align: center; font-size: 12px; color: var(--muted);
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 10px;
   }
+  .site-footer-bar strong { color: var(--accent); }
+  .site-footer-bar a { color: var(--muted); text-decoration: none; font-weight: 500; }
+  .site-footer-bar a:hover { color: var(--accent); text-decoration: underline; }
+  .site-footer-bar .footer-sep { color: var(--border); }
   .star {
     background: var(--surface-2);
     border: 1px solid var(--border);
@@ -1053,14 +1074,111 @@ How an agent extends this:
   </div>
 
   <div class="card">
+    <h3 style="margin-top:0">Encoder &amp; Retrieval Models — BERT Family &amp; Beyond</h3>
+    <p style="color:var(--muted)">
+      RAG quality is often decided by the <strong>encoder stack</strong>, not the chat LLM. These are the models behind embeddings, reranking, and hybrid search — know how they relate.
+    </p>
+
+    <h4 style="margin-bottom:6px;">The BERT Family — Where It All Started</h4>
+    <p style="color:var(--muted)">
+      <strong>BERT</strong> (Bidirectional Encoder Representations from Transformers) reads text in both directions and outputs contextual token embeddings. It is an <em>encoder-only</em> model — great for understanding, not for generating text. Most modern embedding and reranking models are BERT descendants.
+    </p>
+    <table>
+      <thead><tr><th>Model</th><th>What it is</th><th>RAG role</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BERT</strong> (Google, 2018)</td><td>Original 110M/340M encoder; masked language modelling</td><td>Foundation — rarely used raw for retrieval today</td></tr>
+        <tr><td><strong>RoBERTa</strong> (Meta)</td><td>BERT retrained with better recipe; stronger representations</td><td>Base for many sentence-embedding fine-tunes</td></tr>
+        <tr><td><strong>DistilBERT</strong></td><td>40% smaller, 60% faster than BERT; ~97% performance</td><td>Fast encoder backbone for edge / high-QPS embedders</td></tr>
+        <tr><td><strong>Sentence-BERT (SBERT)</strong></td><td>Fine-tunes BERT with siamese/triplet loss so <em>sentence</em> embeddings are comparable</td><td>The breakthrough that made semantic search practical</td></tr>
+        <tr><td><strong>FinBERT</strong></td><td>BERT fine-tuned on financial corpora (Reuters TRC2)</td><td>Domain sentiment/classification; FinBERT-style embedders for finance RAG</td></tr>
+        <tr><td><strong>Legal-BERT / BioBERT</strong></td><td>Domain-specific BERT pre-training</td><td>When generic embedders miss legal/medical jargon</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Modern Embedding Models (Bi-Encoders)</h4>
+    <table>
+      <thead><tr><th>Family</th><th>Key models</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>OpenAI</strong></td><td><code>text-embedding-3-small</code>, <code>text-embedding-3-large</code></td><td>API-only; MRL support (truncate dims); strong general-purpose</td></tr>
+        <tr><td><strong>Cohere Embed</strong></td><td>Embed v3 (English/multilingual)</td><td>Enterprise RAG staple; search_query vs search_document input types</td></tr>
+        <tr><td><strong>Voyage</strong></td><td>voyage-3, voyage-finance-2</td><td>Strong on benchmarks; domain-specific finance variant</td></tr>
+        <tr><td><strong>BGE</strong> (BAAI)</td><td>bge-small, bge-base, bge-large, <strong>bge-m3</strong></td><td>Open-weight; bge-m3 = dense + sparse + multi-vector in one model</td></tr>
+        <tr><td><strong>E5</strong> (Microsoft)</td><td>e5-small, e5-base, e5-large, e5-mistral</td><td>Prefix prompts (<code>query:</code> / <code>passage:</code>); e5-mistral for high quality</td></tr>
+        <tr><td><strong>Nomic</strong></td><td>nomic-embed-text-v1.5</td><td>Open; MRL-native; good for self-hosted with dim truncation</td></tr>
+        <tr><td><strong>GTE / Jina</strong></td><td>gte-large, jina-embeddings-v3</td><td>Strong open alternatives; Jina supports long context</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Reranking &amp; Late-Interaction Models</h4>
+    <table>
+      <thead><tr><th>Type</th><th>Models</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cross-encoder</strong></td><td>Cohere Rerank v3, bge-reranker-v2-m3, ms-marco-MiniLM</td><td>Always — second stage after retrieval; biggest quality lever</td></tr>
+        <tr><td><strong>ColBERT</strong></td><td>ColBERTv2, Jina-ColBERT, RAGatouille</td><td>Late interaction when bi-encoder recall is weak but cross-encoder is too slow at scale</td></tr>
+        <tr><td><strong>Learned sparse</strong></td><td>SPLADE-v3, uniCOIL</td><td>Hybrid index — semantic term expansion with inverted-index speed</td></tr>
+        <tr><td><strong>Multimodal retriever</strong></td><td>ColPali, ColQwen</td><td>PDF/page image retrieval without OCR pipeline</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Decoder LLMs vs Encoder Models — Don't Confuse Them</h4>
+    <ul class="clean">
+      <li><strong>Encoder-only</strong> (BERT, embedders, rerankers) — read input, output vectors or scores. Used for search, classification, NER. Cannot generate text.</li>
+      <li><strong>Decoder-only</strong> (GPT, Claude, Llama) — predict next token. Used for chat, agents, generation. Embeddings from these are possible but not their primary design.</li>
+      <li><strong>Encoder-decoder</strong> (T5, BART) — seq2seq; summarization, translation. Less common in modern RAG stacks.</li>
+      <li><strong>Interview line:</strong> "My chat model is Claude; my retrieval stack is bge-m3 + Cohere Rerank — different models for different jobs."</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Small Models — When &amp; Which Ones</h3>
+    <p style="color:var(--muted)">
+      <strong>Small models</strong> (&lt;3B params for LLMs, &lt;500M for encoders) are not "worse LLMs" — they're the right tool for high-volume, low-latency, or on-prem tasks where frontier capability isn't needed.
+    </p>
+
+    <h4 style="margin-bottom:6px;">Small LLMs — Routing, Rewrite, Classification</h4>
+    <table>
+      <thead><tr><th>Model</th><th>Params</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Claude Haiku / GPT-4o-mini</strong></td><td>—</td><td>API-tier fast models: query rewrite, intent classification, simple extraction</td></tr>
+        <tr><td><strong>Llama 3.2 1B / 3B</strong></td><td>1–3B</td><td>On-device or VPC chat for routing; not for regulated final answers alone</td></tr>
+        <tr><td><strong>Phi-3-mini / Phi-3.5-mini</strong></td><td>3.8B</td><td>Strong reasoning for size; good for structured extraction on CPU/GPU</td></tr>
+        <tr><td><strong>Gemma 2 2B</strong></td><td>2B</td><td>Google open small model; efficient on single GPU</td></tr>
+        <tr><td><strong>Mistral 7B / Mixtral 8×7B</strong></td><td>7–47B</td><td>"Small" for self-hosted chat; MoE variant is fast at inference</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Small Encoders — Embedding &amp; Reranking</h4>
+    <ul class="clean">
+      <li><strong>all-MiniLM-L6-v2</strong> (22M) — 384-d; baseline for prototyping; ~50k sentences/sec on GPU.</li>
+      <li><strong>bge-small-en-v1.5</strong> (33M) — best small English embedder on MTEB; self-host for zero API cost.</li>
+      <li><strong>e5-small-v2</strong> (33M) — Microsoft; requires <code>query:</code> / <code>passage:</code> prefixes.</li>
+      <li><strong>ms-marco-MiniLM-L-6-v2</strong> (22M) — cross-encoder reranker; rerank 50 pairs in &lt;100ms on CPU.</li>
+      <li><strong>bge-reranker-base</strong> (278M) — step up when MiniLM reranker quality isn't enough.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Decision Guide</h4>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li><strong>Task is binary classification / routing?</strong> → Small LLM or even a fine-tuned DistilBERT.</li>
+      <li><strong>Task is semantic search at &gt;100 QPS?</strong> → Small bi-encoder self-hosted; validate recall on gold set.</li>
+      <li><strong>Task is reranking top-50?</strong> → ms-marco-MiniLM on CPU; upgrade to bge-reranker if metrics demand.</li>
+      <li><strong>Task is customer-facing regulated answer?</strong> → Frontier LLM (Claude Sonnet+), not a 1B model.</li>
+      <li><strong>Always:</strong> run your eval harness — a 33M embedder often beats a 7B LLM at retrieval because retrieval is an encoder job, not a generation job.</li>
+    </ol>
+  </div>
+
+  <div class="card">
     <h3 style="margin-top:0">Quick Reference: Which Model for Which Job?</h3>
     <table>
       <thead><tr><th>Task</th><th>Pragmatic default</th></tr></thead>
       <tbody>
         <tr><td>Customer-facing chat (regulated)</td><td>Claude Sonnet on Bedrock or Anthropic API; route easy queries to Haiku</td></tr>
         <tr><td>Code generation in IDE</td><td>Claude (Sonnet/Opus) or GPT-4.1; GitHub Copilot for inline</td></tr>
-        <tr><td>RAG embeddings</td><td>voyage-3, text-embedding-3-large, or BGE-m3 (open)</td></tr>
-        <tr><td>RAG reranking</td><td>Cohere Rerank v3 or BGE-reranker</td></tr>
+        <tr><td>RAG embeddings (API)</td><td>voyage-3, text-embedding-3-large, Cohere Embed v3</td></tr>
+        <tr><td>RAG embeddings (self-hosted)</td><td>bge-m3, bge-small, e5-large, nomic-embed-text (MRL)</td></tr>
+        <tr><td>RAG reranking</td><td>Cohere Rerank v3, bge-reranker-v2, or ms-marco-MiniLM (small/fast)</td></tr>
+        <tr><td>Hybrid sparse+dense</td><td>BM25 + dense (RRF), or SPLADE + dense in Qdrant</td></tr>
+        <tr><td>Late-interaction retrieval</td><td>ColBERTv2, ColPali (multimodal pages)</td></tr>
+        <tr><td>Vector DB at scale</td><td>Qdrant (hybrid + filters), pgvector (&lt;10M), Pinecone (managed)</td></tr>
         <tr><td>Document understanding (PDFs, scans)</td><td>Claude or Gemini for vision; Azure Document Intelligence for layout-heavy</td></tr>
         <tr><td>Speech-to-text</td><td>Whisper (open or via OpenAI), Deepgram for production</td></tr>
         <tr><td>Image generation</td><td>DALL·E 3, Imagen 3, or Flux for open</td></tr>
@@ -1342,6 +1460,10 @@ async def chat(req: Req):
         <tr><td><strong>BM25</strong></td><td>Classic keyword-based ranking (TF-IDF on steroids). Catches exact-match terms that embeddings miss (e.g., product codes, IDs).</td></tr>
         <tr><td><strong>Top-k</strong></td><td>How many chunks you retrieve. Higher k = more context but more noise &amp; cost.</td></tr>
         <tr><td><strong>Reranker</strong></td><td>A second model (cross-encoder) that re-scores the top-k for relevance. Slower but much more accurate than pure embedding similarity.</td></tr>
+        <tr><td><strong>Dense vector</strong></td><td>Fixed-length float array (e.g., 1536-d) from a bi-encoder; every dimension carries signal. Used for semantic ANN search.</td></tr>
+        <tr><td><strong>Sparse vector</strong></td><td>Mostly-zero vector over vocabulary terms (BM25, SPLADE). Catches exact keywords and learned term expansions.</td></tr>
+        <tr><td><strong>ColBERT</strong></td><td>Late-interaction retriever: one vector per token, scored via MaxSim. Between bi-encoder speed and cross-encoder accuracy.</td></tr>
+        <tr><td><strong>MRL</strong></td><td>Matryoshka embeddings — truncate to fewer dimensions (e.g., 1536→512) with modest quality loss; saves storage and latency.</td></tr>
         <tr><td><strong>Chunk overlap</strong></td><td>Repeating the last N tokens of one chunk at the start of the next, so context isn't lost at boundaries.</td></tr>
         <tr><td><strong>Grounding</strong></td><td>The answer is derived from the retrieved context, not the model's parametric memory.</td></tr>
         <tr><td><strong>Faithfulness</strong></td><td>Does every claim in the answer come from the retrieved context? (Anti-hallucination metric.)</td></tr>
@@ -1421,8 +1543,11 @@ def answer(query: str, user_id: str) -> str:
     <summary>More RAG questions</summary>
     <ul class="clean">
       <li>How do you handle tables and figures in PDFs?</li>
-      <li>How do you decide between pgvector and a dedicated vector DB?</li>
-      <li>What's the difference between a bi-encoder and a cross-encoder?</li>
+      <li>How do you decide between pgvector, Qdrant, and Pinecone?</li>
+      <li>What's the difference between a bi-encoder, ColBERT, and a cross-encoder?</li>
+      <li>Dense vs sparse vectors — when do you need hybrid search?</li>
+      <li>What is MRL and when would you truncate embedding dimensions?</li>
+      <li>When do small embedding models beat frontier APIs?</li>
       <li>How do you keep the index in sync with source systems?</li>
       <li>How do you handle multilingual content?</li>
     </ul>
@@ -1453,6 +1578,164 @@ def answer(query: str, user_id: str) -> str:
         <tr><td><strong>Agentic RAG</strong></td><td>Agent plans retrievals, calls tools, iterates until it has enough info</td><td>Complex, multi-step research questions</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- ====== BASICS ====== -->
+  <div class="card">
+    <h3 style="margin-top:0">Basics — Dense Vectors, Sparse Vectors &amp; Reranking</h3>
+    <p style="color:var(--muted)">Before hybrid search or ColBERT, you need a clear picture of what gets stored in the index and how the two-stage retrieve → rerank pipeline works.</p>
+
+    <h4 style="margin-bottom:6px;">Dense Vectors</h4>
+    <p style="color:var(--muted)">
+      A <strong>dense vector</strong> is a fixed-length array of floats (typically 384–3072 dimensions) where <em>every dimension carries signal</em>. A bi-encoder embedding model (e.g., <code>text-embedding-3-large</code>, <code>bge-m3</code>) reads a chunk of text and outputs one vector that summarizes its meaning. At query time you embed the question the same way and find the nearest vectors by <strong>cosine similarity</strong> or <strong>dot product</strong>.
+    </p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> semantic matching — "5-year fixed mortgage" matches "five-year fixed-rate home loan" even with no shared keywords.</li>
+      <li><strong>Weaknesses:</strong> misses exact IDs, product codes, acronyms, rare proper nouns. One vector per chunk = coarse representation.</li>
+      <li><strong>Index:</strong> stored in a vector DB or <code>pgvector</code>; searched with ANN algorithms (HNSW, IVF) for speed at scale.</li>
+      <li><strong>Typical dims:</strong> 384 (small models), 768 (BERT-era), 1024 (BGE-large), 1536 (OpenAI), 3072 (OpenAI large).</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Sparse Vectors</h4>
+    <p style="color:var(--muted)">
+      A <strong>sparse vector</strong> is mostly zeros — only a few dimensions are non-zero, each tied to a vocabulary term (or learned feature). Classic keyword search (BM25, TF-IDF) is sparse retrieval without neural embeddings: "mortgage" and "ISA" hit specific term dimensions.
+    </p>
+    <ul class="clean">
+      <li><strong>BM25</strong> — inverted-index keyword ranking. Fast, explainable, great for SKUs, policy numbers, legal citations.</li>
+      <li><strong>Learned sparse</strong> (SPLADE, uniCOIL) — a transformer expands text into a sparse weight vector over the vocabulary. Gets semantic expansion ("car" → also weights "vehicle") while staying sparse and fast on inverted indexes.</li>
+      <li><strong>Why hybrid?</strong> Dense and sparse fail in opposite ways. Fuse both with <strong>Reciprocal Rank Fusion (RRF)</strong> or weighted score blending.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Reranking — The Two-Stage Pattern</h4>
+    <p style="color:var(--muted)">
+      <strong>Stage 1 (retrieval):</strong> cast a wide net — top-50 or top-100 candidates via fast bi-encoder similarity, BM25, or hybrid. <strong>Stage 2 (reranking):</strong> a slower, more accurate model scores each (query, document) pair and reorders to top-5 for the LLM.
+    </p>
+    <ul class="clean">
+      <li><strong>Bi-encoder</strong> — embed query and doc separately; similarity = dot product. O(n) over the corpus. Used for first pass.</li>
+      <li><strong>Cross-encoder reranker</strong> — feed query + doc together through one transformer; outputs a single relevance score. O(k) over candidates only. Much more accurate.</li>
+      <li><strong>Cost trade-off:</strong> reranking 50 docs adds ~100–300ms but is often the single biggest quality jump after hybrid search.</li>
+      <li><strong>Examples:</strong> Cohere Rerank v3, <code>bge-reranker-v2-m3</code>, Voyage rerank, <code>ms-marco-MiniLM-L-6-v2</code> (small/fast).</li>
+    </ul>
+  </div>
+
+  <!-- ====== INTERMEDIATE ====== -->
+  <div class="card">
+    <h3 style="margin-top:0">Intermediate — ColBERT, MRL &amp; Hybrid Retrieval</h3>
+    <p style="color:var(--muted)">Once basics work, these techniques improve recall and efficiency without jumping to a full custom stack.</p>
+
+    <h4 style="margin-bottom:6px;">ColBERT — Late Interaction Retrieval</h4>
+    <p style="color:var(--muted)">
+      <strong>ColBERT</strong> (Contextualized Late Interaction over BERT) sits between bi-encoders and cross-encoders. Instead of one vector per document, it stores a <strong>multi-vector</strong> representation — one embedding per token. At query time, each query token finds its best-matching doc token; scores are aggregated via <strong>MaxSim</strong> (sum of max similarities per query token).
+    </p>
+    <ul class="clean">
+      <li><strong>Why it helps:</strong> finer-grained matching than a single pooled vector, but still indexable (unlike a full cross-encoder over the whole corpus).</li>
+      <li><strong>Variants:</strong> ColBERTv2 (compressed token embeddings), Jina-ColBERT, ColQwen (multimodal pages).</li>
+      <li><strong>Trade-off:</strong> more storage per doc (many vectors vs one), more complex indexing. Often used as a reranker or on smaller corpora.</li>
+      <li><strong>Interview line:</strong> "Bi-encoder for speed, ColBERT for late interaction, cross-encoder for final rerank."</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">MRL — Matryoshka Representation Learning</h4>
+    <p style="color:var(--muted)">
+      <strong>MRL</strong> trains embeddings so the <em>first N dimensions</em> of a vector are still meaningful when you truncate. A 3072-d embedding from <code>text-embedding-3-large</code> can be cut to 1536 or 512 dims with modest quality loss — like Russian nesting dolls where inner layers still work.
+    </p>
+    <ul class="clean">
+      <li><strong>Storage savings:</strong> store 512-d instead of 3072-d → ~6× less disk and RAM.</li>
+      <li><strong>Latency:</strong> smaller vectors = faster distance computation and smaller HNSW graphs.</li>
+      <li><strong>Multi-resolution:</strong> same model, different dims per use case — 1536 for quality-critical, 256 for high-volume dedup.</li>
+      <li><strong>Models with MRL:</strong> OpenAI embedding-3 family, Nomic Embed, some BGE variants. Always validate truncation on your eval set.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Hybrid + Rerank Stack (Intermediate)</h4>
+    <table>
+      <thead><tr><th>Step</th><th>Technique</th><th>Typical config</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Metadata pre-filter</td><td>ACL, region, date range</td></tr>
+        <tr><td>2</td><td>Dense retrieval</td><td>top-50 via HNSW cosine</td></tr>
+        <tr><td>3</td><td>Sparse retrieval</td><td>top-50 via BM25 or SPLADE</td></tr>
+        <tr><td>4</td><td>RRF fusion</td><td>merge → top-30 unique chunks</td></tr>
+        <tr><td>5</td><td>Cross-encoder rerank</td><td>score all 30 → top-5</td></tr>
+        <tr><td>6</td><td>LLM generation</td><td>answer with citations</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ====== ADVANCED ====== -->
+  <div class="card">
+    <h3 style="margin-top:0">Advanced — Qdrant, Learned Sparse, Small Models &amp; Production Tuning</h3>
+    <p style="color:var(--muted)">Production-grade retrieval stacks where vector DB choice, model size, and index configuration matter as much as algorithm choice.</p>
+
+    <h4 style="margin-bottom:6px;">Qdrant — Vector DB Deep-Dive</h4>
+    <p style="color:var(--muted)">
+      <strong>Qdrant</strong> is a Rust-native vector database built for filtered hybrid search at scale. Strong choice when you outgrow <code>pgvector</code> or need native sparse + dense in one engine.
+    </p>
+    <ul class="clean">
+      <li><strong>Collections &amp; points</strong> — a collection holds points; each point has an ID, one or more named vectors, and a JSON <strong>payload</strong> (metadata).</li>
+      <li><strong>Named vectors</strong> — store <code>dense</code> (1536-d) and <code>sparse</code> (SPLADE) on the same point; query both in one request.</li>
+      <li><strong>Payload filtering</strong> — apply ACL/region/date filters <em>inside</em> the HNSW search (pre-filter or post-filter). Critical for banking ACL enforcement.</li>
+      <li><strong>HNSW tuning</strong> — <code>m</code> (edges per node), <code>ef_construct</code> (build quality), <code>ef</code> (search recall). Higher = better recall, more RAM and slower queries.</li>
+      <li><strong>Quantization</strong> — scalar or product quantization compresses vectors (e.g., 4× RAM reduction) with configurable accuracy trade-off.</li>
+      <li><strong>Multitenancy</strong> — shard by tenant; use payload indexes on hot filter fields (<code>tenant_id</code>, <code>region</code>).</li>
+      <li><strong>When to pick Qdrant over pgvector:</strong> &gt;10M vectors, need hybrid sparse+dense natively, heavy metadata filtering, dedicated ops team. Stay on pgvector if you're &lt;5M docs and already on Postgres.</li>
+    </ul>
+<pre><code># Qdrant hybrid query (conceptual)
+client.query_points(
+    collection_name="policies",
+    prefetch=[
+        {"query": dense_vector, "using": "dense", "limit": 50},
+        {"query": sparse_vector, "using": "sparse", "limit": 50},
+    ],
+    query=models.FusionQuery(fusion=models.Fusion.RRF),
+    query_filter=models.Filter(must=[
+        models.FieldCondition(key="region", match=models.MatchValue(value="UK")),
+        models.FieldCondition(key="acl_group", match=models.MatchAny(any=user_groups)),
+    ]),
+    limit=5,
+)
+</code></pre>
+
+    <h4 style="margin-bottom:6px;">Learned Sparse Vectors (SPLADE) — Advanced Hybrid</h4>
+    <p style="color:var(--muted)">
+      <strong>SPLADE</strong> (and successors like SPLADE-v3, uniCOIL) train a transformer to output sparse term weights. You get BM25-like inverted-index speed with neural term expansion. Qdrant, Elasticsearch, and OpenSearch all support sparse vector fields. Pair with dense in RRF for state-of-the-art hybrid on BEIR-style benchmarks.
+    </p>
+
+    <h4 style="margin-bottom:6px;">ColBERT in Production</h4>
+    <ul class="clean">
+      <li><strong>Indexing:</strong> store token embeddings per chunk (often 100–300 vectors × 128-d each after compression in ColBERTv2).</li>
+      <li><strong>Retrieval:</strong> MaxSim scoring — for each query token, find max dot-product with any doc token, sum across query tokens.</li>
+      <li><strong>Placement:</strong> use as a second-stage retriever after dense top-200, or as a reranker before cross-encoder. Rarely the only retrieval method at &gt;1M docs without dedicated infra (RAGatouille, Vespa).</li>
+      <li><strong>Multimodal:</strong> ColPali / ColQwen apply the same late-interaction idea to page images — strong for layout-heavy PDFs.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Small Models — Embedding &amp; Reranking at the Edge</h4>
+    <p style="color:var(--muted)">
+      Not every stage needs a frontier model. <strong>Small models</strong> (sub-500M params) run on CPU or a single GPU, cut latency and cost, and work well for high-QPS retrieval tiers.
+    </p>
+    <table>
+      <thead><tr><th>Model</th><th>Size</th><th>Dims</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>all-MiniLM-L6-v2</strong></td><td>22M</td><td>384</td><td>Fast baseline bi-encoder; good for prototyping and low-latency search</td></tr>
+        <tr><td><strong>bge-small-en-v1.5</strong></td><td>33M</td><td>384</td><td>Strong small English embedder; beats MiniLM on MTEB</td></tr>
+        <tr><td><strong>e5-small-v2</strong></td><td>33M</td><td>384</td><td>Microsoft E5 family; prefix queries with <code>query:</code> / docs with <code>passage:</code></td></tr>
+        <tr><td><strong>nomic-embed-text-v1.5</strong></td><td>137M</td><td>768 (MRL → 256)</td><td>Open, MRL-native; truncate dims for storage savings</td></tr>
+        <tr><td><strong>ms-marco-MiniLM-L-6-v2</strong></td><td>22M</td><td>—</td><td>Cross-encoder reranker; ~50ms for 50 pairs on CPU</td></tr>
+        <tr><td><strong>bge-reranker-base</strong></td><td>278M</td><td>—</td><td>Better rerank quality than MiniLM; still self-hostable</td></tr>
+        <tr><td><strong>Phi-3-mini / Llama 3.2 1B</strong></td><td>1–3B</td><td>—</td><td>On-device query rewrite, classification, routing — not for final answers</td></tr>
+      </tbody>
+    </table>
+    <ul class="clean">
+      <li><strong>Pattern:</strong> small embedder for index + small reranker for top-50 → frontier LLM for generation. Cuts embedding API cost to zero if self-hosted.</li>
+      <li><strong>When small isn't enough:</strong> multilingual, domain jargon (finance/legal), or low recall on eval — step up to <code>bge-m3</code>, <code>voyage-3</code>, or domain-tuned models (FinBERT-style fine-tunes).</li>
+      <li><strong>Quantization for small models:</strong> ONNX + INT8 on CPU serves 100+ embed QPS on a modest instance.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">MRL in Production — Practical Checklist</h4>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li>Embed at full dimension (e.g., 1536) during indexing.</li>
+      <li>Run recall@k eval at 1536, 768, 512, 256 — find the knee of the curve.</li>
+      <li>Re-index at chosen dim OR truncate at query time if model supports MRL.</li>
+      <li>Re-tune HNSW <code>ef</code> — lower dims sometimes need higher <code>ef</code> to compensate.</li>
+      <li>Document the chosen dim in <code>index_version</code> metadata for reproducibility.</li>
+    </ol>
   </div>
 
   <div class="tip">
@@ -1498,6 +1781,60 @@ def answer(query: str, user_id: str) -> str:
       you embed and retrieve based on that synthetic answer rather than the original question. Helps when the question
       and the document corpus use very different language — short questions vs. long technical docs. Adds an LLM call
       to the critical path, so weigh latency.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q5</span> Dense vs sparse vectors — when do you need both?</div>
+    <p class="a">
+      <strong>Dense</strong> vectors capture semantic meaning — paraphrases, synonyms, conceptual similarity. <strong>Sparse</strong>
+      vectors (BM25 or learned SPLADE) capture lexical overlap — product codes, legal references, acronyms, exact names.
+      In banking RAG you almost always need both: dense finds "early repayment charge" when the user says "pay off mortgage
+      early fee"; sparse finds "SKU-88421" or "FCA CONC 5.2.1R". Fuse with RRF; don't rely on dense alone.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q6</span> Explain ColBERT and how it differs from bi-encoder and cross-encoder.</div>
+    <p class="a">
+      A <strong>bi-encoder</strong> pools the whole document into one vector — fast but coarse. A <strong>cross-encoder</strong>
+      runs query and doc through shared attention — accurate but too slow for millions of docs. <strong>ColBERT</strong> stores
+      one vector per <em>token</em> in the document and scores via <strong>MaxSim</strong>: each query token matches its
+      best doc token, scores are summed. You get token-level interaction without scoring every (query, doc) pair at index
+      time. Typical pattern: bi-encoder top-200 → ColBERT rescore → cross-encoder rerank top-5.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q7</span> What is MRL and why would you truncate embedding dimensions?</div>
+    <p class="a">
+      <strong>Matryoshka Representation Learning (MRL)</strong> trains embeddings so lower-dimensional prefixes remain
+      useful. Truncating 1536-d → 512-d cuts storage and speeds up HNSW search with ~5–15% recall loss (model-dependent).
+      Use it when you have millions of vectors and RAM/disk is the bottleneck, or when you want one model serving both
+      a high-quality tier (full dims) and a fast dedup tier (256-d). Always measure on your gold set — don't truncate blindly.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q8</span> Why Qdrant over pgvector or Pinecone?</div>
+    <p class="a">
+      <strong>pgvector</strong> wins when you're &lt;5–10M vectors, already on Postgres, and want one database.
+      <strong>Qdrant</strong> wins when you need native <strong>hybrid sparse+dense</strong> on the same point, heavy
+      payload filtering inside HNSW, quantization at scale, or &gt;10M vectors with dedicated indexing. <strong>Pinecone</strong>
+      wins when you want fully managed with minimal ops. For regulated banking: Qdrant self-hosted or Qdrant Cloud with
+      private networking gives you ACL payload filters and audit-friendly point-level metadata.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q9</span> When do small embedding/reranking models beat frontier APIs?</div>
+    <p class="a">
+      Small models (<code>bge-small</code>, <code>all-MiniLM</code>, <code>ms-marco-MiniLM</code> reranker) win on
+      <strong>cost, latency, and data residency</strong> — self-host on CPU, no per-token bill, data never leaves your VPC.
+      They lose on multilingual coverage, domain jargon, and absolute recall. Rule: start with a small open model +
+      your eval set; if recall@10 on the gold set is &gt;85%, ship it. If not, step up to <code>bge-m3</code> or
+      <code>voyage-3</code> for embeddings and <code>bge-reranker-v2</code> or Cohere Rerank for the rerank stage.
+      Use small LLMs (Phi-3-mini, Haiku) only for routing/rewrite — not final regulated answers.
     </p>
   </div>
 </section>
@@ -2493,8 +2830,12 @@ print(result["report"])
 
 </main>
 
-<footer>
-  Built for your AVP – Emerging Technology &amp; Transformation interview · Good luck.
+<footer class="site-footer-bar">
+  <span>Created by <strong>Sourabh Rajwade</strong></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
 </footer>
 
 </body>
