@@ -15,6 +15,8 @@
     <meta name="author" content="Learning Hub" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#0f1115" />
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="logo.svg" />
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Learning Hub" />
@@ -115,10 +117,12 @@
         justify-content: center;
         width: 56px;
         height: 56px;
-        border-radius: 14px;
-        background: linear-gradient(135deg, var(--accent), var(--accent2));
-        font-size: 26px;
         margin-bottom: 20px;
+      }
+      .logo img {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
         box-shadow: 0 8px 32px rgba(124, 196, 255, 0.2);
       }
       h1 {
@@ -212,21 +216,13 @@
       .card-icon {
         width: 48px;
         height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
         margin-bottom: 18px;
-        border: 1px solid var(--border);
+        flex-shrink: 0;
       }
-      .card-fe .card-icon {
-        background: rgba(124, 196, 255, 0.1);
-        border-color: rgba(124, 196, 255, 0.25);
-      }
-      .card-genai .card-icon {
-        background: rgba(74, 214, 192, 0.1);
-        border-color: rgba(74, 214, 192, 0.25);
+      .card-icon img {
+        width: 48px;
+        height: 48px;
+        display: block;
       }
       .card h2 {
         margin: 0 0 8px;
@@ -393,7 +389,9 @@
   <body>
     <div class="page">
       <header>
-        <div class="logo" aria-hidden="true">📚</div>
+        <div class="logo">
+          <img src="logo.svg" alt="Learning Hub" width="56" height="56" />
+        </div>
         <h1>Learning Hub</h1>
         <p class="subtitle">
           Interview prep and deep-dive courses — pick a track and start
@@ -402,8 +400,10 @@
       </header>
 
       <div class="cards">
-        <a class="card card-fe" href="frontend-system-design-course.html">
-          <div class="card-icon" aria-hidden="true">⚡</div>
+        <a class="card card-fe" href="frontend-system-design/">
+          <div class="card-icon" aria-hidden="true">
+            <img src="assets/icon-fe.svg" alt="" width="48" height="48" />
+          </div>
           <h2>Frontend System Design</h2>
           <p>
             From the browser rendering pipeline to designing Twitter at scale —
@@ -419,8 +419,10 @@
           <span class="cta">Open course <span>→</span></span>
         </a>
 
-        <a class="card card-genai" href="interview-prep.html">
-          <div class="card-icon" aria-hidden="true">🤖</div>
+        <a class="card card-genai" href="interview-prep/">
+          <div class="card-icon" aria-hidden="true">
+            <img src="assets/icon-genai.svg" alt="" width="48" height="48" />
+          </div>
           <h2>GenAI & Emerging Tech</h2>
           <p>
             Interview preparation covering Python, Generative AI, Agentic AI,

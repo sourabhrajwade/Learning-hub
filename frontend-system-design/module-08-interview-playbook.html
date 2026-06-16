@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 8 · Interview Playbook — Frontend System Design</title>
+<meta name="description" content="Format, rubric, tips, question bank, and company-specific questions." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1115" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --text:#e6e8ef; --muted:#9aa3b2;
+    --accent:#7cc4ff; --accent2:#9d7cff; --green:#7ce0a8; --yellow:#ffd479; --red:#ff8a8a;
+    --border:#2a2f3a; --code:#0b0d12;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{background:var(--code);padding:2px 6px;border-radius:4px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;color:#e0a679}
+  pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;border:1px solid var(--border);font-size:13px;line-height:1.5}
+  pre code{background:none;padding:0;color:#dbe1ec}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;margin-right:6px}
+  .pill.basic{background:#1b3b2b;color:var(--green)}
+  .pill.inter{background:#3b3b1b;color:var(--yellow)}
+  .pill.adv{background:#3b1b2b;color:var(--red)}
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0}
+  .callout.warn{border-color:var(--yellow)} .callout.tip{border-color:var(--green)}
+  .callout strong{color:var(--accent)} .callout.warn strong{color:var(--yellow)} .callout.tip strong{color:var(--green)}
+  details.q{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:10px 0}
+  details.q summary{cursor:pointer;font-weight:600;color:var(--accent2)}
+  details.q[open]{background:var(--panel2)}
+  details.q .answer{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .walkthrough{counter-reset:step}
+  .walkthrough .step{position:relative;padding:10px 12px 10px 38px;margin:8px 0;background:var(--code);border-radius:6px;border-left:3px solid var(--accent2)}
+  .walkthrough .step::before{counter-increment:step;content:counter(step);position:absolute;left:10px;top:10px;width:20px;height:20px;background:var(--accent2);color:#0b0d12;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .walkthrough .step .label{display:block;font-weight:600;color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+  .walkthrough .step .label.script{color:var(--green)}
+  .walkthrough .step p{margin:4px 0;font-size:13.5px}
+  .script-line{font-style:italic;color:#cdd5e3;border-left:2px solid var(--green);padding-left:10px;margin:6px 0;font-size:13.5px}
+  .followup{margin-top:10px;padding:10px 12px;background:var(--panel);border-radius:6px;font-size:13px}
+  .followup strong{color:var(--yellow)}
+  .company-tags{display:inline-flex;gap:5px;flex-wrap:wrap;margin-left:8px;vertical-align:middle}
+  .ctag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;border:1px solid transparent}
+  .ctag.meta{background:#1a2540;color:#7eb6ff;border-color:#2a4570}
+  .ctag.google{background:#1f2a1c;color:#9ad48a;border-color:#3a5a32}
+  .ctag.microsoft{background:#1f2933;color:#7cd1e0;border-color:#345566}
+  .ctag.amazon{background:#332416;color:#ffb86b;border-color:#664a2c}
+  .ctag.apple{background:#2a2a2a;color:#d8d8d8;border-color:#555}
+  .ctag.netflix{background:#3a1a1f;color:#ff9aa2;border-color:#6a2a35}
+  .ctag.uber{background:#1a1a1a;color:#e0e0e0;border-color:#444}
+  .ctag.agoda{background:#2a1a3a;color:#c9a3ff;border-color:#5a3580}
+  .ctag.airbnb{background:#3a1a26;color:#ff9ab8;border-color:#6a2a48}
+  .ctag.stripe{background:#1c2a3f;color:#9ab8ff;border-color:#345878}
+  .ctag.atlassian{background:#1a2540;color:#8eb4ff;border-color:#2c4880}
+  .ctag.bytedance{background:#2a2030;color:#ff9ad1;border-color:#553560}
+  .ctag.linkedin{background:#1a2a3a;color:#8ec5ff;border-color:#2c4a70}
+  .ctag.shopify{background:#1f2e1f;color:#9ad48a;border-color:#3a5a3a}
+  .ctag.booking{background:#1a2a40;color:#7ab0ff;border-color:#2c4a78}
+  .ctag.salesforce{background:#1a2a3a;color:#7ec5ff;border-color:#2c4a70}
+  .ctag.tiktok{background:#1a1a1a;color:#ff7eb6;border-color:#553060}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel);color:var(--accent)}
+  ul.clean li{margin:4px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> FE System Design</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">FE System Design</a></h1>
+<p class="sub">Basics → Advanced · with examples &amp; interview Qs</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-foundations.html">Module 1 · Foundations</a>
+<a class="toc-chapter-link" href="module-02-architecture.html">Module 2 · Architecture</a>
+<a class="toc-chapter-link" href="module-03-performance.html">Module 3 · Performance</a>
+<a class="toc-chapter-link" href="module-04-cdns.html">Module 4 · CDNs</a>
+<a class="toc-chapter-link" href="module-05-security.html">Module 5 · Security</a>
+<a class="toc-chapter-link" href="module-06-scalability.html">Module 6 · Scalability</a>
+<a class="toc-chapter-link" href="module-07-case-studies.html">Module 7 · Case Studies</a>
+<a class="toc-chapter-link active" href="module-08-interview-playbook.html">Module 8 · Interview Playbook</a>
+<ul class="toc-sub">
+<li><a href="#m8-format">8.1 Format & Rubric</a></li>
+<li><a href="#m8-tips">8.2 Tips & Anti-patterns</a></li>
+<li><a href="#m8-bank">8.3 Question Bank</a></li>
+<li><a href="#m8-company">8.4 Company-Specific Questions</a></li>
+</ul>
+</nav>
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 8 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div></aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">All levels</span><span class="chapter-badge">Module 8</span></div>
+  <h1 class="chapter-title">Module 8 · Interview Playbook</h1>
+  <p class="chapter-subtitle">Format, rubric, tips, question bank, and company-specific questions.</p>
+</header>
+<article class="chapter-body">
+<section id="module-8">
+<h2>Module 8 · Interview Playbook <span class="pill inter">All levels</span></h2>
+
+  <h3 id="m8-format">8.1 Format & Rubric</h3>
+  <p>Most companies (Meta, Google, Amazon, ByteDance, Atlassian, Stripe) evaluate on:</p>
+  <ul class="clean">
+    <li><strong>Problem exploration</strong> — clarifying questions, scoping.</li>
+    <li><strong>High-level design</strong> — architecture diagram, data flow.</li>
+    <li><strong>Data & API</strong> — entity model, endpoint contracts.</li>
+    <li><strong>Deep-dive</strong> — pick a hard sub-problem (real-time, virtualization, offline, etc.).</li>
+    <li><strong>Trade-offs</strong> — explicit pros/cons; alternatives considered.</li>
+    <li><strong>Quality concerns</strong> — perf, a11y, security, testing, observability.</li>
+  </ul>
+
+  <h3 id="m8-tips">8.2 Tips & Anti-patterns</h3>
+  <div class="grid2">
+    <div>
+      <h4 style="color:var(--green)">Do</h4>
+      <ul class="clean">
+        <li>Drive the conversation; ask before assuming.</li>
+        <li>Time-box: don't get stuck on data model for 30 min.</li>
+        <li>Whiteboard the architecture before code.</li>
+        <li>State trade-offs explicitly ("X is simpler, Y scales better").</li>
+        <li>Bring up a11y, security, and observability — most candidates skip them.</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="color:var(--red)">Don't</h4>
+      <ul class="clean">
+        <li>Jump into code without architecture.</li>
+        <li>Drop buzzwords without depth ("we'll use Redux"… why?).</li>
+        <li>Ignore the interviewer's hints.</li>
+        <li>Over-engineer: micro-frontends for a TODO app.</li>
+        <li>Forget mobile, slow networks, and edge cases.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 id="m8-bank">8.3 Question Bank</h3>
+
+  <p style="color:var(--muted);font-size:13.5px">Each answer below is structured as <strong>how to actually tackle it</strong> — the exact order to walk the interviewer (or a real design doc) through, with sample phrasing and follow-up traps to expect.</p>
+
+  <!-- ============ Q1 Twitter ============ -->
+  <details class="q"><summary>1. Design a Twitter feed. <span class="company-tags"><span class="ctag meta">Meta</span><span class="ctag google">Google</span><span class="ctag bytedance">ByteDance</span><span class="ctag linkedin">LinkedIn</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify (2 min)</span>
+          <p>Ask: home feed only or profile too? Read-heavy or write-heavy? Media support? Real-time? Mobile + desktop? Scale: ~500M DAU, p95 timeline load &lt;1s.</p>
+          <div class="script-line">"To scope this, can I assume we're designing the home timeline for web, with text + images, real-time new-tweet indicator, and skip composing for now?"</div>
+        </div>
+        <div class="step"><span class="label">Step 2 · High-level architecture</span>
+          <p>Draw: Browser → CDN (static + edge SSR shell) → API gateway → Timeline service. Timeline JSON returns IDs + cursor; tweet entities hydrated separately so they're cacheable.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Data model (client cache)</span>
+          <p>Normalize: <code>tweets:{[id]:Tweet}</code>, <code>users:{[id]:User}</code>, <code>feeds:{home:{ids:[],cursor}}</code>. One like update mutates one entity, propagating to every list referencing it.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · API contract</span>
+          <p><code>GET /timeline?cursor=X&limit=20</code> → <code>{tweets:[ids], entities:{tweets,users}, nextCursor}</code>. Cursor-based (stable under inserts), not offset.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Deep dive: infinite scroll + real-time</span>
+          <p>Virtualized list (TanStack Virtual, dynamic heights). New tweets arrive via SSE → <em>buffer</em> them and show "12 new tweets" pill; never auto-prepend (breaks scroll position). Optimistic like with rollback on error.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Performance</span>
+          <p>Edge SSR for first paint, hydrate progressively. LQIP/blurhash for images, <code>fetchpriority=high</code> for above-the-fold media, <code>loading=lazy</code> for the rest. Prefetch tweet detail on hover.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Trade-offs you should volunteer</span>
+          <p>SSR cost vs CSR speed; cursor pagination doesn't support jump-to-page; virtualization complicates SEO and a11y (mitigate with semantic markup + <code>aria-rowindex</code>).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Likely follow-ups:</strong> "How do you keep scroll position when new tweets arrive?" (anchor to top tweet ID, prepend off-screen). "How do you handle a viral tweet with 1M likes?" (debounce counter updates, server pushes aggregate, not per-like).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q2 Google Docs ============ -->
+  <details class="q"><summary>2. Design Google Docs (real-time collaboration). <span class="company-tags"><span class="ctag google">Google</span><span class="ctag microsoft">Microsoft</span><span class="ctag atlassian">Atlassian</span><span class="ctag meta">Meta</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>How many concurrent editors per doc? (typical &lt;20, but support 100+). Doc size cap? Offline editing? Comments + suggestions? Permissions model?</p>
+          <div class="script-line">"I'll assume up to 50 simultaneous editors, plain rich-text, offline-first, with view/comment/edit roles."</div>
+        </div>
+        <div class="step"><span class="label">Step 2 · Pick the convergence algorithm</span>
+          <p>Two options: <strong>OT</strong> (server transforms ops, used by Google) — simpler ops, complex server. <strong>CRDT</strong> (Yjs/Automerge) — peer-friendly, offline-friendly, slightly larger payloads. Pick CRDT for offline-first; explicitly call out the trade-off.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Architecture</span>
+          <p>Client (CRDT doc + local IndexedDB persistence) ⇄ WebSocket relay ⇄ persistence service (op log + periodic snapshots in S3). Awareness channel (cursors/selections) is separate, ephemeral, not persisted.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Offline & reconnection</span>
+          <p>All edits append to local op log immediately. On reconnect, exchange state vectors → server sends missing ops → client merges. Conflict-free by construction.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · UI concerns</span>
+          <p>Per-user cursor colors (presence), undo stack scoped per-user (don't undo your collaborator's work), large-doc virtualization (only render viewport pages), input latency &lt;30ms — apply locally first, sync async.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Persistence & cost</span>
+          <p>Snapshot every N ops or M seconds; compact op log. Permissions checked at WS handshake and on each op (defense in depth).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "What if two users format the same word differently?" (CRDT merges both attributes, last-write-wins per attribute key). "How do you handle a 500-page doc?" (chunked CRDT subdocs per page; load lazily).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q3 Autocomplete ============ -->
+  <details class="q"><summary>3. Design an autocomplete component. <span class="company-tags"><span class="ctag google">Google</span><span class="ctag amazon">Amazon</span><span class="ctag agoda">Agoda</span><span class="ctag booking">Booking</span><span class="ctag meta">Meta</span><span class="ctag microsoft">Microsoft</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Local data or server-backed? How many suggestions? Latency budget? Mobile? Result count and ranking source?</p>
+          <div class="script-line">"Server-backed, ~10 suggestions, &lt;100ms perceived latency, supports keyboard + screen readers."</div>
+        </div>
+        <div class="step"><span class="label">Step 2 · Component anatomy</span>
+          <p>Headless hook (state + a11y) + presentational dropdown. ARIA: <code>role="combobox"</code>, <code>aria-expanded</code>, <code>aria-activedescendant</code>, <code>aria-autocomplete="list"</code>.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Network strategy</span>
+          <p>Debounce 200ms. <code>AbortController</code> cancels stale requests. Tag each request with a monotonically increasing ID; ignore responses whose ID is older than the latest applied — this is the <em>real</em> race-condition fix, since aborts may not always fire.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Caching</span>
+          <p>LRU keyed by query string. Optimization: results for "abc" usually subset "abcd"; client can filter the cached "abc" list while waiting for the network — instant UI.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · UX states</span>
+          <p>Loading (spinner inline, not blocking), empty ("No matches for 'xyz'"), error ("Try again"), recent searches when input is empty, highlight matched substring with <code>&lt;mark&gt;</code>.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Accessibility & mobile</span>
+          <p>Keyboard: ↑/↓ navigates, Enter selects, Esc closes. Mobile: tap-to-select, scroll suggestions, virtual keyboard doesn't cover input.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "How do you handle 50ms typist?" (debounce alone leaves a stale request — combine with request-id guard). "Edge-side autocomplete?" (deploy a trie or vector index to Cloudflare Workers, sub-30ms p99 globally).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q4 Chat ============ -->
+  <details class="q"><summary>4. Design a chat app (WhatsApp / Slack web). <span class="company-tags"><span class="ctag meta">Meta</span><span class="ctag microsoft">Microsoft</span><span class="ctag salesforce">Salesforce</span><span class="ctag google">Google</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>1:1 + group? Group size? Media? E2E encryption? Offline? Message history depth? Multi-device?</p>
+          <div class="script-line">"Group chat up to 256, text + images, must work offline, multi-device sync, with delivery + read receipts."</div>
+        </div>
+        <div class="step"><span class="label">Step 2 · Transport</span>
+          <p>Primary: WebSocket with heartbeat every 30s. Fallback: long-polling. Reconnect with exponential backoff + jitter. Resume protocol: client sends <code>last_seq</code>, server replays missed messages.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Local-first storage</span>
+          <p>IndexedDB stores message log per conversation. UI reads from local store, writes go to local store first then sync queue ("outbox") — feels instant offline.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · IDs & ordering</span>
+          <p>Client generates ULID for each message (sortable, unique). Server returns canonical ID + seq; client reconciles by client ID. React key stays stable, no flicker.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · UI engineering</span>
+          <p>Virtualized message list, anchored to bottom only when user is already at bottom (avoid scroll-jacking). Typing indicator: debounced events, coalesced server-side (1 event/3s).</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Multi-device & E2E</span>
+          <p>Multi-device: messages encrypted to each device key (Signal protocol). Web pairs via QR with mobile, never holds long-term private keys server-side.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "What if outbox fills offline?" (cap with size + age, surface "X messages pending"). "Read receipts cost?" (batch + debounce; one PUT per visible-window change, not per message).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q5 Pinterest ============ -->
+  <details class="q"><summary>5. Design an image gallery (Pinterest). <span class="company-tags"><span class="ctag meta">Meta</span><span class="ctag airbnb">Airbnb</span><span class="ctag agoda">Agoda</span><span class="ctag bytedance">ByteDance</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Masonry layout? Infinite scroll or pagination? Image-heavy — what's the LCP target? Mobile-first?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Layout</span>
+          <p>CSS columns or JS-positioned masonry. JS gives you precise, virtualized control; CSS columns reflow when an image loads (CLS risk). Reserve aspect-ratio boxes upfront — server returns <code>width,height</code> per image.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Image pipeline</span>
+          <p>CDN with on-the-fly resize (Cloudflare Images / Imgix). Serve AVIF → WebP → JPEG via <code>&lt;picture&gt;</code>. <code>srcset</code> for DPR. BlurHash placeholder while loading — feels instant.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Loading strategy</span>
+          <p>Native <code>loading="lazy"</code> for below-the-fold, IntersectionObserver-based prefetch ~600px ahead of viewport. Decode hint <code>decoding="async"</code>.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Virtualization</span>
+          <p>For 10k+ pins, virtualize. Track scroll velocity — at high speed, swap full images for placeholders to keep frame rate (Pinterest does this).</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Pagination</span>
+          <p>Cursor-based; prefetch next page when user is 80% through current. Save scroll position for back-navigation (sessionStorage).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "How do you avoid CLS?" (server returns dimensions; reserve box). "Memory growth on long sessions?" (release decoded images far above viewport; nuke <code>blob:</code> URLs).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q6 Video player ============ -->
+  <details class="q"><summary>6. Design a video player like YouTube. <span class="company-tags"><span class="ctag google">Google</span><span class="ctag netflix">Netflix</span><span class="ctag bytedance">ByteDance</span><span class="ctag tiktok">TikTok</span><span class="ctag meta">Meta</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>VOD or live? Quality switching? Captions? DRM? Browser support floor? Analytics requirements?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Streaming protocol</span>
+          <p>HLS (Safari native, hls.js elsewhere) or DASH. Manifest lists segments at multiple bitrates. ABR algorithm picks based on bandwidth estimate + buffer level (BOLA, throughput-based).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Buffer & seek</span>
+          <p>Target ~30s ahead. On seek, flush forward buffer, fetch nearest keyframe segment, resume. Handle <code>waiting</code>/<code>stalled</code> with spinner; downshift quality if buffer drains.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · UI architecture</span>
+          <p>State machine (XState) for player states: idle → loading → playing → paused → buffering → ended → error. Avoids "impossible" UI states.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · A11y & UX</span>
+          <p>Keyboard: space=play, ←→ seek, ↑↓ volume, F fullscreen. Captions via WebVTT, customizable size/color. PiP via <code>requestPictureInPicture()</code>.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Analytics & DRM</span>
+          <p>Heartbeat every 10s with playhead, buffer health, dropped frames. QoE metrics: startup time, rebuffer ratio, bitrate. DRM: EME with Widevine (Chrome/FF), FairPlay (Safari), PlayReady (Edge).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User on flaky 3G — how do you keep them watching?" (start at lowest bitrate, ramp up; preload key segments on hover). "Live latency?" (LL-HLS / LL-DASH with chunked CMAF, ~3s glass-to-glass).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q7 Design system ============ -->
+  <details class="q"><summary>7. Design a design system. <span class="company-tags"><span class="ctag atlassian">Atlassian</span><span class="ctag shopify">Shopify</span><span class="ctag microsoft">Microsoft</span><span class="ctag agoda">Agoda</span><span class="ctag uber">Uber</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify scope</span>
+          <p>How many products consume it? Frameworks? Theming (light/dark/branded)? Mobile native? Who maintains it?</p>
+          <div class="script-line">"5 React web apps, dark + light, central platform team owns primitives, product teams contribute patterns."</div>
+        </div>
+        <div class="step"><span class="label">Step 2 · Layered model</span>
+          <p>Tokens (JSON) → CSS variables / Style Dictionary outputs → Primitives (Button, Input, Modal) → Patterns (Form, DataTable) → Templates (full page layouts).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Tech choices</span>
+          <p>Headless behavior (Radix / React Aria) for a11y correctness. Styling: CSS-in-JS adds runtime cost — prefer Vanilla Extract / CSS Modules / Tailwind with tokens. Variants via <code>cva</code> or similar.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Distribution</span>
+          <p>Monorepo with versioned packages (changesets). Tree-shakable ESM. Storybook + auto-published docs. Visual regression (Chromatic).</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Governance</span>
+          <p>Contribution model: RFC for new primitives, "patterns" can ship faster. Deprecation policy (one major). Codemods (jscodeshift) for breaking changes — migration must be near-zero-cost or teams won't upgrade.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Quality gates</span>
+          <p>Every primitive: a11y test (axe), keyboard test, RTL test, dark-mode test, visual regression. No primitive lands without these.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "How do you measure adoption?" (instrument imports, dashboard of % primitives used per app). "Team A wants a custom variant?" (extend in their app; upstream only if reused twice).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q8 Dashboard ============ -->
+  <details class="q"><summary>8. Design an analytics dashboard with 50 widgets. <span class="company-tags"><span class="ctag microsoft">Microsoft</span><span class="ctag salesforce">Salesforce</span><span class="ctag google">Google</span><span class="ctag stripe">Stripe</span><span class="ctag amazon">Amazon</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Real-time or periodic refresh? Customizable layouts? Export? Time-range scope? p95 load target?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Architecture</span>
+          <p>Each widget = self-contained module: query spec + render. Dashboard orchestrator owns layout (react-grid-layout) and shared filters (time range).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Data layer</span>
+          <p>Batch queries — many widgets often need overlapping data. Coalesce within a tick into one POST. Cache with TanStack Query keyed by (query, time-range). Stream via WebSocket for real-time tiles.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Rendering</span>
+          <p>Don't mount all 50 at once. IntersectionObserver — render only visible widgets, placeholders for off-screen. Heavy aggregation/parsing in a Web Worker via Comlink.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Resilience</span>
+          <p>Error boundary <em>per widget</em> — one failing widget never breaks the dashboard. Skeleton on load, "Retry" on error, "No data" empty state.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Export & perf</span>
+          <p>CSV export streamed via <code>ReadableStream</code> to avoid memory spikes. Charts: Canvas (uPlot) for &gt;1000 points, SVG for small. Time series down-sampled server-side.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Time range changes — how do you avoid 50 simultaneous fetches?" (batch + debounce 100ms; cancel in-flight). "User saved 200 dashboards?" (lazy-load layout, virtualize sidebar).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q9 Uploader ============ -->
+  <details class="q"><summary>9. Design a file uploader (Dropbox / Drive). <span class="company-tags"><span class="ctag google">Google</span><span class="ctag microsoft">Microsoft</span><span class="ctag amazon">Amazon</span><span class="ctag atlassian">Atlassian</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Max file size? Folder upload? Resumable across sessions? Concurrent uploads? Browser support?</p>
+          <div class="script-line">"Up to 10GB per file, folder upload, must resume after page refresh, 5 concurrent files."</div>
+        </div>
+        <div class="step"><span class="label">Step 2 · Chunking strategy</span>
+          <p>Slice file via <code>file.slice()</code> into 5-10 MB chunks. Upload via pre-signed S3 multipart URLs (server doesn't proxy bytes — saves egress and CPU).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Resumability</span>
+          <p>Server returns upload session ID; persist in IndexedDB along with chunk completion bitmap. On reload, query server for completed parts and resume missing ones.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Concurrency & retries</span>
+          <p>Pool of 4-6 in-flight chunk uploads. Failed chunk → exponential backoff (max 5 retries). Use <code>navigator.connection</code> to throttle on slow networks.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Integrity & finalization</span>
+          <p>SHA-256 per chunk computed in Web Worker (don't block main thread). Server validates, then issues "complete multipart upload" call. Final ETag from S3 confirms file.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · UX</span>
+          <p>Per-file + total progress, pause/resume, drag-drop, folder via <code>webkitdirectory</code>, conflict modal ("file already exists: overwrite/keep both/skip"), bandwidth limit toggle.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User closes the tab mid-upload?" (warn via <code>beforeunload</code>; chunks already accepted persist). "100k small files?" (zip client-side or use a different bulk endpoint — multipart per file is wasteful).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q10 Notifications ============ -->
+  <details class="q"><summary>10. Design a notification system. <span class="company-tags"><span class="ctag meta">Meta</span><span class="ctag linkedin">LinkedIn</span><span class="ctag uber">Uber</span><span class="ctag agoda">Agoda</span><span class="ctag microsoft">Microsoft</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>In-app only or push too? Realtime urgency? Cross-tab sync? Read state authoritative where? Categories/preferences?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Transport</span>
+          <p>In-app: SSE (one-way, simpler than WS) for notifications stream. Web Push (Push API + service worker) for off-tab/closed-browser.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Data model</span>
+          <p><code>{id, type, payload, createdAt, readAt}</code>. Server is source of truth for read state. Unread count = derived.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Cross-tab sync</span>
+          <p>BroadcastChannel: tab A marks notification read → broadcasts → tab B updates without refetch. Service worker can be the single SSE consumer to avoid N connections per user.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Coalescing & UX</span>
+          <p>Group: "Alice and 3 others liked your post." Batch on server-side over a window (e.g., 5 min). Toast for high-priority, badge for ambient. Respect <code>prefers-reduced-motion</code>; sound off by default.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Preferences & DnD</span>
+          <p>Per-category opt-out, do-not-disturb schedule, channel preference (in-app/email/push). Always include unsubscribe.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "1k notifications per minute for power users?" (server-side digest; client receives summary, not each). "User on 3 tabs?" (one SW connection, BroadcastChannel fanout).</div>
+    </div>
+  </details>
+
+  <!-- ============ Q11 Checkout ============ -->
+  <details class="q"><summary>11. Design an e-commerce checkout. <span class="company-tags"><span class="ctag amazon">Amazon</span><span class="ctag shopify">Shopify</span><span class="ctag stripe">Stripe</span><span class="ctag agoda">Agoda</span><span class="ctag booking">Booking</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Guest checkout? Saved cards? Multiple payment methods? Address validation? Multi-region/tax/currency?</p>
+          <div class="script-line">"Guest + logged-in, card + Apple Pay + PayPal, US-only initially, single-shipment order."</div>
+        </div>
+        <div class="step"><span class="label">Step 2 · Flow as a state machine</span>
+          <p>States: cart → address → shipping → payment → review → submitted → confirmed. Use XState or a discriminated-union reducer; impossible to skip steps or double-submit.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Idempotency</span>
+          <p>Generate idempotency key client-side per checkout attempt; send on submit. Server uses it to dedupe — solves double-click, network retry, back-button-resubmit. Disable submit button on click; render in a "submitting" state.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Payment isolation</span>
+          <p>Payment SDK (Stripe Elements / Braintree) renders card field in an iframe served by them — your code never touches PAN, drops PCI scope. Tokenize → submit token to your backend, not the card.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Security posture</span>
+          <p>Strict CSP, no third-party tags on /checkout (no analytics/ads — they add risk + perf cost). HTTPS-only, HttpOnly session cookie, SameSite=Lax, CSRF tokens on POST.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · UX & resilience</span>
+          <p>Address autocomplete (Google Places). Validate inline. Persist form state (sessionStorage) to survive refresh. Error recovery: declined card returns to payment step with explainer, doesn't reset cart. Funnel analytics per step (drop-off telemetry).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Network drops mid-submit?" (idempotency key + client polls order status). "Inventory ran out during checkout?" (server returns 409; UI returns to cart with item flagged). "Bot abuse?" (rate-limit + CAPTCHA on suspicious patterns).</div>
+    </div>
+  </details>
+
+  <h3 id="m8-company">8.4 Company-Specific Questions <span class="pill adv">By company</span></h3>
+  <p style="color:var(--muted);font-size:13.5px">Reported from candidate experiences across leetcode discuss, Glassdoor, Blind, and front-end interview prep communities. Tags reflect where each problem has been seen most often — <em>indicative, not exhaustive</em>.</p>
+
+  <h4 style="color:#7eb6ff">Meta (Facebook / Instagram)</h4>
+  <details class="q"><summary>Design the Facebook News Feed. <span class="company-tags"><span class="ctag meta">Meta</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Vertical feed: text/image/video/share/reels. Stories at top. Reactions, comments, share. Real-time new posts? Mobile + desktop. 3B users globally.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery + CDN</span>
+          <p>App shell + bundle from Meta's CDN (FBCDN), Anycast. <strong>Media (photos/videos) is the dominant byte cost</strong> — served from FBCDN globally with edge caching, regional shields, image optimization (resize, format conversion). Feed JSON is per-user → not edge-cacheable as-is, but post entities (independent of viewer) ARE cached at edge keyed by post-id.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Data layer (Relay/GraphQL — Meta's actual stack)</span>
+          <p>Fragments co-located with components: each component declares its data needs; query compiler aggregates into one round-trip. Normalized cache by entity id. <strong>Single update propagates everywhere</strong> the entity is referenced.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Pagination &amp; cursor</span>
+          <p>Cursor-based, stable under inserts. Server returns ranked feed slice + nextCursor. Don't reset on new posts — buffer them and surface a "See N new posts" pill.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Virtualization &amp; image strategy</span>
+          <p>Virtualized list with overscan. Images: AVIF/WebP via image CDN (per device DPR), LQIP/blurhash placeholder, <code>fetchpriority=high</code> for above-the-fold. Prefetch images for next 2-3 stories.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Video autoplay budgeting</span>
+          <p>Only 1 video plays at a time (visibility threshold + scroll velocity). Mute by default. Pause off-screen. Prefetch first segment of next video. Sub-bitrate during scroll, ramp up when settled.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Reactions, comments, share</span>
+          <p>Optimistic reaction; multi-emoji picker on long-press. Comments: cursor-paginated, threaded. Share modal lazy-loaded. Counts updated via batched server pushes (not per-event).</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Ads / organic interleaving</span>
+          <p>Server interleaves sponsored posts; UI labels them. Ad telemetry (view, click, hide) sent via separate beacon endpoint. Ad failure must NOT break organic feed.</p>
+        </div>
+        <div class="step"><span class="label">Step 9 · A11y &amp; perf</span>
+          <p>Each post is an <code>article</code> landmark, focusable. Skip-link to main feed. CWV: LCP &lt;2.5s, INP &lt;200ms even on low-end Android. Code-split heavy widgets (live video player, marketplace).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User comes back after a day?" (server marks last-seen; new posts above; pre-fetched). "How do you keep scroll position with new content above?" (anchor to last visible post id, prepend off-screen, surface pill).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design Instagram Stories. <span class="company-tags"><span class="ctag meta">Meta</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Ring of friends' stories at top, each ring = 5-15 photos/videos, 24h TTL. Tap to advance, hold to pause, swipe to next user, swipe up to reply. Web + mobile web. Global product → 2B users.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery & CDN</span>
+          <p>Stories are immutable + heavily-read for ~24h → ideal CDN content. Architecture: media uploaded to nearest ingestion PoP (Anycast routes user to closest), transcoded on origin, then pushed to CDN. CDN cache key includes story id; <code>Cache-Control: public, max-age=86400, immutable</code>. Use multi-CDN (e.g., Akamai + Cloudflare) for failover. Manifests served from edge with low TTL (60s) so newly-added stories appear quickly.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Pre-fetching pipeline</span>
+          <p>While story N plays, prefetch (a) all media for current user's remaining stories, (b) the <em>first</em> image and manifest of the next user's story. Use <code>fetchpriority="high"</code> for the next item. Decode in advance via <code>img.decode()</code> so transitions are 0-frame-delay.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Player state machine</span>
+          <p>States: loading → playing → paused → completed → next. Tap-and-hold → paused. Tap left → previous segment. Tap right → next. Swipe → next user. Progress bar = N segments, animated via <code>requestAnimationFrame</code> linked to media currentTime (don't use setInterval — drifts).</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Image vs video pipeline</span>
+          <p>Images: AVIF/WebP at multiple DPRs via <code>srcset</code>; ~3s display time. Videos: HLS with 2-3 bitrates, ABR, capped at 15s. Codec: H.264 baseline for compatibility, AV1 where supported (smaller, edge transcodes per region). Mute by default; user gesture unlocks audio.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Telemetry & privacy</span>
+          <p>View tracking debounced (post once after 1s viewed) and batched. Don't ship the user's seen-list to the client; server returns only the segment-level seen state. Stories self-delete server-side after 24h; CDN entries naturally age out via short max-age + purge-on-delete.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Trade-offs</span>
+          <p>Aggressive prefetch costs bandwidth (2B users × MBs); cap based on <code>navigator.connection.effectiveType</code> ('slow-2g' → only current). Limit decoded images in memory (revoke <code>blob:</code> URLs after passed). a11y: provide alt text + caption stream + keyboard ←/→/space.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Why not WebSocket?" (one-way, low-frequency reads — HTTPS+CDN beats WS for static media). "How do users in remote regions get fast loads?" (regional shields → origin; cache-fill once per PoP per asset).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a poll/voting widget embeddable in any post. <span class="company-tags"><span class="ctag meta">Meta</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Embed in feed posts and external sites? Anonymous or authenticated? Multi-choice or single? Deadline? Result visibility before/after vote?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Architecture & globalization</span>
+          <p>Widget shipped as a tiny JS bundle from a CDN (e.g., <code>poll.fbcdn.net/widget.js</code>) with <code>integrity</code> hash for SRI and 1-year cache. Anycast DNS → nearest PoP. Vote endpoint hosted on regional API nodes; reads (counts) served from CDN with short TTL + stale-while-revalidate.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Vote write path</span>
+          <p>Client generates idempotency key per (user, poll). POST to nearest API edge → forwarded to primary region for the poll (geo-pinned), persisted, async-replicated. Response returns updated counts.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Read path (counts)</span>
+          <p>Counts are hot-read globally → cache at edge with <code>s-maxage=2, stale-while-revalidate=10</code>. Bulk readers see 2-12s lag; fine for non-critical counts. Voters see authoritative count from their write response.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Anti-abuse</span>
+          <p>Rate-limit per user + IP at edge (Cloudflare WAF / Akamai Bot Manager). Server enforces one vote per user. For anonymous embeds, use a fingerprint cookie + CAPTCHA on suspicious volume.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Embed isolation</span>
+          <p>Render inside a sandboxed iframe served from a different origin → CSS/JS can't be hijacked by host page. <code>postMessage</code> for size negotiation with origin validation. Web Component fallback for first-party (FB-hosted) usage.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · UX & a11y</span>
+          <p>Optimistic vote with instant bar animation, rollback on 4xx. <code>role="radiogroup"</code>, keyboard arrows, screen-reader announcement of result. Localized number formatting (<code>Intl.NumberFormat</code>) — important globally.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Counts diverge across regions?" (eventual consistency; reconcile on poll close). "Spike of 1M votes/min?" (edge throttle + queue + async aggregation; counts UI moves in steps, not per-vote).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#9ad48a">Google (Search / YouTube / Workspace)</h4>
+  <details class="q"><summary>Design Google Search results page. <span class="company-tags"><span class="ctag google">Google</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">How to tackle</span>
+          <p>Critical-rendering-path obsession: inline critical CSS, server-render shell in &lt;100ms, defer everything non-essential. Each result block is independently cacheable. Discuss <em>how a single byte impacts billions of requests</em>.</p>
+        </div>
+        <div class="step"><span class="label">Sub-systems</span>
+          <p>Suggestion box, infinite results, knowledge panels, ads slot, voice/image search entry. Streaming HTML for early paint of header + first 3 results while the rest loads.</p>
+        </div>
+      </div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a calendar (Google Calendar). <span class="company-tags"><span class="ctag google">Google</span><span class="ctag microsoft">Microsoft</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Personal calendar + shared/team? Recurring events? Timezones? Offline? Reminders/notifications? Free-busy across users? Mobile?</p>
+          <div class="script-line">"I'll design web Calendar with month/week/day views, recurring events, multi-tz, shared calendars, offline read."</div>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery / CDN</span>
+          <p>Static shell (HTML, JS, CSS, locale bundles) served from CDN with hashed filenames + <code>immutable</code> cache. Locale bundles split by language (<code>en.json</code>, <code>ja.json</code>...) — only the user's locale loads. Account-data API hits regional cluster (geo-routed via Anycast) — calendars are per-user, not cacheable at edge except via signed URLs for public iCal feeds.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Data model & timezones</span>
+          <p>Events stored as <code>{startUtc, durationMs, tzId, rrule, recurrenceExceptions[]}</code>. <strong>Always store UTC + tz id</strong>; render in user tz with <code>Intl.DateTimeFormat</code>. RRULE expansion happens client-side for the current viewport only (server returns rule, client expands per visible window) — saves bandwidth for events recurring forever.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Layout & rendering</span>
+          <p>Month view: 6×7 grid; events placed by day, overflow shown as "+3 more". Week/day: time-grid (24×7) with overlapping events laid out via interval-tree algorithm. Virtualize the all-events list in the side panel.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Interactions (state machine)</span>
+          <p>Drag-to-create, drag-to-move, drag-to-resize. State: idle → dragging → committing. Optimistic write, rollback on conflict (someone else moved the same event). Snap to 15-min grid; respect tz transitions during resize.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Sync & offline</span>
+          <p>Service worker + IndexedDB caches the next 4 weeks. Sync via incremental token: server returns <code>{events: [...], nextSyncToken}</code>; client persists token. Reconnection sends token, server returns delta. WebSocket for push notifications when others edit shared events.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Free/busy & invites</span>
+          <p>Free/busy is a derived view per attendee — request batched per visible day range. Invite responses go through the email provider; deep link back into Calendar with auth.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Performance & a11y</span>
+          <p>Avoid full re-render on tz/locale switch — recompute via memoized selectors. Keyboard: arrow nav between days, Enter opens, Esc cancels. Screen reader: announce day + event count; use <code>aria-live</code> for create/move feedback.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User flies SFO→LON mid-day — what shows?" (system tz vs preferred tz: show in preferred, optionally annotate). "10k recurring meetings (forever)?" (never expand server-side; expand only the visible window; cap horizon at 2 years).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design Google Maps frontend (tile rendering + interactions). <span class="company-tags"><span class="ctag google">Google</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Pan/zoom map + markers + search + directions? 2D raster or vector? Mobile? Offline? Concurrent users globally → billions.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Tile pyramid + CDN (the heart of this answer)</span>
+          <p>Map is rendered as 256×256 tiles in a quadtree. Each zoom level (0-22) has 4× the tiles of the previous. URL: <code>/tile/{z}/{x}/{y}.png</code>. Tiles are <strong>immutable, identical for all users</strong> — perfect for CDN. <code>Cache-Control: public, max-age=31536000, immutable</code>. Anycast routes user to nearest PoP; cache hit ratio &gt;99% globally → tile latency 10-30ms.</p>
+          <p>For vector tiles (modern Maps): smaller (~10-50 KB), client renders via WebGL; styles change without re-fetch. Tile bundles served from CDN with same caching strategy.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Viewport math & request batching</span>
+          <p>On pan/zoom: compute visible tile coords for current viewport + 1-tile buffer in pan-direction (predictive prefetch). Throttle viewport queries to 30Hz. Debounce settled-state queries (POIs, traffic) by 200ms.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · LRU client cache</span>
+          <p>Decoded tiles in memory (limit ~200 tiles to bound memory). Service worker also caches raw tile bytes for offline + back-nav. Eviction: LRU + distance-from-viewport heuristic.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Markers & overlays</span>
+          <p>At low zoom, cluster markers via supercluster (k-d tree). Render markers in WebGL (instanced quads) — DOM doesn't scale to 10k+. Hit-testing via offscreen color-coded buffer.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Search, directions, traffic</span>
+          <p>Search: typeahead → API hit per region (geocoder service). Directions: server returns polyline + steps, client decodes (Google's polyline encoding compresses ~80%). Traffic: separate live-tile layer with short TTL (60s) — CDN-cached but invalidated frequently.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Performance & device adaptation</span>
+          <p>Detect <code>devicePixelRatio</code> for hi-DPI tiles (<code>@2x</code>). Reduce tile detail on slow networks (<code>navigator.connection</code>). Smooth zoom = transition between two zoom layers via opacity blend.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Edge & globalization</span>
+          <p>POIs/labels are localized — separate tile per language (<code>?lang=ja</code>) cached per language. Edge function rewrites tile URL to insert <code>lang</code> from <code>Accept-Language</code>. Restricted regions (e.g., disputed borders) served from country-specific origin via geo-DNS.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Why not single big SVG?" (download + render cost; tile-based is incremental). "User in Africa with high latency?" (CDN PoP brings tile latency to acceptable; vector tiles compress better than raster — reduce bytes shipped, not just RTT).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#7cd1e0">Microsoft (Office / Teams / Azure)</h4>
+  <details class="q"><summary>Design Microsoft Teams chat + meeting UI. <span class="company-tags"><span class="ctag microsoft">Microsoft</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Chat (1:1, group, channels) + meetings (up to 1000 participants) + screen share + recording. Web first; assume Chromium edge cases.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global media topology</span>
+          <p>Meetings use SFU (Selective Forwarding Unit), not P2P mesh — scales to 100+. SFUs deployed in regions (NA-East, EU-West, APAC, etc.); media routed to nearest SFU via Anycast. Inter-SFU bridging when participants span continents. CDN's role here is for the <em>app shell + assets</em> (10-30MB JS bundle for the Teams web client) and recordings (replay = static media → cached at edge).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Chat side</span>
+          <p>WebSocket via SignalR / Azure Web PubSub. Same playbook as Q4 (offline outbox, IndexedDB persistence, ULID client IDs, virtualized list). Channels are just shared chats with ACLs.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Media stack (WebRTC)</span>
+          <p><code>RTCPeerConnection</code> per SFU connection. Audio always on, video subscribed selectively — request only the N visible video tiles (<em>simulcast</em>: encoder produces 3 layers; SFU picks the right one per subscriber). This is critical for scaling to 100 participants.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · UI architecture</span>
+          <p>Tile virtualization: render only video tiles in viewport; background tiles unsubscribed from SFU (saves bandwidth + CPU). Active-speaker detection from RTP audio levels → reorder tiles. Background blur via MediaPipe in a Web Worker + OffscreenCanvas; capped at 30fps; degraded on low-end CPUs (CPU detection via <code>hardwareConcurrency</code>).</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Network adaptation</span>
+          <p>Bandwidth estimation (REMB / TWCC). Downgrade order: video resolution → video frame rate → screen-share quality → drop video entirely (audio-only fallback). Surface network quality indicator to user. Reconnect ICE on network change.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Captions, raise-hand, reactions</span>
+          <p>Captions: separate WebSocket from speech-to-text service (regional). Reactions: ephemeral overlay, throttled per-user (5/min). Raise-hand: data-channel event over the SFU connection.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Privacy & a11y</span>
+          <p>E2E encryption optional for high-security tenants (smaller meetings only — SFU can't transcode). Captions + transcript for a11y. Keyboard: mute (Ctrl+Shift+M), camera (Ctrl+Shift+O). Screen reader: announce join/leave events.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "1000 attendees in a town hall?" (broadcast mode: only presenters publish, attendees consume; CDN-distributed HLS for view-only spectators). "User in India joins NA meeting?" (regional SFU bridge — adds RTT but inter-SFU paths are pre-warmed on Microsoft's WAN).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design Excel Online (web spreadsheet). <span class="company-tags"><span class="ctag microsoft">Microsoft</span><span class="ctag google">Google</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Sheet sizes (1M+ cells), formulas, charts, formatting, real-time collab, offline, mobile? Cap discussion to spreadsheet core.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Architecture</span>
+          <p>App shell from CDN (immutable). User documents from regional API + blob storage. CDN role here: shell, fonts, icon spritesheets, locale bundles — NOT the document itself (private).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Rendering: Canvas, not DOM</span>
+          <p>1M cells in DOM = browser death. Canvas grid: render only the visible viewport (~50×30 cells). Track scroll, repaint on demand. Hit testing via row/col coordinate math. Text via Canvas 2D measure + draw. This is the single biggest design decision.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Data model</span>
+          <p>Sparse: <code>Map&lt;cellRef, Cell&gt;</code> — most cells empty. Cells store <code>{value, formula, format}</code>. Formula dependency graph: each formula tracks its precedents; on a cell change, recompute dirty descendants only. Use Tarjan's algorithm to detect cycles.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Formula engine in Web Worker</span>
+          <p>Heavy compute (10k formulas × volatile functions) blocks main thread. Run engine in a worker; main thread sends edits, worker returns recomputed cells. SharedArrayBuffer for very large sheets where post overhead matters.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Real-time collab</span>
+          <p>OT or CRDT over operations like <code>{type:"setCell", ref:"B5", value:42}</code>. WebSocket to a regional realtime service. Per-user cursors + selection rendered as Canvas overlay. Server holds authoritative state; periodic snapshots to blob.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Copy/paste, undo, freeze panes</span>
+          <p>Clipboard: write multiple MIME types (HTML table, TSV plain text, custom Excel format). Undo: per-user op stack — never undo a collaborator's op. Freeze panes: split Canvas into 4 viewports sharing the same model.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Performance budget</span>
+          <p>Target: 16ms scroll repaint. Pre-measure column widths to avoid per-frame text measure. Composite layers: gridlines (rarely change) on one canvas, content on another.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User has 100k VLOOKUPs?" (lazy-evaluate, evaluate visible cells first; show "calculating..." for distant ones). "Mobile?" (touch-optimized cell select; reduce visible viewport; same Canvas approach).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design VS Code in the browser. <span class="company-tags"><span class="ctag microsoft">Microsoft</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Editing local files only? Or remote workspace (GitHub Codespaces)? Extensions? Debugger? Terminal?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery</span>
+          <p>App shell + Monaco bundle from CDN with hashed filenames, immutable cache, Brotli. Critical bundle ~10MB; route-split by feature (debugger, source control, terminal load on demand). Service worker caches shell for instant 2nd-load.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Editor core (Monaco)</span>
+          <p>Model–View–Controller: Model holds text + tokens; View renders only viewport lines (virtualized). Buffer = piece-tree (efficient inserts in large files). Tokenization in worker via TextMate grammars or Tree-sitter.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Extension host</span>
+          <p>Extensions run in a separate Web Worker (isolation: no DOM access). RPC bridge over <code>postMessage</code> with a typed protocol. Untrusted extensions are sandboxed; they can't crash the editor or access tokens directly.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Filesystem &amp; Codespaces</span>
+          <p>Local: File System Access API (Chrome) or in-memory + IndexedDB. Remote (Codespaces): WebSocket tunnel to a remote VM running the language servers. The frontend becomes a thin client; LSP messages stream over WS.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Language Server Protocol</span>
+          <p>LSP server runs remotely (or in-worker). Editor sends <code>didChange</code>, gets diagnostics + completions back. Debounce <code>didChange</code> events; flush on focus loss / save.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · UX polish</span>
+          <p>Command palette: fuzzy match (fzf-style scoring) over command registry. Quick open: search file index, virtualize result list. Keybindings: Mac/Win/Linux profiles; configurable.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "1GB file?" (don't load fully — page in viewport ranges; minimap shows whole-file structure). "Latency to remote VM?" (region selection at workspace creation; pre-warmed VMs in nearest region).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design Outlook web mail list with 100k emails. <span class="company-tags"><span class="ctag microsoft">Microsoft</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Folders + threads + search + drafts + offline read? Single account or multi? Mobile?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Architecture &amp; CDN</span>
+          <p>Static shell from CDN. Mailbox data is private — no CDN caching of email bodies. CDN does carry: app bundle, attachment thumbnails (with signed URLs, short TTL), inline images served via signed proxy URLs (cacheable per token).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · List virtualization</span>
+          <p>Never render 100k DOM rows. Virtualized list (TanStack Virtual). Server returns pages of 50; client fetches page on scroll. Variable height (preview lines wrap). Skeleton rows during fetch.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Data sync (incremental)</span>
+          <p>Server uses sync token: <code>GET /messages?syncToken=X</code> → returns delta + new token. Client persists in IndexedDB. WebSocket pushes new-message events; client patches its cache.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Threading</span>
+          <p>Server-side conversation grouping (canonical, fast); client renders thread strip. Expanding a thread fetches the conversation graph; quoted text collapsed by default.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Search</span>
+          <p>Server index (Elastic-like) — too large to ship to client. Recent-searches LRU on client for instant dropdown. Highlight matched terms in results. Filters (from:, has:attachment) parsed client-side, sent as structured query.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Drafts &amp; composition</span>
+          <p>Autosave to IndexedDB every 3s (debounced) + every 30s to server. Optimistic queueing: send button → outbox → server retry on network failure. Attachments uploaded chunked (resumable, like Q9).</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Mark-read &amp; batch ops</span>
+          <p>Optimistic UI for read/flag/move; queue ops, batch flush every 500ms. On error, rollback and toast.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User has 1M emails?" (cap virtualization range; require search/filter to access older). "Account in EU under GDPR?" (data resides in EU region; CDN delivers shell only; routing pinned).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#c9a3ff">Agoda</h4>
+  <details class="q"><summary>Design the Agoda hotel search results page. <span class="company-tags"><span class="ctag agoda">Agoda</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">How to tackle</span>
+          <p>This is Agoda's <em>signature</em> question. Clarify: filters (price/stars/amenities), map view, pagination, currency/locale, real-time availability.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global architecture &amp; CDN role</span>
+          <p>Anycast DNS routes user to nearest PoP. Static shell (HTML, JS, CSS, fonts, locale bundles) served from CDN with <code>immutable</code> cache. <strong>Edge SSR</strong> renders the result list at the PoP — pulls cached hotel cards, personalizes via edge KV (recent searches, currency). For popular queries (top-100 destinations × common date windows), the entire HTML is cached at edge with SWR; long-tail queries fall back to regional origin. Image CDN serves photos with on-the-fly resize + AVIF/WebP per device. Preconnect to image CDN in <code>&lt;head&gt;</code> to save the TLS round-trip.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · URL-as-state &amp; SEO</span>
+          <p>All filters/sort live in URL → SSR can render. Shareable. Crawlable. Server returns cards with structured data (<code>schema.org/Hotel</code>) for rich Google results.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Pricing pipeline</span>
+          <p>Two layers per card: (a) <strong>card metadata</strong> (name, photos, rating, location) — relatively static, edge-cached for hours. (b) <strong>live price</strong> per (hotel, dates, currency, occupancy) — short TTL (30-60s) at edge, SWR. The page renders instantly with stale prices, then refreshes — feels fast even on long-tail queries.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Map view</span>
+          <p>Lazy-load only when tab opened. Marker clustering at low zoom (supercluster). Sync hover state list↔map. Map tile layer from a provider's CDN.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Performance budget</span>
+          <p>Targets: LCP &lt;2.5s globally, even on 4G in SE Asia. Edge SSR + critical CSS inline + defer JS + lazy images + preload hero with <code>fetchpriority=high</code> + virtualize past 50 hotels.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · i18n &amp; currency (Agoda's signature)</span>
+          <p>38+ languages, multi-currency, RTL (Arabic, Hebrew). Locale bundles ~30KB each, lazy-loaded from CDN. <code>Intl.NumberFormat</code> for currency, <code>Intl.DateTimeFormat</code> for dates. Tax/fee inclusion rules differ by region (US: pre-tax; EU: tax-inclusive) — surfaced via edge function reading <code>cf-ipcountry</code>.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Personalization at edge</span>
+          <p>Recently viewed hotels in edge KV per session. Edge function re-orders top of list before sending HTML — cacheable shell + personalized fragment. Avoids per-user origin hit while still feeling personal.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Common follow-ups:</strong> "Bangkok user vs London user — same query?" (geo-routed CDN, locale-default currency, nearest data center). "User changes date — how do you avoid full re-render?" (memoize hotel cards by id, only re-fetch price fragment).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a multi-step booking flow with payment. <span class="company-tags"><span class="ctag agoda">Agoda</span><span class="ctag booking">Booking</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Steps: room select → guest details → payment → confirm. Inventory hold? Multi-currency? Partner cards? International (PSD2 / 3DS)? Mobile?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global architecture &amp; CDN</span>
+          <p>Static shell + i18n bundles from CDN (hashed, immutable). Booking API calls go to <em>regional</em> origin (geo-routed via Anycast); pricing engine often co-located near the inventory provider. CDN does NOT cache booking responses (private + per-user) but does serve images, fonts, payment SDK iframes (Stripe/Adyen scripts pre-fetched from their CDNs with SRI hashes).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Inventory hold</span>
+          <p>On step 1 → server reserves room for 10 min, returns <code>holdId</code>. UI shows countdown timer. On expiry → release server-side (TTL job) + show "Your hold expired, please re-select." Persist <code>holdId</code> in URL or sessionStorage so refresh recovers state.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Currency &amp; price lock</span>
+          <p>User's display currency comes from geo + preference. Backend stores price in property currency; client converts using FX rate fetched once per session. <em>Lock</em> the converted price at hold start so it can't drift. Show "in 3 currencies" hover for transparency.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · State machine for steps</span>
+          <p>XState or discriminated reducer: <code>select → details → payment → submitting → confirmed | failed</code>. Steps store in URL (<code>/book/payment</code>) so back button works correctly. Persist form state to sessionStorage; restore on refresh.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Payment + 3DS</span>
+          <p>Payment iframe (Stripe Elements / Adyen Components) served from <em>their</em> domain — your code never touches PAN. Tokenize → POST token + holdId + idempotency key. Server initiates 3DS if required → returns challenge URL → render in modal iframe → callback via <code>postMessage</code> (with origin validation) → finalize.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Idempotency &amp; double-submit</span>
+          <p>Generate UUID per attempt; send on every retry. Disable submit button during inflight. Network drop mid-submit → poll <code>/booking/{idempotencyKey}/status</code> until terminal state — never re-charge.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Compliance &amp; localization</span>
+          <p>EU: PSD2/SCA mandatory; show consent text per locale. India: RBI guest-checkout rules. Tax breakdown localized. Date/number formatting via <code>Intl</code>. RTL for Arabic/Hebrew markets.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Hold expires while user is on payment step?" (warn at 1 min remaining; on expire, attempt to re-acquire hold; if fails, soft-redirect with error). "Why iframe payment fields?" (PCI scope reduction; user's PAN never enters your origin).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a price chart / calendar showing nightly rates for a hotel. <span class="company-tags"><span class="ctag agoda">Agoda</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Range select (check-in/out)? How many months ahead? Mobile vs desktop? Show price tier or exact price? Availability?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery</span>
+          <p>Calendar component is part of the property page bundle (CDN). Price data is per (property, occupancy, currency) → <em>edge-cacheable</em> with short TTL (~60s SWR). Cache key includes currency + occupancy. CDN cuts pricing latency from ~200ms (origin) to ~20ms.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · API design</span>
+          <p><code>GET /property/{id}/rates?from=2026-06&amp;months=2&amp;currency=USD&amp;occ=2A</code> → returns sparse map <code>{date: {price, available, tier}}</code>. Sparse means unsold/closed dates absent — shrinks payload. Edge caches per query string.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Rendering</span>
+          <p>Month grid (7 columns × 5-6 rows). Cell: date number + tier indicator (color-coded: cheap/avg/expensive) + price text on desktop, just color on mobile. Render two months side-by-side desktop, one swipeable on mobile.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Lazy load adjacent months</span>
+          <p>Prefetch next 1-2 months when current is rendered. IntersectionObserver on the &gt;&gt; arrow triggers fetch. Cache in client memory; no refetch on backwards nav.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Range selection state machine</span>
+          <p><code>idle → checkInPicked → rangeHover → rangePicked</code>. Hover preview highlights range from check-in. Min nights enforced (e.g., 2-night minimum on weekends). Disabled cells un-clickable + ARIA <code>aria-disabled</code>.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Currency switching</span>
+          <p>Currency change → invalidate cache for that property + re-fetch with new currency. Cheap because edge cache hit for popular currencies. Don't client-convert (FX rates inconsistent with backend's official rate).</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Performance &amp; a11y</span>
+          <p>Virtualize if showing 12+ months. Keyboard: arrow keys nav, Enter selects. <code>role="grid"</code>, <code>aria-rowindex/colindex</code>, <code>aria-label</code> with full date + price. Color is never the only signal — also a label.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Property in 5 currencies popular globally?" (edge caches all 5; ~5x cache footprint but ~100% hit rate). "Sold-out during user picking?" (server returns 409 on book; client invalidates calendar cache).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Build a debounced filter sidebar that updates URL and results. <span class="company-tags"><span class="ctag agoda">Agoda</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Filter types (price range, stars, amenities, neighborhoods)? Faceted counts shown next to each? Mobile UX (modal vs sidebar)? Server-side or client-side filtering?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery role</span>
+          <p>Search results endpoint takes (location, dates, filters) — high cardinality. Edge caches popular combos with SWR (e.g., <code>Bangkok / next weekend / no filters</code>). Long-tail combos hit origin. Edge function can short-circuit cache if user is logged-in (personalized ranking).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · URL as source of truth</span>
+          <p>All filters serialized to URL: <code>?price=100-300&amp;stars=4,5&amp;amenities=wifi,pool</code>. State derived from URL. Back/forward works. Shareable. SSR can render initial filtered results.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Debounce strategy</span>
+          <p>Slider drag (price): 200-300ms debounce — many micro-changes. Checkbox toggle (stars): commit immediately or batch with 100ms debounce. Use <code>history.replaceState</code> during continuous gestures (no history spam) → <code>pushState</code> on settled value.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Request lifecycle</span>
+          <p>AbortController cancels in-flight on new filter. Tag each request with monotonic id; ignore stale responses (belt + suspenders for the abort). Show skeleton results during load — keeping previous results dimmed feels broken.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Facet counts</span>
+          <p>Each filter shows count: "Pool (245)". Two strategies: (a) re-fetch full facet response after each change (always accurate, expensive); (b) optimistic local approximation while server returns true count. Production: do (b) and reconcile on response.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Mobile UX</span>
+          <p>Don't auto-fetch on each tap (data + bad UX). Modal with "Apply Filters" button → batch all changes into one request. Show "X filters applied" indicator on closed state.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Performance &amp; a11y</span>
+          <p>Memoize filter chip components by id. Use CSS containment for the sidebar to avoid layout cascades. <code>role="region" aria-label="Filters"</code>, group with <code>fieldset/legend</code>, range slider with <code>aria-valuemin/max/now</code>.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "URL gets ugly with 20 filters?" (compact encoding: bitfield or short codes; reverse-map server-side). "User on slow 3G?" (use connection-aware longer debounce, 600ms; show "0 results" only after server confirms — flicker-free).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#ffb86b">Amazon</h4>
+  <details class="q"><summary>Design Amazon product detail page. <span class="company-tags"><span class="ctag amazon">Amazon</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Single product, multi-variant (color/size), price, stock, reviews, "FBT", recommendations, Q&amp;A, mobile + desktop, internationalized.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery + CDN strategy</span>
+          <p>Catalog-level data (title, description, photos, specs) → <strong>ISR</strong>: rebuilt on change, served from CDN with long TTL + tag-based purge. Anycast DNS gets user to nearest PoP; LCP image preloaded. Image CDN does per-device resizing.</p>
+          <p>Per-user fragments (price including locale-tax, stock per warehouse, "Hello, Sourabh" greeting, recommendations) NOT cached at edge — fetched separately and hydrated. Edge function composes the page: cached shell HTML + injected dynamic fragments via ESI-style placeholders. This is exactly how Amazon achieves &lt;1s loads globally.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Above-the-fold render</span>
+          <p>Title, hero image, price, buy box rendered in first paint. LCP element is the hero — preload with <code>fetchpriority=high</code>. Variant selectors (color/size) interactive immediately; switching a variant updates price + main image without nav (uses <code>history.replaceState</code> + variant-specific cache).</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Below-the-fold lazy</span>
+          <p>"Frequently bought together", reviews, Q&amp;A, related products → IntersectionObserver lazy-mount. Each is its own bundle (route-split). Reviews paginated server-side, sortable (Most Helpful / Most Recent). Skeleton placeholders prevent CLS.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · A/B testing &amp; experimentation</span>
+          <p>Edge function reads experiment assignment cookie (or assigns new), rewrites HTML variant inline. Cacheable per variant — so you have N HTML versions cached at edge instead of one. Crucial for an A/B-heavy product like Amazon.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Accessibility &amp; i18n</span>
+          <p>Buy box: focus order title→price→variants→qty→add-to-cart. ARIA live region announces price/stock changes. Image gallery keyboard nav. <code>Intl.NumberFormat</code> for prices in user currency.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Performance &amp; resilience</span>
+          <p>Bundle: shell ~80KB. Defer analytics/ads — never block buy box. Error-boundary per below-fold widget; reviews failing must NOT break the page.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User in India sees price in INR with GST?" (edge function detects country, fetches localized price fragment). "Stock changes during page view?" (poll every 30s for buy-box-affecting fields, or WS for high-demand items).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a shopping cart synced across devices. <span class="company-tags"><span class="ctag amazon">Amazon</span><span class="ctag shopify">Shopify</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Guest cart vs logged-in cart? Multi-device (web/mobile/tablet)? Survive logout? Inventory check on add or checkout? Save-for-later?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Storage strategy</span>
+          <p>Guests: cart in <code>localStorage</code> + a guest cart-id cookie. Logged-in: server-side cart (regional DB), client mirrors via TanStack Query. CDN role: not for cart data (private) but cart bundle/components served from CDN.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Sync across devices &amp; tabs</span>
+          <p>Cross-tab same device: <code>BroadcastChannel</code> "cart-changed" event → all tabs refetch from cache. Cross-device: server is source of truth; on cart open, fetch with ETag for cheap revalidate. WebSocket optional for real-time (overkill — polling on focus works).</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Login merge</span>
+          <p>On login: POST guest cart to server merge endpoint. Conflict rules: keep max qty per SKU; preserve customizations. Atomic operation. Show "We added X items from your previous session" toast.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Optimistic mutations</span>
+          <p>Add-to-cart: instant UI update + optimistic count badge → POST → on success, reconcile; on error, rollback + toast. Idempotency key on each mutation prevents double-add on retry.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Inventory &amp; price drift</span>
+          <p>Don't reserve on add (cart is loose). On checkout enter, server re-validates: stock, price, promo. Show "Price changed: $99 → $89" if it dropped, "Item now out of stock" with alternatives if gone.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Performance</span>
+          <p>Cart drawer is critical UX → bundle &lt;20KB. Image thumbs from CDN. Mini-cart updates via small JSON (~1KB), not full HTML.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User offline, adds 3 items?" (queue locally, sync on reconnect; conflict → server wins). "Cart with 100 items?" (paginate; show top 5 + "View full cart").</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a product search with filters and sorting. <span class="company-tags"><span class="ctag amazon">Amazon</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Catalog size (millions)? Filters? Personalized ranking? SEO? Mobile? Sponsored placements?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · CDN/edge architecture</span>
+          <p>First page of results for top queries (~10k common queries) edge-cached as full HTML. Long-tail queries → origin (search service like Elastic/OpenSearch). Edge SWR keeps popular queries fast; origin handles fresh ranking.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · URL state + SSR</span>
+          <p>Query, filters, sort, page → URL params. SSR for SEO + first paint. Subsequent filter changes are SPA updates with URL sync.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Faceted filters with counts</span>
+          <p>Server returns facet counts per filter dimension. Mobile: "Filter" modal batches, applies on submit. Desktop: sidebar applies live with 200ms debounce + AbortController.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Sponsored interleaving</span>
+          <p>Server interleaves sponsored slots into organic results; UI labels them clearly ("Sponsored"). Click tracking endpoint instrumented separately. Don't let ad fetch block organic render.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · "Did you mean" &amp; suggestions</span>
+          <p>Server returns spell-correction. UI: "Showing results for X. Search instead for Y" — link preserves filters.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Pagination &amp; prefetch</span>
+          <p>Numbered pagination (better SEO than infinite for catalog). Prefetch next page on hover/tap. Cache pages in memory for back nav.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User has 100 filters?" (collapse low-signal ones; show count of selected). "Latency for ranking model?" (rank candidates server-side; cache top-N at edge for 30s SWR).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#ff9aa2">Netflix / Streaming</h4>
+  <details class="q"><summary>Design the Netflix browse page (rows of titles). <span class="company-tags"><span class="ctag netflix">Netflix</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Multiple horizontal rows ("Trending", "Because you watched..."), per-user personalized, hover preview, click → detail modal. Web + 10-foot UI (TV)? Pick web.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery (Netflix's bread and butter)</span>
+          <p>Netflix runs <strong>Open Connect</strong> — its own CDN with appliances inside ISPs. App shell, JS, images, video segments all served from these edge boxes. Result: assets travel a few hops to the user, not across continents. For interview, frame as: "App shell on a generic CDN with Anycast PoPs; video on a custom CDN deeply embedded in ISPs."</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Personalization vs cacheability</span>
+          <p>Row composition (which rows, which titles) is per-user → cannot edge-cache HTML. Strategy: cacheable shell + JSON rows fetched per user from regional API. Each row's title metadata (title, art URL) IS edge-cacheable globally.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Row virtualization</span>
+          <p>Each row independently virtualized horizontally — render visible tiles + 2 ahead. Vertical: render 3 rows in viewport + 2 below. Off-screen tiles unmount entirely (memory bound).</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Hover preview</span>
+          <p>800ms hover delay → enlarge tile + start muted video preview (low bitrate, ~5s). Preview pre-fetched on initial hover. Cancel if user moves away. Don't preview on touch (mobile).</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Image strategy</span>
+          <p>Per-user A/B-tested artwork (Netflix tests artwork as a personalization signal). Image URL includes variant id. Image CDN resizes per device DPR. Preload visible-row images; lazy below.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Performance &amp; resilience</span>
+          <p>LCP target &lt;2s on TV/console too. Critical row (top one) loaded in initial response; rest stream in. Error boundary per row.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User on 50Mbps fiber vs 5Mbps DSL?" (cap initial image quality; client measures and upgrades). "Row count varies (5-30)?" (render only 4-5 rows initially; rest on scroll).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a binge-watch experience (auto-play next episode). <span class="company-tags"><span class="ctag netflix">Netflix</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Show series → episodes have intro/credits markers. Auto-play with Up Next countdown. Skip-intro. Continue watching across devices. Parental controls.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Cross-device playhead</span>
+          <p>Server stores playhead per (user, episode) in regional DB. Client sends heartbeat every 10s + on pause/seek. Resume reads from server, not local — crucial for "start on phone, continue on TV".</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · CDN + manifest prefetch</span>
+          <p>Video manifest (HLS/DASH) and first 2-3 segments of next episode prefetched at T-30s before credits. Manifests are cacheable per (title, bitrate ladder); CDN-friendly. License acquisition (DRM EME) also pre-warmed if possible.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Skip markers</span>
+          <p>Server returns marker timestamps in episode metadata: <code>{intro:[5,90], credits:[2700,2750]}</code>. UI shows "Skip Intro" button when playhead in range. Markers can be auto-detected via audio fingerprint (server-side ML).</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Up Next overlay</span>
+          <p>At credits-marker entry: dim current video → next-episode card + 10s countdown. User can: skip credits (jump to next now), cancel auto-play (stop), or let countdown finish. State machine: <code>watching → credits-detected → countdown → transitioning → next-watching</code>.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Episode transition</span>
+          <p>Don't tear down player — same player instance loads next manifest (faster). Restore preferences: subtitle on/off, audio track, playback rate.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Parental controls + rate limiting</span>
+          <p>Profile-level "Are you still watching?" prompt after N consecutive auto-plays (4-5). Kid profiles disable some autoplay. Reduce data on cellular per user setting.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User skips credits — next episode?" (use credits-start as trigger, not credits-end). "DRM license fails for next episode?" (fallback: prompt user, don't fail silently).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#e0e0e0">Uber / Lyft</h4>
+  <details class="q"><summary>Design the Uber rider map (live driver tracking). <span class="company-tags"><span class="ctag uber">Uber</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Pre-trip: nearby drivers move on map. In-trip: assigned driver tracked to pickup, then to destination. Update frequency? Mobile-first.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global topology &amp; CDN</span>
+          <p>Shell + bundle from CDN. Map tiles from a tile-CDN (immutable, edge-cached forever). Live data goes to a regional dispatch service via WebSocket — geo-pinned to nearest region for low RTT. CDN's role for live tracking is indirect: it makes everything <em>except</em> the realtime stream fast.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Realtime stream</span>
+          <p>WebSocket → server pushes <code>{driverId, lat, lng, heading, ts}</code> at 4-5Hz. Don't render every frame — that's 4-5 marker repaints/sec. Instead, interpolate.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Smooth interpolation</span>
+          <p>Last 2 known positions per driver → linear interpolation in <code>requestAnimationFrame</code>. Driver appears to move smoothly between updates instead of teleporting. Heading angle smoothed via short-window average.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Reconnection &amp; resume</span>
+          <p>WS drop → exponential backoff. On reconnect, send <code>lastSeq</code> → server replays missed updates (or full snapshot if too many). UI shows discreet "Reconnecting…" indicator without alarming the user.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Battery &amp; data adaptation</span>
+          <p>App backgrounded → reduce update frequency (1Hz or pause). On 2G/3G (<code>navigator.connection</code>) → server-side throttle to 1Hz. Long-poll fallback if WS blocked by corporate proxy.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · ETA &amp; surge UI</span>
+          <p>ETA recomputed server-side every ~10s (uses live traffic + driver speed). Client throttles UI updates to once per 5s — prevents jittery numbers. Surge surfaced as multiplier badge with ARIA-live announcement.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · A11y</span>
+          <p>Map is visual; provide a textual alternative panel: "Driver 2 minutes away, approaching from the south." Screen reader users critical to support.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Driver loses GPS for 30s?" (last-known + dotted line; show "Driver location unclear"). "User in tunnel?" (client buffers updates; resumes on reconnect with skip-ahead interpolation).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design ride request + driver matching UI states. <span class="company-tags"><span class="ctag uber">Uber</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Flow: enter destination → see options/price → request → matched → wait for driver → in-trip → drop-off → rate. Cancellation rules. Background notifications.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Strict state machine</span>
+          <p>States: <code>idle → estimating → confirming → searching → matched → driverArriving → arrived → inTrip → dropping → rating → completed</code>. Plus terminal <code>cancelled-by-user/driver</code>, <code>error</code>. No impossible transitions — UI cannot show "matched" without a server-confirmed driver.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Server is source of truth</span>
+          <p>Each state transition triggered by server event over WS. Optimistic UI is dangerous here ("requesting") — only flip to "searching" on server ack. Idempotency key on the request POST.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Background &amp; resume</span>
+          <p>Web Push / SW notification when driver matched / arrived (works even if tab closed). On reopen, fetch trip state via single endpoint, hydrate UI to correct state — don't replay events from start.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Driver cancels mid-search</span>
+          <p>Server emits <code>driverCancelled</code> → state goes back to <code>searching</code>; show toast "Looking for another driver"; don't show user the prior driver's photo.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Cancellation policy</span>
+          <p>Within free-cancel window: just cancel. Past window: show fee modal with breakdown ("$5 fee — driver was 2 minutes away"). Confirm explicitly to avoid accidental.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Performance</span>
+          <p>Bundle for the request flow ~50KB; map lazy-loaded. Critical: car-going actions feel instant via micro-interactions (haptic-equivalent visuals).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Network drops mid-request?" (idempotency key + poll; never double-charge). "Trip lasts 1 hour, browser tab inactive?" (background updates via SW notifications + state recovery on focus).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#ff9ab8">Airbnb / Booking</h4>
+  <details class="q"><summary>Design the Airbnb listing page. <span class="company-tags"><span class="ctag airbnb">Airbnb</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Photo gallery, title, host, amenities, reviews, calendar, sticky booking widget, similar listings. SEO critical (Google indexes listings).</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery + CDN role</span>
+          <p>Listing pages = <strong>millions of canonical URLs</strong>, mostly read-heavy. ISR/SSR + edge cache: HTML cached at PoP keyed by listing-id + locale + currency. TTL ~5min with SWR. Image CDN does on-the-fly resize (AVIF/WebP) — Airbnb is famously image-heavy and LCP-sensitive. Anycast routes to nearest PoP; preconnect to image CDN saves the TLS handshake.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Above-the-fold</span>
+          <p>Hero photo grid (5 photos), title, basic info, sticky booking widget on right (desktop). LCP element = hero photo, preloaded with <code>fetchpriority=high</code>. Critical CSS inlined.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Photo gallery / lightbox</span>
+          <p>Click hero → lightbox with 30+ photos. Lazy-load lightbox bundle on first interaction (saves initial weight). Preload next 2 images on slide. Keyboard nav, focus trap, restore focus on close.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Sticky booking widget</span>
+          <p>Date picker, guests, calculated price. Keeps form state in URL so refresh / share works. Live price recomputed via API on input change (debounced + AbortController). Edge-cached per (listing, dates, guests, currency).</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Lazy-loaded sections</span>
+          <p>Reviews (paginated, sortable), host card, location map, similar listings, "Things to know" — all IntersectionObserver lazy-mount. Reviews API supports cursor pagination + filtering.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · i18n &amp; currency</span>
+          <p>60+ locales. Locale bundle ~30KB lazy-loaded. Currency switching invalidates only price-fragment cache; HTML body unchanged. RTL for Arabic. Date formatting via <code>Intl</code>.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · A11y &amp; perf budget</span>
+          <p>Photo carousel keyboard accessible, alt text per photo. Skeleton placeholders prevent CLS. LCP &lt;2.5s, INP &lt;200ms. Bundle budget enforced in CI.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User from Japan with mobile 4G?" (Tokyo PoP serves edge HTML; image CDN delivers AVIF; locale bundle in JP). "Reviews are 1000+?" (top 6 visible, "Show all" lazy-loads paginated modal).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#9ab8ff">Stripe</h4>
+  <details class="q"><summary>Design Stripe Checkout (embeddable payment form). <span class="company-tags"><span class="ctag stripe">Stripe</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Embedded in any merchant's site? Cards + APMs (Apple Pay, iDEAL, SEPA, Klarna)? Compliance (PCI-DSS, PSD2, SCA)? Mobile?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery (CDN-critical)</span>
+          <p>Stripe.js loaded via merchant <code>&lt;script src="https://js.stripe.com/v3"&gt;</code> — served from Stripe's CDN globally. Anycast PoPs ensure low-latency script load anywhere. <strong>Versionless URL</strong>: same URL always serves latest (Stripe controls caching with short TTLs + SWR), enabling security updates without merchant action. Crucial: SRI is intentionally NOT used (so Stripe can patch), but cert pinning + CSP <code>script-src js.stripe.com</code> protects integrity.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · iframe isolation (PCI strategy)</span>
+          <p>Each card field rendered in an iframe served by <code>js.stripe.com</code>. Merchant's JS cannot read card input — moves them <strong>out of PCI scope</strong> (huge value-add). Communication via <code>postMessage</code> with strict origin validation. Outer page sees only events ("card complete", "card invalid") and an opaque token after submit.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Region-aware payment methods</span>
+          <p>Edge function detects user country (<code>cf-ipcountry</code>); returns enabled methods in display order. NL → iDEAL on top; DE → SEPA; US → cards + Apple Pay. Each method's UI lazy-loaded; default bundle stays small.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Validation &amp; UX</span>
+          <p>Card brand auto-detect from BIN, format spaces (4-4-4-4), Luhn check, expiry/CVC validation. Errors inline, ARIA-live announced. Real-time as you type; debounced server validation only on submit.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · 3DS / SCA</span>
+          <p>Server initiates 3DS → returns challenge. Stripe.js renders challenge in modal iframe (issuer's domain). Result via <code>postMessage</code>. Parent never sees authentication data.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Accessibility</span>
+          <p>Inside iframe still WCAG-compliant: labels, error announcements, focus mgmt. Iframe height auto-resizes via postMessage. Keyboard tab order seamless across iframes.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Performance &amp; resilience</span>
+          <p>Stripe.js core ~30KB gzipped. Method-specific code split. Pre-warmed connection to Stripe API via DNS prefetch + preconnect. Graceful fallback if WebSocket-based features (real-time fraud signals) fail.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Merchant in Australia, customer in Brazil?" (edge function detects customer locale + currency; payment methods adapt; latency to Stripe API regional). "User on outdated browser?" (feature-detect; degrade to basic card input form, no Apple Pay).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a developer dashboard with API logs (real-time). <span class="company-tags"><span class="ctag stripe">Stripe</span><span class="ctag salesforce">Salesforce</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Volume (100s/sec)? Live tail vs historical? Search? Replay? Multi-account? Export?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Architecture</span>
+          <p>Logs ingest pipeline → log store (Elasticsearch / ClickHouse). Frontend reads via two endpoints: (a) historical query (paginated), (b) live tail SSE stream. Dashboard bundle from CDN.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Live tail (SSE)</span>
+          <p>SSE > WebSocket here: one-way, auto-reconnect, simple. Server pushes log lines as they arrive. Client buffers and renders in batches (50ms ticks) — never per-line, otherwise 100/s logs trigger 100 re-renders.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Virtualization</span>
+          <p>Virtualized table (TanStack Virtual). Variable row height when JSON expanded. Cap in-memory buffer at ~5000 lines; older lines drop off (still queryable via search).</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Pause/resume tail</span>
+          <p>If user scrolls up, auto-pause tail (don't yank them away from what they're inspecting). "X new logs" pill at top → click to resume + scroll to bottom. Mirrors Slack/Twitter pattern.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Search &amp; filters</span>
+          <p>Server-side search (logs too large for client). Filter UI builds structured query: <code>status:5xx AND endpoint:/charges AND duration:&gt;1s</code>. URL-driven; shareable. Recent searches LRU on client.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Detail &amp; replay</span>
+          <p>Row click → side panel with full request/response JSON, headers, timing. Copy as cURL button. "Replay" sends the same request to a sandbox endpoint.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Permissions &amp; cost</span>
+          <p>Filter logs to scopes the API key/user can see. Sensitive fields (auth tokens, PII) redacted server-side, never sent to client. Rate-limit log queries to prevent backend overload.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User has 1M logs?" (always paginate; warn if export &gt;10k). "Live tail across 5 regions?" (server fans-in regional streams; client sees one merged stream — order by ingest ts).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#8eb4ff">Atlassian (Jira / Confluence)</h4>
+  <details class="q"><summary>Design a Jira-like Kanban board. <span class="company-tags"><span class="ctag atlassian">Atlassian</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Columns (statuses), cards (issues), drag between columns + reorder within. Live updates from teammates? Filters / swimlanes / WIP limits? Mobile?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Architecture &amp; CDN</span>
+          <p>App shell + bundle from CDN. Board data is per-tenant (Jira Cloud) → regional API. Image attachments + avatars served via Atlassian's image CDN with signed URLs. Edge cache useful for static issue type icons, sprite assets.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Data model</span>
+          <p>Cards normalized: <code>{id, title, assignee, status, position}</code>. Position via fractional indexing (LexoRank — Jira's actual approach) so reorder = single-cell update, no re-numbering.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Drag-and-drop</span>
+          <p><code>react-dnd</code> or HTML5 DnD with custom drop zones per column. Optimistic move: update UI instantly with new position computed via LexoRank (insert between two neighbors). POST to server. On conflict (someone moved card concurrently), server returns canonical position; client reconciles.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Live updates</span>
+          <p>WebSocket subscription per board. Other-user moves arrive as events; apply to local store. Avoid layout flash: animate transitions (FLIP technique) so cards "slide" into place instead of jumping.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Virtualization</span>
+          <p>Columns can have 500+ cards. Virtualize per-column vertical list. Drag a card across columns: render virtual placeholder; commit on drop.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · A11y (often forgotten)</span>
+          <p>Keyboard DnD: Space to grab, arrow keys to move, Space to drop, Esc to cancel. ARIA: <code>role="listitem"</code>, <code>aria-grabbed</code>, <code>aria-dropeffect</code>, <code>aria-live</code> announces "Card moved to In Progress, position 3".</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Filters &amp; perf</span>
+          <p>Filters (assignee, label, sprint) applied client-side over loaded cards. URL state. Memoized selectors. Suspense boundaries per column for independent loading.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Board with 5000 cards across 8 columns?" (virtualize + lazy-load by column visibility). "Two users move same card simultaneously?" (LexoRank + last-write-wins; both get notified via WS).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design Confluence rich-text editor. <span class="company-tags"><span class="ctag atlassian">Atlassian</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Rich text + tables + embeds + collab + comments + mentions + media. Multi-page docs? Versioning?</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Architecture</span>
+          <p>Editor framework: ProseMirror (Atlassian's actual choice). Schema-first: each node type validated. Editor bundle from CDN; embed previews from Confluence's media service. Collab service in regional cluster; WS connections geo-routed.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Schema &amp; commands</span>
+          <p>Document = tree of nodes (paragraph, heading, list, table, codeBlock, mention, mediaCard). Marks (bold, link). Every transformation is a Transaction; impossible to produce invalid documents.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Collaboration</span>
+          <p>OT or CRDT layer (Atlassian uses Synchrony / Y.js variants). WebSocket relay; per-doc room. Cursor presence channel separate. Offline edits buffered, synced on reconnect.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Embeds &amp; smart links</span>
+          <p>Paste a Jira URL → unfurled into a card via the URL Resolver service. Server returns metadata; UI renders rich preview. Cached server-side per URL.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Slash command menu</span>
+          <p>"/" triggers floating menu of commands (insert table, mention, code block...). Fuzzy search. Cursor position drives menu placement; recompute on scroll.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Paste sanitization</span>
+          <p>Paste from Word/Google Docs = arbitrary HTML. Pipeline: parse → map to schema (<em>only</em> known nodes accepted) → strip everything else. Critical security defense (XSS) and quality concern.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Comments &amp; versioning</span>
+          <p>Comments anchored to text ranges via stable identifiers; survive reflow. Version history = snapshot per save + op log. Diff view computed from ops.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "100-page doc?" (split into virtualized sections; each section loaded on scroll). "Two users edit same paragraph?" (CRDT merges character-level; cursors stay distinct).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#ff9ad1">ByteDance / TikTok</h4>
+  <details class="q"><summary>Design TikTok web (vertical video feed). <span class="company-tags"><span class="ctag bytedance">ByteDance</span><span class="ctag tiktok">TikTok</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Vertical scroll, one full-screen video per "page". Auto-play current, mute by default until interaction. Like, comment, share. Mobile + desktop web.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery (CDN-heavy)</span>
+          <p>Video is the largest asset; ByteDance operates a massive video CDN (Volcano Engine + commercial CDNs). Anycast routes user to nearest PoP holding HLS/DASH segments. Manifests cached &lt;60s (rotation + popularity sensitivity); segments cached effectively forever (immutable, content-hashed names).</p>
+          <p>Recommendation feed JSON is per-user → not edge-cached, but the next-N video metadata IS cacheable per (geo, content-id).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Prefetch pipeline</span>
+          <p>Critical for sub-100ms scroll-to-play: while video N plays, prefetch (a) next 2 video manifests, (b) first 1-2 segments of next video, (c) poster image of next 3. Use <code>fetchpriority</code>, <code>&lt;link rel=preload&gt;</code> for the next item. Multiple parallel HTTP/3 streams to the CDN.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Player &amp; intersection</span>
+          <p>One pool of 3 reusable <code>&lt;video&gt;</code> elements (current, prev, next) — creating new <code>&lt;video&gt;</code> per scroll is slow and leaks decoders. IntersectionObserver fires play on entry, pause + reset to 0 on exit. Mute by default; unmute on first user gesture.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Bandwidth adaptation</span>
+          <p>HLS ABR. On slow connections, start at lowest bitrate; ramp up. Visible video gets all bandwidth; prefetches lower priority. Mobile users on cellular: respect "data saver" toggle.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Interactions</span>
+          <p>Double-tap to like (animated heart at tap point). Comment drawer slides up — video continues at edge of viewport. Share generates short URL via API. Optimistic like/follow.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Telemetry &amp; ranking</span>
+          <p>Watch-time signals (play, complete-pct, skip-fast) sent batched. Critical for the recommendation ML loop. Sample carefully — not every micro-event.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Memory bounds</span>
+          <p>Long sessions = memory growth. Revoke <code>blob:</code> URLs, drop decoded video buffers off-screen, cap LRU at ~5 videos. Watch the heap profile for leaks (decoders are notorious).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User in remote area, 2G?" (lowest-bitrate-only mode; prefetch only the immediate next; placeholder poster). "Suddenly viral video, 10M concurrent views?" (CDN-native; segments are static; primary load is on edges, origin barely sees it).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design a live-stream chat overlaying video. <span class="company-tags"><span class="ctag bytedance">ByteDance</span><span class="ctag tiktok">TikTok</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Live broadcast with overlaid chat. Concurrency: 100s for niche, 100k+ for big creators. Gifts/reactions. Moderator tools.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global topology</span>
+          <p>Video: live HLS / LL-HLS (or LL-DASH) with ~3-6s latency, distributed via CDN globally. Chat: regional WebSocket clusters (one room can fan out via pub/sub like Redis or Kafka). Edge proxies (Cloudflare WS, AWS API Gateway WebSockets) handle TLS termination near user.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Chat ingestion at scale</span>
+          <p>Server fans-in messages from many users, fans-out per room. At 100k concurrent users sending 1 msg/min, that's ~1.7k msgs/sec. Server-side rate-limit per user (1/sec). Aggregate "1.5k people typed 🔥" rather than render every fire emoji.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Client-side rendering throttle</span>
+          <p>Don't render every msg — at 100/sec on screen, user can't read. Sample to ~3/sec for display while keeping all in moderation history. Use a fixed-size visible queue (e.g., 30 lines), drop oldest as new arrive.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Auto-scroll lock</span>
+          <p>Chat auto-scrolls to bottom by default. If user scrolls up, lock — don't yank them away. Show "X new messages" pill to resume.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Gifts &amp; animations</span>
+          <p>Gift events trigger overlay animations (Lottie / Canvas). Queue gifts; cap concurrent animations to 5 (otherwise visual chaos). Premium gifts get bigger animations, render at higher priority.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Moderation</span>
+          <p>Client-side profanity filter (basic) for instant feedback; server-side ML model is authoritative. Broadcaster controls: slow-mode (1 msg / N sec), ban, mute, follower-only, subscriber-only.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · A11y &amp; perf</span>
+          <p>Live region for screen readers (announce sampled messages). Toggle to disable animations (<code>prefers-reduced-motion</code>). Memory: cap chat history in DOM; older flushed.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Latency between video and chat?" (chat is instant; video 3-6s — so chat reactions reference past video moments. Surface this in UI). "WS connection drops?" (reconnect with last seq id; server replays missed; deduplicate on client).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#8ec5ff">LinkedIn</h4>
+  <details class="q"><summary>Design the LinkedIn feed + connection suggestions. <span class="company-tags"><span class="ctag linkedin">LinkedIn</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Vertical feed of posts (text/image/video/article) interleaved with "People you may know", sponsored content, news. Reactions, comments, share. Authenticated users only.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery + CDN</span>
+          <p>App shell, JS, CSS, fonts from CDN with immutable cache. Anycast PoPs. Profile photos and post media via image CDN with on-the-fly resize. <strong>Feed JSON is per-user</strong>, not edge-cacheable; comes from regional API. Static post entities (title, body) ARE cacheable globally per post-id.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Data model</span>
+          <p>Normalized: <code>posts:{[id]}</code>, <code>profiles:{[id]}</code>, <code>feeds:{home:{ids,cursor}}</code>. Same as Twitter playbook. One profile update propagates to every post that references that author.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Module interleaving</span>
+          <p>Server returns feed as a heterogeneous list: <code>{type:"post"}</code>, <code>{type:"pymk-carousel"}</code>, <code>{type:"sponsored"}</code>, <code>{type:"news-card"}</code>. Each module is a registered component. Sponsored slots tagged for click tracking + ad telemetry.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Profile hover card</span>
+          <p>Hover on author name &gt;500ms (intent) → preload profile fragment + show card. Cancel on mouseleave. Cache fragment in memory for repeat hovers.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Reactions (multi-emoji)</span>
+          <p>Hold/long-press like → reveal picker (👍❤️🎉👏). Optimistic update; rollback on error. Batched count updates from server (don't refresh count per peer reaction).</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Performance &amp; virtualization</span>
+          <p>Virtualize feed (TanStack Virtual). Posts have varied heights (text vs image vs video vs article preview). Article previews lazy-fetch metadata via OG tags resolver (server-side, cached).</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · A11y</span>
+          <p>Each post is an <code>article</code> landmark. Reactions are <code>radiogroup</code> when picker open. Skip-link to main feed. Screen reader announces "5 reactions" not each reaction.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Sponsored slot fails to load?" (timeout 1s; show organic fallback — never break feed for ad). "User from country with strict privacy laws?" (edge function adjusts which modules render: e.g., GDPR-restricted recs hidden).</div>
+    </div>
+  </details>
+  <details class="q"><summary>Design profile page with skills/endorsements editing. <span class="company-tags"><span class="ctag linkedin">LinkedIn</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Sections: header (photo, headline), about, experience, education, skills (with endorsements), recommendations. Inline edit by owner, view-only for others. Privacy controls per section.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Architecture</span>
+          <p>Profile page rendered SSR for SEO (public profiles indexed). Owner-edit mode reuses same components in editable state. Bundle from CDN. Profile data from regional API; photos from image CDN with face-aware crop.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Inline edit pattern</span>
+          <p>Each section: pencil icon → enters edit state in-place (no modal). Optimistic save on blur or explicit Save. Visual diff (yellow highlight) shows what changed. Cancel restores prior value.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Autosave drafts</span>
+          <p>Long fields (about, descriptions) autosave to local storage every 3s. Server save on focus loss + explicit save. "Saved" indicator with timestamp.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Skills with autosuggest</span>
+          <p>Skill input → server-side typeahead from canonical taxonomy (saves dirty data). Drag-to-reorder via DnD; persists order. Endorsements: max N visible, "Show all" expands.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Privacy controls</span>
+          <p>Per-section visibility: public / connections only / nobody. Surface toggles inline. Server enforces; client respects.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Versioning &amp; conflict</span>
+          <p>Each section has a version. Save sends prior version + new value; server rejects on stale (rare — same user editing 2 tabs). Surface "This was edited elsewhere — refresh".</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · A11y</span>
+          <p>Edit button has <code>aria-label="Edit experience"</code>. Pressing it announces "Editing started". Save/cancel reachable via keyboard. Inline errors with <code>aria-describedby</code>.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User has 100 skills?" (paginate; reorder applies within visible set). "Recruiter views — same page?" (yes, but ranks/highlights differently; A/B sections via edge personalization).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#9ad48a">Shopify</h4>
+  <details class="q"><summary>Design a storefront theme renderer. <span class="company-tags"><span class="ctag shopify">Shopify</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Merchants customize storefront via theme editor (drag sections, change settings). Storefronts must be FAST (LCP critical for conversion). Multi-tenant: millions of stores, each with custom theme.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global CDN architecture (Shopify's actual model)</span>
+          <p>Storefront HTML rendered on Shopify's edge (Oxygen / global PoPs). Themes (Liquid) compiled to renderable JSON-section trees. Pages cached at edge per (shop, page-type, locale, currency). Cart/customer fragments are dynamic, ESI-style.</p>
+          <p>Static assets (JS, CSS, images) on Shopify's CDN globally. Image CDN does on-the-fly resize + WebP/AVIF — merchants upload one image, served per device.</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Section-based architecture</span>
+          <p>Each section (hero, product grid, testimonial) is independent: own settings JSON, template, styles. Theme = schema of section types + ordered list per page. Drag-to-reorder in admin = mutate the order array.</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Live preview iframe</span>
+          <p>Theme editor: left = settings, right = iframe with storefront. On setting change → postMessage to iframe (with origin validation) → iframe section re-renders without full reload. Targeted update: only the changed section's HTML is patched.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Performance budget per section</span>
+          <p>Each section has byte/JS budget enforced in build. Bad section can't degrade the whole page. Lazy-load below-fold sections; LCP-region sections (hero) prioritized.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Hydration strategy</span>
+          <p>Most sections static HTML (no JS). Interactive sections (cart, search) hydrate independently — partial hydration, like Astro Islands. Reduces JS shipped per page dramatically.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · A/B testing &amp; experimentation</span>
+          <p>Edge function reads experiment cookie, picks variant section ordering, rewrites HTML inline. Variants edge-cached separately. Merchants can A/B test layouts without backend changes.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Multi-locale &amp; currency</span>
+          <p>Per-shop locales; locale bundles served from CDN. Currency switching: cart fragment re-fetched in new currency; product prices updated in place (HTML body unchanged).</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "Merchant in Australia, customer in UK?" (edge serves nearest PoP; localized currency from edge function; shipping computed at checkout). "Section adds 200KB JS?" (build fails; performance budget enforced).</div>
+    </div>
+  </details>
+
+  <h4 style="color:#7ec5ff">Salesforce</h4>
+  <details class="q"><summary>Design a CRM record page with lazy panels. <span class="company-tags"><span class="ctag salesforce">Salesforce</span></span></summary>
+    <div class="answer">
+      <div class="walkthrough">
+        <div class="step"><span class="label">Step 1 · Clarify</span>
+          <p>Account / Opportunity / Contact record page with many panels (details, activities, notes, tasks, related lists, files, AI insights). Heavily customizable per org/profile. Multi-tenant SaaS, global users.</p>
+        </div>
+        <div class="step"><span class="label">Step 2 · Global delivery + CDN</span>
+          <p>Salesforce Lightning runtime + LWC framework served from global CDN (Akamai). Customer-data API requests routed to the customer's home pod (geo-pinned for compliance). CDN's role: fast bundle delivery + sprite/icon assets; not for record data (private).</p>
+        </div>
+        <div class="step"><span class="label">Step 3 · Component model (LWC)</span>
+          <p>Each panel = a Lightning Web Component, isolated. Standardized lifecycle, shadow DOM for style isolation. Panels declare data dependencies; framework batches API calls (UI API).</p>
+        </div>
+        <div class="step"><span class="label">Step 4 · Layout customization per profile</span>
+          <p>Admin defines page layout (which panels, in which order, who sees what) → server returns layout JSON. Renderer composes the page. Permissions filter at field level: server returns only fields the user can read.</p>
+        </div>
+        <div class="step"><span class="label">Step 5 · Lazy panel mounting</span>
+          <p>Above-the-fold panels mount immediately. Below-the-fold via IntersectionObserver. Tab panels mount on tab activation. Each panel has skeleton + error boundary — one panel failing doesn't break the page.</p>
+        </div>
+        <div class="step"><span class="label">Step 6 · Inline edit + conflict resolution</span>
+          <p>Inline edit per field with optimistic save. Server returns version (LastModifiedDate); on save conflict, surface "Record was edited by Alice 30s ago — refresh or overwrite?" dialog.</p>
+        </div>
+        <div class="step"><span class="label">Step 7 · Activity stream + real-time</span>
+          <p>Activities (calls, emails, notes) streamed via CometD / Pub-Sub API. New activity appears at top with subtle highlight. Virtualize large activity lists.</p>
+        </div>
+        <div class="step"><span class="label">Step 8 · Related lists &amp; performance</span>
+          <p>Related lists (e.g., Opportunity → 1000 line items) virtualized + paginated. Progressive disclosure: show top 5 + "View All" link. Bundle split per panel; common lib loaded once.</p>
+        </div>
+      </div>
+      <div class="followup"><strong>Follow-ups:</strong> "User in EU, data in EU pod?" (data residency enforced; CDN delivers shell only; pod-routing via login.salesforce.com). "Page renders in 200 fields?" (lazy-load secondary fields on tab switch; server projects only requested fields).</div>
+    </div>
+  </details>
+
+  <div class="callout tip"><strong>Note on tags:</strong> Companies rotate questions; tags reflect <em>commonly reported</em> patterns rather than current rotation. Always practice the underlying skill (feeds, real-time, virtualization, multi-step forms) — the company name is the wrapper, not the substance.</div>
+
+  <div class="callout"><strong>Final advice:</strong> The best frontend system design candidates are those who treat the user as the system's most important actor — they reason about latency, data integrity, and accessibility with the same rigor a backend engineer applies to throughput and consistency. Practice diagrams. Read post-mortems. Build something hard.</div>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-07-case-studies.html">← Module 7: Case Studies</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script src="../assets/course.js"></script>
+</body></html>

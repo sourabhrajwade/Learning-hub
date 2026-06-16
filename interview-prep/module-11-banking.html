@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 11 · Banking Project — GenAI Interview Prep</title>
+<meta name="description" content="Enterprise banking GenAI case study and talking points." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1320" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1320; --panel:#161b2e; --panel2:#1d2440; --text:#e8ecf8; --muted:#a4adc8;
+    --accent:#7c8cff; --accent2:#4ad6c0; --green:#7ee08a; --yellow:#f6a96b; --red:#ff8a8a;
+    --border:#2a3357; --code:#0b0f1a;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0e19 0%,var(--bg) 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;font-size:12.5px;color:#cdd6f4}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+  .qa{display:grid;grid-template-columns:1fr;gap:10px}
+  .q{font-weight:600;color:var(--text);display:flex;gap:10px}
+  .q .badge{flex-shrink:0;background:rgba(124,140,255,0.12);color:var(--accent);border:1px solid rgba(124,140,255,0.3);padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600}
+  .a{color:var(--muted);border-left:2px solid var(--accent2);padding-left:14px;margin:0}
+  .a strong{color:var(--text)}
+  .tip{background:rgba(126,224,138,0.08);border:1px solid rgba(126,224,138,0.25);color:var(--green);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  .warn{background:rgba(246,169,107,0.08);border:1px solid rgba(246,169,107,0.25);color:var(--yellow);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  ul.clean{margin:0;padding-left:20px;color:var(--muted)}
+  ul.clean li{margin-bottom:6px}
+  ul.clean li strong{color:var(--text)}
+  .grid-2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  details{border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:600;color:var(--text);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  details>*:not(summary){margin-top:10px;color:var(--muted)}
+  .star{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;margin:12px 0}
+  .star b{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:14px;margin:14px 0}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;color:var(--muted);vertical-align:top}
+  th{background:var(--panel2);color:var(--text);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .chapter-body section h2{display:none}
+  .chapter-body section .intro{display:none}
+  .chapter-body section h2 .num{display:none}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>
+<p class="sub">Interview prep · Python · LLMs · RAG · Cloud</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-overview.html">Module 1 · Overview</a>
+<a class="toc-chapter-link" href="module-02-ml-foundations.html">Module 2 · ML Foundations</a>
+<a class="toc-chapter-link" href="module-03-genai-foundations.html">Module 3 · GenAI Foundations</a>
+<a class="toc-chapter-link" href="module-04-models.html">Module 4 · Model Landscape</a>
+<a class="toc-chapter-link" href="module-05-python.html">Module 5 · Python</a>
+<a class="toc-chapter-link" href="module-06-genai.html">Module 6 · Generative AI</a>
+<a class="toc-chapter-link" href="module-07-agentic.html">Module 7 · Agentic AI</a>
+<a class="toc-chapter-link" href="module-08-llms.html">Module 8 · LLMs & Tooling</a>
+<a class="toc-chapter-link" href="module-09-rag.html">Module 9 · RAG Deep-Dive</a>
+<a class="toc-chapter-link" href="module-10-advanced-rag.html">Module 10 · Advanced RAG</a>
+<a class="toc-chapter-link active" href="module-11-banking.html">Module 11 · Banking Project</a>
+<a class="toc-chapter-link" href="module-12-eval.html">Module 12 · Eval (RAGAS)</a>
+<a class="toc-chapter-link" href="module-13-langchain.html">Module 13 · LangChain & LangGraph</a>
+<a class="toc-chapter-link" href="module-14-sdlc.html">Module 14 · SDLC</a>
+<a class="toc-chapter-link" href="module-15-cloud.html">Module 15 · Cloud-native</a>
+<a class="toc-chapter-link" href="module-16-databases.html">Module 16 · Databases</a>
+<a class="toc-chapter-link" href="module-17-copilot.html">Module 17 · GitHub Copilot</a>
+<a class="toc-chapter-link" href="module-18-behavioral.html">Module 18 · Behavioral</a>
+<a class="toc-chapter-link" href="module-19-system-design.html">Module 19 · System Design</a>
+<a class="toc-chapter-link" href="module-20-questions.html">Module 20 · Questions to Ask</a>
+<a class="toc-chapter-link" href="module-21-cheat-sheet.html">Module 21 · Cheat Sheet</a>
+</nav>
+
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 21 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div>
+</aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">Case study</span><span class="chapter-badge">Module 11</span></div>
+  <h1 class="chapter-title">Module 11 · Banking Project</h1>
+  <p class="chapter-subtitle">Enterprise banking GenAI case study and talking points.</p>
+</header>
+<article class="chapter-body">
+<section id="banking">
+<h2><span class="num">5c</span> End-to-End Banking Project: "Client Pathways Knowledge Assistant"</h2>
+  <p class="intro">A complete project narrative you can walk through in an interview — from raw data to production monitoring. Banking domain. Memorize the shape, swap in your own numbers if you've done a similar project.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">The Problem (Frame It in Business Terms)</h3>
+    <p style="color:var(--muted)">
+      Relationship managers and contact-center agents at a retail bank handle 40k+ client queries/month spanning
+      products (mortgages, ISAs, credit cards), policies, and onboarding procedures. Average handle time: 8 min,
+      with ~30% of time spent searching across SharePoint, the policy wiki, the product catalogue, and Outlook.
+      <strong>Goal:</strong> a grounded GenAI assistant that returns cited answers in &lt;3s, cuts handle time by
+      20%, and never quotes outdated or unauthorized content.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Architecture at a Glance</h3>
+<pre><code>┌──────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│  Source SoR  │────▶│  Ingestion +    │────▶│  Vector + BM25   │
+│ (Sharepoint, │ CDC │  Cleaning +     │     │  Index (pgvector │
+│  Confluence, │     │  Labeling +     │     │  + OpenSearch)   │
+│  Policy DB)  │     │  Chunking       │     └────────┬─────────┘
+└──────────────┘     └─────────────────┘              │
+                                                      ▼
+┌──────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│  RM / Agent  │────▶│  API (FastAPI)  │────▶│  Hybrid Retrieve │
+│   (UI/Chat)  │     │  + Auth + ACL   │     │  + Rerank        │
+└──────────────┘     └─────────────────┘     └────────┬─────────┘
+                                                      ▼
+                     ┌─────────────────┐     ┌──────────────────┐
+                     │  Guardrails +   │◀────│  LLM (Claude)    │
+                     │  Citations +    │     │  + Prompt Cache  │
+                     │  Audit Log      │     └──────────────────┘
+                     └─────────────────┘
+                              │
+                              ▼
+                  ┌──────────────────────┐
+                  │  Monitoring + Eval   │
+                  │  (RAGAS + Custom)    │
+                  └──────────────────────┘
+</code></pre>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Stage 1 — Data Sourcing &amp; Cleaning</h3>
+    <ul class="clean">
+      <li><strong>Sources</strong> — SharePoint (15k policy docs), Confluence (8k pages), Product DB (Postgres), Salesforce KB articles, Outlook FAQs.</li>
+      <li><strong>Connectors</strong> — Microsoft Graph API (SharePoint), Confluence REST, JDBC for product DB. Run as scheduled jobs + CDC for high-churn sources.</li>
+      <li><strong>Cleaning steps</strong>:
+        <ul>
+          <li>PDF → text with <code>unstructured</code> or <code>PyMuPDF</code>; preserve tables via <code>pdfplumber</code> or LayoutLM.</li>
+          <li>Strip headers/footers, page numbers, watermarks ("CONFIDENTIAL — DRAFT").</li>
+          <li>Drop duplicates via MinHash/LSH (banking content is heavily duplicated across regions).</li>
+          <li>Normalize whitespace, fix encoding (smart quotes, ligatures).</li>
+          <li>OCR fallback for scanned policy PDFs (Tesseract or Azure Document Intelligence).</li>
+          <li>Detect language; route non-English to translation pipeline if needed.</li>
+        </ul>
+      </li>
+      <li><strong>PII handling</strong> — Microsoft Presidio or AWS Comprehend to detect PAN, IBAN, NI numbers, names. <strong>Redact</strong> if not needed for the use case; <strong>tokenize</strong> if needed for retrieval.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Stage 2 — Labeling &amp; Metadata Enrichment</h3>
+    <ul class="clean">
+      <li><strong>Why label?</strong> Metadata enables filtering ("only mortgage docs valid in 2026"), routing (commercial vs retail), and ACL enforcement.</li>
+      <li><strong>What to label</strong>:
+        <ul>
+          <li><strong>Document-level:</strong> doc_type (policy / FAQ / product sheet), product_line, region, effective_date, expiry_date, sensitivity (Public / Internal / Confidential / Restricted), owner.</li>
+          <li><strong>Chunk-level:</strong> section heading, applies_to (customer segment), regulatory_ref (e.g., "FCA CONC 5.2").</li>
+        </ul>
+      </li>
+      <li><strong>How</strong>:
+        <ul>
+          <li>Rule-based extractors for structured fields (filename patterns, doc properties).</li>
+          <li>LLM-assisted labeling for semantic fields (doc_type, applies_to) — sample, verify with SMEs, then scale.</li>
+          <li><strong>SME-in-the-loop</strong> for the gold set: 200 docs reviewed by compliance + product SMEs to anchor the labeling rubric and serve as eval ground truth.</li>
+          <li>Tooling: Label Studio or Argilla for the SME workflow; annotators agree on a rubric before labeling at volume.</li>
+        </ul>
+      </li>
+      <li><strong>ACL propagation</strong> — every chunk inherits the source doc's permission set. Retrieval applies the user's identity as a filter <em>before</em> similarity search.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Stage 3 — Chunking, Embedding &amp; Indexing</h3>
+    <ul class="clean">
+      <li><strong>Chunking</strong> — recursive splitter at 800 tokens / 100 overlap, with semantic boundary respect (don't break mid-table, mid-list).</li>
+      <li><strong>Contextual prefix</strong> — prepend 1–2 sentences of doc context to each chunk before embedding (Anthropic's Contextual Retrieval). Use prompt caching on the full doc to keep this cheap.</li>
+      <li><strong>Embedding model</strong> — start with <code>text-embedding-3-large</code> (1536-d) or <code>voyage-3</code>. Evaluate against domain on the gold set; consider domain-tuned embeddings (FinBERT-style) only if measurable lift.</li>
+      <li><strong>Indexes</strong> — pgvector (HNSW index) for dense; OpenSearch for BM25; both keyed on chunk_id with metadata. Reconcile via RRF at query time.</li>
+      <li><strong>Refresh strategy</strong> — incremental: CDC events trigger re-embed of changed chunks. Full rebuild quarterly. Track index_version; queries pin a version for reproducibility.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Stage 4 — Retrieval &amp; Generation</h3>
+    <ul class="clean">
+      <li><strong>Query pipeline</strong>:
+        <ol>
+          <li>Auth → resolve user identity, roles, regions.</li>
+          <li>Query rewrite (LLM, fast/cheap model) to expand abbreviations, resolve "this/that" against chat history.</li>
+          <li>Hybrid retrieval (top-50 dense + top-50 BM25) with hard filters: ACL, region, effective_date &lt;= today &lt;= expiry_date.</li>
+          <li>RRF fusion → top-30.</li>
+          <li>Cross-encoder rerank → top-5.</li>
+          <li>LLM (Claude) with system prompt enforcing: "answer only from context; cite [n]; if unsure, say so."</li>
+          <li>Post-processor verifies citations exist, redacts any leaked PII, logs full trace.</li>
+        </ol>
+      </li>
+      <li><strong>Guardrails</strong> — input filter for prompt injection &amp; off-topic; output filter for PII leakage, toxic content, claim-without-citation. Block if violated; log for review.</li>
+      <li><strong>Latency budget</strong> — 3s p95: retrieve 200ms, rerank 250ms, LLM streaming first-token 800ms, full response 2s. Stream to UI to mask perceived latency.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Stage 5 — Evaluation (Pre-Production)</h3>
+    <ul class="clean">
+      <li><strong>Gold dataset</strong> — 300 (question, ideal_answer, expected_sources) tuples curated with SMEs, covering top intents (rates, eligibility, procedure, exceptions) and edge cases (out-of-scope, multi-hop).</li>
+      <li><strong>Retrieval metrics</strong> — Hit@k, MRR, nDCG against expected_sources.</li>
+      <li><strong>Generation metrics</strong> — Faithfulness, Answer Relevance, Context Precision/Recall (RAGAS — see next section).</li>
+      <li><strong>Behavioral checks</strong> — refusal rate on out-of-scope, citation presence, format compliance.</li>
+      <li><strong>Human review</strong> — SMEs blind-rate a 10% sample weekly during development.</li>
+      <li><strong>CI gate</strong> — every prompt/model change runs evals; thresholds block merge if any metric regresses &gt;2 points.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Stage 6 — Deployment &amp; Rollout</h3>
+    <ul class="clean">
+      <li><strong>Shadow mode</strong> first: real queries go to current process AND to the assistant; compare offline. No user impact.</li>
+      <li><strong>Canary</strong>: 5% of agents → 25% → 100% over 3 weeks. Auto-rollback on p95 latency or eval regression.</li>
+      <li><strong>Feature flags</strong> for prompt and model versions; A/B testing infrastructure for prompt iteration.</li>
+      <li><strong>Approvals</strong>: model risk management (MRM) sign-off, infosec review, data privacy impact assessment (DPIA), legal review of disclaimers.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Stage 7 — Monitoring &amp; Continuous Evaluation</h3>
+    <ul class="clean">
+      <li><strong>System metrics</strong> — p50/p95/p99 latency, error rate, tokens/request, $/request, throughput.</li>
+      <li><strong>Quality metrics (online)</strong>:
+        <ul>
+          <li><strong>Implicit:</strong> thumbs up/down, copy-to-clipboard rate, escalation-to-human rate, query reformulation rate.</li>
+          <li><strong>LLM-as-judge:</strong> sample 5% of live traffic, score on faithfulness + relevance with a judge model. Alert on drift.</li>
+          <li><strong>Citation health:</strong> % responses with valid citations, % citations to expired docs.</li>
+        </ul>
+      </li>
+      <li><strong>Drift detection</strong> — embedding drift (new query distribution), retrieval drift (top-k composition shifting), data drift (new doc types).</li>
+      <li><strong>Feedback loop</strong> — thumbs-down + agent comment routed to a review queue; SMEs triage weekly into: prompt fix, doc fix, or new gold-set example.</li>
+      <li><strong>Auditability</strong> — every response stored 7 years (regulatory) with prompt version, model version, retrieved chunks, citations, user, timestamp.</li>
+      <li><strong>Cost guardrails</strong> — per-user and global token budgets; alerts at 80% of monthly cap.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Outcomes (Have Numbers Ready)</h3>
+    <ul class="clean">
+      <li>Average handle time: 8.0 min → <strong>6.1 min</strong> (-24%).</li>
+      <li>Answer accuracy on gold set: 71% → <strong>92%</strong> after hybrid + rerank + contextual retrieval.</li>
+      <li>Hallucination rate (faithfulness &lt; 0.8): <strong>&lt;1.5%</strong> on sampled live traffic.</li>
+      <li>Cost: <strong>~$0.018/query</strong> after prompt caching + model routing.</li>
+      <li>Adoption: <strong>78%</strong> weekly active among target user pool by month 3.</li>
+    </ul>
+  </div>
+
+  <div class="warn">
+    <strong>Interview tip:</strong> when asked "tell me about a project," walk this top-to-bottom in 4–5 minutes. Lead with the business problem, not the tech stack. End with a lesson learned (e.g., "the biggest unlock wasn't the model — it was getting compliance to label the corpus correctly").
+  </div>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-10-advanced-rag.html">← Module 10: Advanced RAG</a><a class="next" href="module-12-eval.html">Module 12: Eval (RAGAS) →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script type="application/json" id="course-config">{"storageKey": "learning-hub-genai-progress", "moduleSlugs": ["module-01-overview", "module-02-ml-foundations", "module-03-genai-foundations", "module-04-models", "module-05-python", "module-06-genai", "module-07-agentic", "module-08-llms", "module-09-rag", "module-10-advanced-rag", "module-11-banking", "module-12-eval", "module-13-langchain", "module-14-sdlc", "module-15-cloud", "module-16-databases", "module-17-copilot", "module-18-behavioral", "module-19-system-design", "module-20-questions", "module-21-cheat-sheet"]}</script>
+<script src="../assets/course.js"></script>
+</body></html>

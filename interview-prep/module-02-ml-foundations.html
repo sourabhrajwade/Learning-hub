@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 2 · ML Foundations — GenAI Interview Prep</title>
+<meta name="description" content="Machine learning basics before LLMs and agents." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1320" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1320; --panel:#161b2e; --panel2:#1d2440; --text:#e8ecf8; --muted:#a4adc8;
+    --accent:#7c8cff; --accent2:#4ad6c0; --green:#7ee08a; --yellow:#f6a96b; --red:#ff8a8a;
+    --border:#2a3357; --code:#0b0f1a;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0e19 0%,var(--bg) 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;font-size:12.5px;color:#cdd6f4}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+  .qa{display:grid;grid-template-columns:1fr;gap:10px}
+  .q{font-weight:600;color:var(--text);display:flex;gap:10px}
+  .q .badge{flex-shrink:0;background:rgba(124,140,255,0.12);color:var(--accent);border:1px solid rgba(124,140,255,0.3);padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600}
+  .a{color:var(--muted);border-left:2px solid var(--accent2);padding-left:14px;margin:0}
+  .a strong{color:var(--text)}
+  .tip{background:rgba(126,224,138,0.08);border:1px solid rgba(126,224,138,0.25);color:var(--green);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  .warn{background:rgba(246,169,107,0.08);border:1px solid rgba(246,169,107,0.25);color:var(--yellow);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  ul.clean{margin:0;padding-left:20px;color:var(--muted)}
+  ul.clean li{margin-bottom:6px}
+  ul.clean li strong{color:var(--text)}
+  .grid-2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  details{border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:600;color:var(--text);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  details>*:not(summary){margin-top:10px;color:var(--muted)}
+  .star{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;margin:12px 0}
+  .star b{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:14px;margin:14px 0}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;color:var(--muted);vertical-align:top}
+  th{background:var(--panel2);color:var(--text);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .chapter-body section h2{display:none}
+  .chapter-body section .intro{display:none}
+  .chapter-body section h2 .num{display:none}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>
+<p class="sub">Interview prep · Python · LLMs · RAG · Cloud</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-overview.html">Module 1 · Overview</a>
+<a class="toc-chapter-link active" href="module-02-ml-foundations.html">Module 2 · ML Foundations</a>
+<a class="toc-chapter-link" href="module-03-genai-foundations.html">Module 3 · GenAI Foundations</a>
+<a class="toc-chapter-link" href="module-04-models.html">Module 4 · Model Landscape</a>
+<a class="toc-chapter-link" href="module-05-python.html">Module 5 · Python</a>
+<a class="toc-chapter-link" href="module-06-genai.html">Module 6 · Generative AI</a>
+<a class="toc-chapter-link" href="module-07-agentic.html">Module 7 · Agentic AI</a>
+<a class="toc-chapter-link" href="module-08-llms.html">Module 8 · LLMs & Tooling</a>
+<a class="toc-chapter-link" href="module-09-rag.html">Module 9 · RAG Deep-Dive</a>
+<a class="toc-chapter-link" href="module-10-advanced-rag.html">Module 10 · Advanced RAG</a>
+<a class="toc-chapter-link" href="module-11-banking.html">Module 11 · Banking Project</a>
+<a class="toc-chapter-link" href="module-12-eval.html">Module 12 · Eval (RAGAS)</a>
+<a class="toc-chapter-link" href="module-13-langchain.html">Module 13 · LangChain & LangGraph</a>
+<a class="toc-chapter-link" href="module-14-sdlc.html">Module 14 · SDLC</a>
+<a class="toc-chapter-link" href="module-15-cloud.html">Module 15 · Cloud-native</a>
+<a class="toc-chapter-link" href="module-16-databases.html">Module 16 · Databases</a>
+<a class="toc-chapter-link" href="module-17-copilot.html">Module 17 · GitHub Copilot</a>
+<a class="toc-chapter-link" href="module-18-behavioral.html">Module 18 · Behavioral</a>
+<a class="toc-chapter-link" href="module-19-system-design.html">Module 19 · System Design</a>
+<a class="toc-chapter-link" href="module-20-questions.html">Module 20 · Questions to Ask</a>
+<a class="toc-chapter-link" href="module-21-cheat-sheet.html">Module 21 · Cheat Sheet</a>
+</nav>
+
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 21 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div>
+</aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">Foundations</span><span class="chapter-badge">Module 2</span></div>
+  <h1 class="chapter-title">Module 2 · ML Foundations</h1>
+  <p class="chapter-subtitle">Machine learning basics before LLMs and agents.</p>
+</header>
+<article class="chapter-body">
+<section id="foundations">
+<h2><span class="num">L1</span> Machine Learning Foundations (Learn First)</h2>
+  <p class="intro">
+    Before LLMs and agents, understand the fundamentals they're built on. This section is a learning layer — not interview Q&amp;A — so the rest of the doc makes sense even if your background is software engineering more than ML.
+  </p>
+
+  <div class="card">
+    <h3 style="margin-top:0">What is Machine Learning?</h3>
+    <p style="color:var(--muted)">
+      Traditional programming: you write rules, the computer applies them. <br>
+      Machine learning: you give the computer <strong>examples</strong>, and it figures out the rules. The "model" is just a mathematical function whose parameters were tuned by looking at data.
+    </p>
+    <p style="color:var(--muted)">
+      Example: instead of writing <em>"if email contains 'free money' then spam"</em>, you show the model 100,000 emails labeled spam/not-spam and it learns the patterns — including ones you'd never think of.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">The Three Types of ML</h3>
+    <table>
+      <thead><tr><th>Type</th><th>What you give it</th><th>What it learns</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Supervised</strong></td>
+          <td>Inputs <em>+ correct answers</em> (labels)</td>
+          <td>To map inputs → outputs</td>
+          <td>Spam detection, credit scoring, image classification</td>
+        </tr>
+        <tr>
+          <td><strong>Unsupervised</strong></td>
+          <td>Inputs only, no labels</td>
+          <td>Hidden structure / groups</td>
+          <td>Customer segmentation, anomaly detection</td>
+        </tr>
+        <tr>
+          <td><strong>Reinforcement</strong></td>
+          <td>An environment with rewards</td>
+          <td>Best actions to maximize reward</td>
+          <td>Game-playing AI, robotics, RLHF for LLMs</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="color:var(--muted)"><strong>LLMs are mostly supervised</strong> (predict the next token given previous tokens) with a layer of reinforcement learning on top (RLHF — humans rate responses, model learns to prefer good ones).</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Classification vs Regression vs Generation</h3>
+    <ul class="clean">
+      <li><strong>Classification</strong> — output is a category. "Is this transaction fraud? yes/no." "Which of 10 product categories?" Output: a probability for each class.</li>
+      <li><strong>Regression</strong> — output is a number. "What's the house price?" "What's the credit risk score?" Output: a continuous value.</li>
+      <li><strong>Generation</strong> — output is structured content (text, image, audio). LLMs are <em>generative classifiers</em> at their core: at each step they classify "what's the next token?" over a vocabulary of ~100k options.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">How a Model Actually Learns (The Training Loop)</h3>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li><strong>Initialize</strong> the model with random parameters (weights).</li>
+      <li><strong>Forward pass:</strong> feed an input, get a prediction.</li>
+      <li><strong>Loss:</strong> compare prediction to the correct answer; compute how wrong it was (a single number).</li>
+      <li><strong>Backward pass (backprop):</strong> compute how each weight contributed to the error.</li>
+      <li><strong>Update:</strong> nudge each weight slightly in the direction that reduces the loss (gradient descent).</li>
+      <li><strong>Repeat</strong> on millions of examples until the loss stops dropping.</li>
+    </ol>
+    <p style="color:var(--muted)">That's it. Everything from a logistic regression to GPT-4 follows this same loop — they differ in <em>architecture</em> (the shape of the function) and <em>scale</em> (how much data and how many parameters).</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Critical Vocabulary — Memorize These</h3>
+    <table>
+      <thead><tr><th>Term</th><th>Plain English</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Features</strong></td><td>The input variables (columns in a spreadsheet). For text, the features are the tokens.</td></tr>
+        <tr><td><strong>Labels / Targets</strong></td><td>The correct answers you're trying to predict.</td></tr>
+        <tr><td><strong>Parameters / Weights</strong></td><td>The numbers inside the model that get tuned during training. GPT-4 has ~1.8 trillion.</td></tr>
+        <tr><td><strong>Hyperparameters</strong></td><td>Knobs <em>you</em> set before training (learning rate, batch size). Not learned.</td></tr>
+        <tr><td><strong>Loss function</strong></td><td>A formula measuring how wrong the model is. Training = minimizing loss.</td></tr>
+        <tr><td><strong>Gradient descent</strong></td><td>The algorithm that updates weights to reduce loss. "Roll downhill on the loss landscape."</td></tr>
+        <tr><td><strong>Epoch</strong></td><td>One full pass over the training data.</td></tr>
+        <tr><td><strong>Batch</strong></td><td>A small group of examples processed together. GPUs work on batches, not single rows.</td></tr>
+        <tr><td><strong>Overfitting</strong></td><td>Model memorized training data but fails on new data. Like a student who memorized answers without understanding.</td></tr>
+        <tr><td><strong>Underfitting</strong></td><td>Model is too simple to capture the pattern. Trains poorly AND tests poorly.</td></tr>
+        <tr><td><strong>Train / Validation / Test split</strong></td><td>Train on one set, tune on a second, judge final quality on a third (untouched until the end).</td></tr>
+        <tr><td><strong>Inference</strong></td><td>Using a trained model to make predictions. (Training is one-time; inference is continuous in production.)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">How We Measure "Good"</h3>
+    <ul class="clean">
+      <li><strong>Accuracy</strong> — % correct. Misleading when classes are imbalanced (99% non-fraud → predicting "never fraud" gets 99% accuracy and is useless).</li>
+      <li><strong>Precision</strong> — of the items I flagged as positive, how many actually were? (Avoid false alarms.)</li>
+      <li><strong>Recall</strong> — of the actual positives, how many did I catch? (Don't miss real cases.)</li>
+      <li><strong>F1</strong> — harmonic mean of precision and recall. One number that balances both.</li>
+      <li><strong>AUC-ROC</strong> — how well the model separates classes across all decision thresholds. 0.5 = random, 1.0 = perfect.</li>
+      <li><strong>RMSE / MAE</strong> — for regression — how far off your numerical predictions are on average.</li>
+    </ul>
+    <p style="color:var(--muted)"><strong>Banking intuition:</strong> in fraud detection, recall matters more than accuracy — missing real fraud is far more expensive than a few false alarms. In credit decisioning, precision on the "approve" class matters more — a wrong approval becomes a default loss.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">From Classical ML to Deep Learning to LLMs</h3>
+    <ul class="clean">
+      <li><strong>Classical ML</strong> (logistic regression, decision trees, gradient boosting) — works on structured data (tables). Fast to train, easy to interpret. Still the right answer for most tabular problems in banking (XGBoost is the go-to).</li>
+      <li><strong>Deep learning</strong> — neural networks with many layers. Works directly on unstructured data (text, images, audio) by learning their own features. Needs lots of data and GPUs.</li>
+      <li><strong>Transformers</strong> (2017, "Attention is All You Need") — the architecture that broke open language. Uses <em>self-attention</em> to let every token "look at" every other token. Scales spectacularly with data and compute.</li>
+      <li><strong>Large Language Models</strong> — transformers trained on a huge fraction of the internet to predict the next token. The "magic" is what emerges from scale: reasoning, code, translation, none of it explicitly programmed.</li>
+    </ul>
+  </div>
+
+  <div class="tip">
+    <strong>Key insight for the role:</strong> not every problem needs an LLM. If the input is a table and the output is a number or a category, classical ML is faster, cheaper, and more interpretable. LLMs are for <em>language-shaped</em> problems — where the input or output is unstructured text.
+  </div>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-01-overview.html">← Module 1: Overview</a><a class="next" href="module-03-genai-foundations.html">Module 3: GenAI Foundations →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script type="application/json" id="course-config">{"storageKey": "learning-hub-genai-progress", "moduleSlugs": ["module-01-overview", "module-02-ml-foundations", "module-03-genai-foundations", "module-04-models", "module-05-python", "module-06-genai", "module-07-agentic", "module-08-llms", "module-09-rag", "module-10-advanced-rag", "module-11-banking", "module-12-eval", "module-13-langchain", "module-14-sdlc", "module-15-cloud", "module-16-databases", "module-17-copilot", "module-18-behavioral", "module-19-system-design", "module-20-questions", "module-21-cheat-sheet"]}</script>
+<script src="../assets/course.js"></script>
+</body></html>

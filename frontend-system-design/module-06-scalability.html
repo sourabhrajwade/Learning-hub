@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 6 · Scalability — Frontend System Design</title>
+<meta name="description" content="Monorepos, design systems, micro-frontends, i18n, and observability." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1115" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --text:#e6e8ef; --muted:#9aa3b2;
+    --accent:#7cc4ff; --accent2:#9d7cff; --green:#7ce0a8; --yellow:#ffd479; --red:#ff8a8a;
+    --border:#2a2f3a; --code:#0b0d12;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{background:var(--code);padding:2px 6px;border-radius:4px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;color:#e0a679}
+  pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;border:1px solid var(--border);font-size:13px;line-height:1.5}
+  pre code{background:none;padding:0;color:#dbe1ec}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;margin-right:6px}
+  .pill.basic{background:#1b3b2b;color:var(--green)}
+  .pill.inter{background:#3b3b1b;color:var(--yellow)}
+  .pill.adv{background:#3b1b2b;color:var(--red)}
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0}
+  .callout.warn{border-color:var(--yellow)} .callout.tip{border-color:var(--green)}
+  .callout strong{color:var(--accent)} .callout.warn strong{color:var(--yellow)} .callout.tip strong{color:var(--green)}
+  details.q{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:10px 0}
+  details.q summary{cursor:pointer;font-weight:600;color:var(--accent2)}
+  details.q[open]{background:var(--panel2)}
+  details.q .answer{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .walkthrough{counter-reset:step}
+  .walkthrough .step{position:relative;padding:10px 12px 10px 38px;margin:8px 0;background:var(--code);border-radius:6px;border-left:3px solid var(--accent2)}
+  .walkthrough .step::before{counter-increment:step;content:counter(step);position:absolute;left:10px;top:10px;width:20px;height:20px;background:var(--accent2);color:#0b0d12;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .walkthrough .step .label{display:block;font-weight:600;color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+  .walkthrough .step .label.script{color:var(--green)}
+  .walkthrough .step p{margin:4px 0;font-size:13.5px}
+  .script-line{font-style:italic;color:#cdd5e3;border-left:2px solid var(--green);padding-left:10px;margin:6px 0;font-size:13.5px}
+  .followup{margin-top:10px;padding:10px 12px;background:var(--panel);border-radius:6px;font-size:13px}
+  .followup strong{color:var(--yellow)}
+  .company-tags{display:inline-flex;gap:5px;flex-wrap:wrap;margin-left:8px;vertical-align:middle}
+  .ctag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;border:1px solid transparent}
+  .ctag.meta{background:#1a2540;color:#7eb6ff;border-color:#2a4570}
+  .ctag.google{background:#1f2a1c;color:#9ad48a;border-color:#3a5a32}
+  .ctag.microsoft{background:#1f2933;color:#7cd1e0;border-color:#345566}
+  .ctag.amazon{background:#332416;color:#ffb86b;border-color:#664a2c}
+  .ctag.apple{background:#2a2a2a;color:#d8d8d8;border-color:#555}
+  .ctag.netflix{background:#3a1a1f;color:#ff9aa2;border-color:#6a2a35}
+  .ctag.uber{background:#1a1a1a;color:#e0e0e0;border-color:#444}
+  .ctag.agoda{background:#2a1a3a;color:#c9a3ff;border-color:#5a3580}
+  .ctag.airbnb{background:#3a1a26;color:#ff9ab8;border-color:#6a2a48}
+  .ctag.stripe{background:#1c2a3f;color:#9ab8ff;border-color:#345878}
+  .ctag.atlassian{background:#1a2540;color:#8eb4ff;border-color:#2c4880}
+  .ctag.bytedance{background:#2a2030;color:#ff9ad1;border-color:#553560}
+  .ctag.linkedin{background:#1a2a3a;color:#8ec5ff;border-color:#2c4a70}
+  .ctag.shopify{background:#1f2e1f;color:#9ad48a;border-color:#3a5a3a}
+  .ctag.booking{background:#1a2a40;color:#7ab0ff;border-color:#2c4a78}
+  .ctag.salesforce{background:#1a2a3a;color:#7ec5ff;border-color:#2c4a70}
+  .ctag.tiktok{background:#1a1a1a;color:#ff7eb6;border-color:#553060}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel);color:var(--accent)}
+  ul.clean li{margin:4px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> FE System Design</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">FE System Design</a></h1>
+<p class="sub">Basics → Advanced · with examples &amp; interview Qs</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-foundations.html">Module 1 · Foundations</a>
+<a class="toc-chapter-link" href="module-02-architecture.html">Module 2 · Architecture</a>
+<a class="toc-chapter-link" href="module-03-performance.html">Module 3 · Performance</a>
+<a class="toc-chapter-link" href="module-04-cdns.html">Module 4 · CDNs</a>
+<a class="toc-chapter-link" href="module-05-security.html">Module 5 · Security</a>
+<a class="toc-chapter-link active" href="module-06-scalability.html">Module 6 · Scalability</a>
+<ul class="toc-sub">
+<li><a href="#m6-monorepo">6.1 Monorepos</a></li>
+<li><a href="#m6-ds">6.2 Design Systems</a></li>
+<li><a href="#m6-mfe">6.3 Micro-Frontends</a></li>
+<li><a href="#m6-i18n">6.4 i18n / a11y</a></li>
+<li><a href="#m6-obs">6.5 Observability</a></li>
+</ul>
+<a class="toc-chapter-link" href="module-07-case-studies.html">Module 7 · Case Studies</a>
+<a class="toc-chapter-link" href="module-08-interview-playbook.html">Module 8 · Interview Playbook</a>
+</nav>
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 8 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div></aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">Advanced</span><span class="chapter-badge">Module 6</span></div>
+  <h1 class="chapter-title">Module 6 · Scalability</h1>
+  <p class="chapter-subtitle">Monorepos, design systems, micro-frontends, i18n, and observability.</p>
+</header>
+<article class="chapter-body">
+<section id="module-6">
+<h2>Module 6 · Scalability for Large Apps <span class="pill adv">Advanced</span></h2>
+
+  <h3 id="m6-monorepo">6.1 Monorepos</h3>
+  <p>One repo, many packages. Tools: Nx, Turborepo, pnpm workspaces, Bazel, Rush.</p>
+  <ul class="clean">
+    <li>Shared tooling, atomic cross-package changes, single-version policy.</li>
+    <li>Affected-only builds (Nx <code>affected</code>, Turbo task graph) = fast CI.</li>
+    <li>Remote caching across the team.</li>
+    <li><strong>Trade-off:</strong> tighter coupling, complex CI, larger repo. Worth it past ~3-5 collaborating apps.</li>
+  </ul>
+
+  <h3 id="m6-ds">6.2 Design Systems</h3>
+  <ul class="clean">
+    <li><strong>Tokens</strong> (color, spacing, typography) generated to CSS vars / native platforms.</li>
+    <li><strong>Primitives</strong> (Button, Input, Modal) — accessible, themable.</li>
+    <li><strong>Patterns</strong> (Form, Table, EmptyState) — composed primitives.</li>
+    <li><strong>Docs</strong> with Storybook, automated visual regression tests (Chromatic, Percy).</li>
+    <li>Versioned releases; deprecation policy; migration codemods.</li>
+  </ul>
+
+  <h3 id="m6-mfe">6.3 Micro-Frontends</h3>
+  <p>Independent teams ship independent frontends, composed at runtime or build time. Useful when team count &gt; ~5 and release cadences differ.</p>
+  <h4>Composition strategies</h4>
+  <ul class="clean">
+    <li><strong>Build-time:</strong> npm packages composed in a shell. Simplest; coupled releases.</li>
+    <li><strong>Server-side composition:</strong> shell stitches HTML fragments (Tailor, Podium, Edge Includes).</li>
+    <li><strong>Run-time / Module Federation</strong> (Webpack 5): host loads remotes at runtime, sharing React/etc.</li>
+    <li><strong>Iframes</strong>: strong isolation; bad for UX (focus, perf, deep links).</li>
+    <li><strong>Web Components</strong>: framework-agnostic boundary.</li>
+  </ul>
+
+  <div class="callout warn"><strong>Costs:</strong> dependency duplication, version skew, design inconsistency, perf regressions, cross-MFE communication complexity. Don't adopt for small teams.</div>
+
+  <h3 id="m6-i18n">6.4 Internationalization & Accessibility</h3>
+  <h4>i18n</h4>
+  <ul class="clean">
+    <li>ICU MessageFormat for plurals/genders; tools: react-intl, i18next, FormatJS.</li>
+    <li>RTL support: logical properties (<code>margin-inline-start</code>), <code>dir="rtl"</code>.</li>
+    <li>Locale-aware sorting, dates (<code>Intl.DateTimeFormat</code>), numbers, currency.</li>
+    <li>Lazy-load locale bundles by route.</li>
+  </ul>
+  <h4>a11y</h4>
+  <ul class="clean">
+    <li>Semantic HTML first; ARIA only when needed.</li>
+    <li>Keyboard support: tab order, focus management, skip links.</li>
+    <li>Color contrast (WCAG AA: 4.5:1 text), prefers-reduced-motion.</li>
+    <li>Automated tests: axe-core, Lighthouse; manual: screen reader passes.</li>
+  </ul>
+
+  <h3 id="m6-obs">6.5 Observability & Releases</h3>
+  <ul class="clean">
+    <li><strong>RUM</strong> (Real User Monitoring): web-vitals lib → analytics endpoint.</li>
+    <li><strong>Error tracking:</strong> Sentry, Bugsnag — source maps for stack traces.</li>
+    <li><strong>Feature flags:</strong> LaunchDarkly, Statsig; gradual rollouts, kill switches.</li>
+    <li><strong>Releases:</strong> canary deploys, automatic rollback on regressed CWV/error rate.</li>
+    <li><strong>Synthetic monitoring:</strong> Lighthouse CI, Playwright on schedule.</li>
+  </ul>
+
+  <details class="q"><summary>Q: 5 teams want to ship to one app. Do you go micro-frontend?</summary>
+    <div class="answer">Not automatically. First try: monorepo + clear module ownership + design system + trunk-based development with feature flags. MFEs only if teams need independent deploys, different tech stacks, or have hard organizational boundaries (e.g., acquisitions). The cost of MFE is real: duplicate deps, runtime contracts, perf overhead.</div>
+  </details>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-05-security.html">← Module 5: Security</a><a class="next" href="module-07-case-studies.html">Module 7: Case Studies →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script src="../assets/course.js"></script>
+</body></html>

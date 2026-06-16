@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 13 · LangChain & LangGraph — GenAI Interview Prep</title>
+<meta name="description" content="LangChain v1, LangGraph, and agent workflows." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1320" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1320; --panel:#161b2e; --panel2:#1d2440; --text:#e8ecf8; --muted:#a4adc8;
+    --accent:#7c8cff; --accent2:#4ad6c0; --green:#7ee08a; --yellow:#f6a96b; --red:#ff8a8a;
+    --border:#2a3357; --code:#0b0f1a;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0e19 0%,var(--bg) 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;font-size:12.5px;color:#cdd6f4}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+  .qa{display:grid;grid-template-columns:1fr;gap:10px}
+  .q{font-weight:600;color:var(--text);display:flex;gap:10px}
+  .q .badge{flex-shrink:0;background:rgba(124,140,255,0.12);color:var(--accent);border:1px solid rgba(124,140,255,0.3);padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600}
+  .a{color:var(--muted);border-left:2px solid var(--accent2);padding-left:14px;margin:0}
+  .a strong{color:var(--text)}
+  .tip{background:rgba(126,224,138,0.08);border:1px solid rgba(126,224,138,0.25);color:var(--green);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  .warn{background:rgba(246,169,107,0.08);border:1px solid rgba(246,169,107,0.25);color:var(--yellow);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  ul.clean{margin:0;padding-left:20px;color:var(--muted)}
+  ul.clean li{margin-bottom:6px}
+  ul.clean li strong{color:var(--text)}
+  .grid-2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  details{border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:600;color:var(--text);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  details>*:not(summary){margin-top:10px;color:var(--muted)}
+  .star{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;margin:12px 0}
+  .star b{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:14px;margin:14px 0}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;color:var(--muted);vertical-align:top}
+  th{background:var(--panel2);color:var(--text);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .chapter-body section h2{display:none}
+  .chapter-body section .intro{display:none}
+  .chapter-body section h2 .num{display:none}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>
+<p class="sub">Interview prep · Python · LLMs · RAG · Cloud</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-overview.html">Module 1 · Overview</a>
+<a class="toc-chapter-link" href="module-02-ml-foundations.html">Module 2 · ML Foundations</a>
+<a class="toc-chapter-link" href="module-03-genai-foundations.html">Module 3 · GenAI Foundations</a>
+<a class="toc-chapter-link" href="module-04-models.html">Module 4 · Model Landscape</a>
+<a class="toc-chapter-link" href="module-05-python.html">Module 5 · Python</a>
+<a class="toc-chapter-link" href="module-06-genai.html">Module 6 · Generative AI</a>
+<a class="toc-chapter-link" href="module-07-agentic.html">Module 7 · Agentic AI</a>
+<a class="toc-chapter-link" href="module-08-llms.html">Module 8 · LLMs & Tooling</a>
+<a class="toc-chapter-link" href="module-09-rag.html">Module 9 · RAG Deep-Dive</a>
+<a class="toc-chapter-link" href="module-10-advanced-rag.html">Module 10 · Advanced RAG</a>
+<a class="toc-chapter-link" href="module-11-banking.html">Module 11 · Banking Project</a>
+<a class="toc-chapter-link" href="module-12-eval.html">Module 12 · Eval (RAGAS)</a>
+<a class="toc-chapter-link active" href="module-13-langchain.html">Module 13 · LangChain & LangGraph</a>
+<a class="toc-chapter-link" href="module-14-sdlc.html">Module 14 · SDLC</a>
+<a class="toc-chapter-link" href="module-15-cloud.html">Module 15 · Cloud-native</a>
+<a class="toc-chapter-link" href="module-16-databases.html">Module 16 · Databases</a>
+<a class="toc-chapter-link" href="module-17-copilot.html">Module 17 · GitHub Copilot</a>
+<a class="toc-chapter-link" href="module-18-behavioral.html">Module 18 · Behavioral</a>
+<a class="toc-chapter-link" href="module-19-system-design.html">Module 19 · System Design</a>
+<a class="toc-chapter-link" href="module-20-questions.html">Module 20 · Questions to Ask</a>
+<a class="toc-chapter-link" href="module-21-cheat-sheet.html">Module 21 · Cheat Sheet</a>
+</nav>
+
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 21 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div>
+</aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">Tooling</span><span class="chapter-badge">Module 13</span></div>
+  <h1 class="chapter-title">Module 13 · LangChain & LangGraph</h1>
+  <p class="chapter-subtitle">LangChain v1, LangGraph, and agent workflows.</p>
+</header>
+<article class="chapter-body">
+<section id="langchain">
+<h2><span class="num">5e</span> LangChain v1 Agents &amp; LangGraph Workflows</h2>
+  <p class="intro">
+    Two patterns you must be able to write live: an <strong>agent</strong> using LangChain v1's
+    <code>create_agent()</code>, and a <strong>graph workflow</strong> using LangGraph (no agent — just deterministic
+    nodes and edges). Know the difference and when to choose each.
+  </p>
+
+  <div class="card">
+    <h3 style="margin-top:0">Study Notes — Agent vs Workflow</h3>
+    <table>
+      <thead><tr><th></th><th>Agent (LangChain <code>create_agent</code>)</th><th>Workflow (LangGraph <code>StateGraph</code>)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Control flow</strong></td><td>LLM decides next step (tool-call loop)</td><td>You define the graph; deterministic edges</td></tr>
+        <tr><td><strong>When to use</strong></td><td>Open-ended tasks; path can't be enumerated</td><td>Known steps; you want predictability</td></tr>
+        <tr><td><strong>Cost / latency</strong></td><td>Variable, often higher (multiple LLM calls)</td><td>Predictable; fewer LLM calls</td></tr>
+        <tr><td><strong>Debuggability</strong></td><td>Harder — model decisions hidden</td><td>Easy — every transition is in code</td></tr>
+        <tr><td><strong>Production fit</strong></td><td>Use sparingly, with guardrails &amp; HITL</td><td>Default for most enterprise GenAI</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--muted)">Mental model: <strong>agents are workflows where the edges are decided by an LLM</strong>. Most real systems are workflows with a small agentic sub-step (e.g., a research node that's an agent), not end-to-end agents.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Key LangChain v1 Concepts (Memorize)</h3>
+    <ul class="clean">
+      <li><strong><code>create_agent()</code></strong> — the canonical way to build an agent. Replaces older <code>AgentExecutor</code> and <code>create_react_agent</code>. Handles the tool-call loop for you.</li>
+      <li><strong><code>@tool</code></strong> — decorator that turns a Python function into an LLM-callable tool. The docstring becomes the tool description; type hints become the schema.</li>
+      <li><strong><code>checkpointer</code></strong> — persistence layer (e.g., <code>MemorySaver</code>, Postgres). Keyed by <code>thread_id</code> for multi-turn memory.</li>
+      <li><strong><code>middleware</code></strong> — intercepts the agent loop. Used for <strong>human-in-the-loop</strong> approval, custom logging, retries, dynamic prompt rewriting.</li>
+      <li><strong><code>response_format</code></strong> — Pydantic model for structured output; agent returns typed object in <code>result["structured_response"]</code>.</li>
+      <li><strong><code>recursion_limit</code></strong> — pass in invoke config to cap loop iterations (prevents runaway agents).</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-top:32px">Example 1 — Agentic System (LangChain v1) for Banking Support</h3>
+  <p style="color:var(--muted)">A relationship-manager assistant that can look up products, check rates, draft an email, and require human approval before sending. Demonstrates tools, persistence, structured output, and HITL middleware.</p>
+
+  <div class="card">
+<pre><code>from langchain.agents import create_agent
+from langchain.agents.middleware import HumanInTheLoopMiddleware
+from langchain_core.tools import tool
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import Command
+from pydantic import BaseModel, Field
+
+# 1. Tools — each is a normal Python function with a clear docstring.
+@tool
+def lookup_product(product_code: str) -> dict:
+    """Look up a banking product by its internal code.
+
+    Args:
+        product_code: Internal code, e.g. 'MTG-FIX-5Y' for 5-year fixed mortgage.
+    """
+    catalogue = {
+        "MTG-FIX-5Y": {"name": "5-Year Fixed Mortgage",
+                       "rate": 4.29, "erc_schedule": "5,5,3,2,1"},
+        "ISA-CASH":   {"name": "Cash ISA",
+                       "rate": 4.10, "annual_limit": 20000},
+    }
+    return catalogue.get(product_code, {"error": "unknown product"})
+
+@tool
+def get_client_segment(client_id: str) -> str:
+    """Return client segment (mass / affluent / private) for tailoring responses."""
+    return "affluent"  # stub — real impl hits CRM
+
+@tool
+def send_email(to: str, subject: str, body: str) -> str:
+    """Send an email to a client. THIS IS A WRITE ACTION — requires approval.
+
+    Args:
+        to: Recipient email address.
+        subject: Email subject line.
+        body: Email body in plain text.
+    """
+    # Real impl: SMTP / Graph API
+    return f"sent to {to}"
+
+# 2. Structured output — agent returns a typed response.
+class AgentResponse(BaseModel):
+    summary: str = Field(description="One-sentence summary for the RM.")
+    action_taken: str = Field(description="What the agent did.")
+    next_steps: list[str] = Field(default_factory=list)
+
+# 3. Human-in-the-loop on the destructive tool.
+hitl = HumanInTheLoopMiddleware(
+    interrupt_on={"send_email": True},   # require approval before send
+)
+
+# 4. Build the agent.
+agent = create_agent(
+    model="anthropic:claude-opus-4-7",
+    tools=[lookup_product, get_client_segment, send_email],
+    system_prompt=(
+        "You are a relationship-manager assistant for a retail bank. "
+        "Use tools to look up products and client info before answering. "
+        "Cite product codes. Never invent rates or fees. "
+        "If asked to email a client, draft it and call send_email — "
+        "a human will approve before it goes out."
+    ),
+    checkpointer=MemorySaver(),
+    middleware=[hitl],
+    response_format=AgentResponse,
+)
+
+# 5. Invoke with a thread_id for memory + a recursion limit for safety.
+config = {"configurable": {"thread_id": "rm-42-session-1"},
+          "recursion_limit": 12}
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content":
+        "Client C-9981 is asking about our 5-year fixed mortgage rate. "
+        "Look it up and email them a summary at jane@example.com."}]},
+    config=config,
+)
+
+# 6. The agent pauses at send_email — resume after human approves:
+result = agent.invoke(
+    Command(resume={"decisions": [{"type": "approve"}]}),
+    config=config,
+)
+
+print(result["structured_response"].summary)
+print(result["structured_response"].next_steps)
+</code></pre>
+  </div>
+
+  <div class="tip">
+    <strong>What to point out in interview:</strong> tool design with clear docstrings, HITL on the destructive action, <code>thread_id</code> for memory, <code>recursion_limit</code> to prevent runaway loops, structured output for downstream systems, and the deliberate choice to <em>not</em> let the agent write to systems of record without approval.
+  </div>
+
+  <h3 style="margin-top:32px">Example 2 — Simple LangGraph Workflow (No Agent): Loan Triage</h3>
+  <p style="color:var(--muted)">Linear pipeline with conditional routing. Classify a loan application → route to fast-track, manual-review, or auto-decline. No LLM autonomy — every transition is in code.</p>
+
+  <div class="card">
+<pre><code>from typing import Literal
+from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+class LoanState(TypedDict):
+    application_id: str
+    credit_score: int
+    income: float
+    requested_amount: float
+    decision: str
+    rationale: str
+
+def classify(state: LoanState) -> dict:
+    score, income, amt = state["credit_score"], state["income"], state["requested_amount"]
+    dti = amt / max(income, 1)
+    if score &gt;= 740 and dti &lt; 3:
+        bucket = "fast_track"
+    elif score &lt; 580 or dti &gt; 6:
+        bucket = "auto_decline"
+    else:
+        bucket = "manual_review"
+    return {"decision": bucket}
+
+def route(state: LoanState) -> Literal["fast_track", "manual_review", "auto_decline"]:
+    return state["decision"]
+
+def fast_track(state: LoanState) -> dict:
+    return {"rationale": "Approved on bureau score and low DTI."}
+
+def manual_review(state: LoanState) -> dict:
+    return {"rationale": "Routed to underwriter queue for review."}
+
+def auto_decline(state: LoanState) -> dict:
+    return {"rationale": "Declined: bureau or DTI thresholds breached."}
+
+graph = (
+    StateGraph(LoanState)
+    .add_node("classify", classify)
+    .add_node("fast_track", fast_track)
+    .add_node("manual_review", manual_review)
+    .add_node("auto_decline", auto_decline)
+    .add_edge(START, "classify")
+    .add_conditional_edges("classify", route,
+                           ["fast_track", "manual_review", "auto_decline"])
+    .add_edge("fast_track", END)
+    .add_edge("manual_review", END)
+    .add_edge("auto_decline", END)
+    .compile()
+)
+
+result = graph.invoke({
+    "application_id": "APP-1001",
+    "credit_score": 760, "income": 90000, "requested_amount": 200000,
+    "decision": "", "rationale": "",
+})
+print(result["decision"], "—", result["rationale"])
+</code></pre>
+  </div>
+
+  <h3 style="margin-top:32px">Example 3 — LangGraph RAG Workflow (No Agent)</h3>
+  <p style="color:var(--muted)">Deterministic RAG pipeline as a graph: retrieve → grade context → generate (or refuse). No model autonomy; you control every step. This is the shape of most production RAG systems.</p>
+
+  <div class="card">
+<pre><code>from typing import Literal, Annotated
+import operator
+from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+from langchain_anthropic import ChatAnthropic
+
+llm = ChatAnthropic(model="claude-opus-4-7", temperature=0)
+
+class RAGState(TypedDict):
+    question: str
+    contexts: list[str]
+    context_ok: bool
+    answer: str
+    citations: Annotated[list[str], operator.add]
+
+def retrieve(state: RAGState) -> dict:
+    chunks = vector_search(state["question"], k=5)  # your retriever
+    return {"contexts": [c.text for c in chunks],
+            "citations": [c.source for c in chunks]}
+
+def grade_context(state: RAGState) -> dict:
+    """LLM judges whether the retrieved context can actually answer the question."""
+    judgement = llm.invoke(
+        f"Can the question be answered from this context? Reply YES or NO.\n\n"
+        f"Q: {state['question']}\nCONTEXT:\n" + "\n---\n".join(state["contexts"])
+    ).content.strip().upper()
+    return {"context_ok": judgement.startswith("YES")}
+
+def route_after_grade(state: RAGState) -> Literal["generate", "refuse"]:
+    return "generate" if state["context_ok"] else "refuse"
+
+def generate(state: RAGState) -> dict:
+    ctx = "\n\n".join(f"[{i+1}] {c}" for i, c in enumerate(state["contexts"]))
+    msg = llm.invoke(
+        f"Answer ONLY from the context. Cite sources as [n].\n\n"
+        f"Context:\n{ctx}\n\nQuestion: {state['question']}"
+    )
+    return {"answer": msg.content}
+
+def refuse(state: RAGState) -> dict:
+    return {"answer": "I don't have enough information to answer that confidently."}
+
+graph = (
+    StateGraph(RAGState)
+    .add_node("retrieve", retrieve)
+    .add_node("grade", grade_context)
+    .add_node("generate", generate)
+    .add_node("refuse", refuse)
+    .add_edge(START, "retrieve")
+    .add_edge("retrieve", "grade")
+    .add_conditional_edges("grade", route_after_grade, ["generate", "refuse"])
+    .add_edge("generate", END)
+    .add_edge("refuse", END)
+    .compile()
+)
+
+result = graph.invoke({"question": "What's the ERC on a 5-year fixed mortgage?",
+                       "contexts": [], "context_ok": False,
+                       "answer": "", "citations": []})
+print(result["answer"], "\nSources:", result["citations"])
+</code></pre>
+  </div>
+
+  <h3 style="margin-top:32px">Example 4 — LangGraph Parallel Fan-Out (No Agent)</h3>
+  <p style="color:var(--muted)">Process a batch of client documents in parallel using the <code>Send</code> API. Useful for evaluation pipelines, bulk summarization, or any embarrassingly-parallel work.</p>
+
+  <div class="card">
+<pre><code>from typing import Annotated
+import operator
+from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+from langgraph.types import Send
+
+class BatchState(TypedDict):
+    documents: list[str]
+    summaries: Annotated[list[str], operator.add]   # reducer accumulates
+    report: str
+
+def fan_out(state: BatchState):
+    # Returns a list of Send commands — one worker per document.
+    return [Send("summarize", {"doc": d}) for d in state["documents"]]
+
+def summarize(state: dict) -> dict:
+    # Each worker runs in parallel.
+    return {"summaries": [f"Summary of: {state['doc'][:30]}..."]}
+
+def report(state: BatchState) -> dict:
+    return {"report": f"Processed {len(state['summaries'])} documents."}
+
+graph = (
+    StateGraph(BatchState)
+    .add_node("summarize", summarize)
+    .add_node("report", report)
+    .add_conditional_edges(START, fan_out, ["summarize"])
+    .add_edge("summarize", "report")
+    .add_edge("report", END)
+    .compile()
+)
+
+result = graph.invoke({
+    "documents": ["doc A text...", "doc B text...", "doc C text..."],
+    "summaries": [], "report": "",
+})
+print(result["report"])
+</code></pre>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q1</span> When do you choose <code>create_agent</code> vs a hand-built LangGraph workflow?</div>
+    <p class="a">
+      I default to a <strong>workflow</strong> because it's predictable, debuggable, and cheaper. I reach for an
+      <strong>agent</strong> only when the path genuinely can't be enumerated — open-ended research, tool-rich
+      problem solving — and even then I scope it tightly with a small toolset, recursion limits, and HITL on any
+      destructive action. Most production systems I build are workflows with one agentic node, not the other way around.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q2</span> What's the role of middleware in LangChain v1?</div>
+    <p class="a">
+      Middleware sits inside the agent loop and intercepts tool calls or LLM steps. The most important built-in is
+      <code>HumanInTheLoopMiddleware</code>, which pauses execution before specified tools fire and resumes via
+      <code>Command(resume=...)</code> after a human decides. You can also write custom middleware with
+      <code>@wrap_tool_call</code> for logging, redaction, or dynamic prompt rewriting. Middleware is how you add
+      enterprise controls without rewriting the agent.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q3</span> What's a reducer in LangGraph and why does it matter?</div>
+    <p class="a">
+      A reducer defines how concurrent updates to a state field are merged. Default behavior is "last write wins"
+      — fine for scalars but disastrous for lists when nodes run in parallel (Send fan-out). Annotating a list with
+      <code>operator.add</code> makes updates concatenate instead. Forgetting reducers on accumulator fields is the
+      single most common LangGraph bug.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q4</span> How do you prevent an agent from looping forever or burning budget?</div>
+    <p class="a">
+      Three controls: <strong>(1)</strong> <code>recursion_limit</code> in invoke config — hard cap on loop iterations.
+      <strong>(2)</strong> Tool design — make tools idempotent, return clear "done" signals, validate args strictly.
+      <strong>(3)</strong> Token / cost budget per session enforced in middleware — kill the run if it exceeds the
+      cap and surface the partial result. I also log every step to LangSmith so I can replay and tune.
+    </p>
+  </div>
+
+  <details>
+    <summary>More LangChain / LangGraph questions to rehearse</summary>
+    <ul class="clean">
+      <li>How do you do streaming with <code>graph.stream(..., stream_mode="messages")</code> for a chat UI?</li>
+      <li>Difference between <code>add_edge</code>, <code>add_conditional_edges</code>, and returning <code>Command</code>?</li>
+      <li>How do you persist state across processes — <code>MemorySaver</code> vs Postgres checkpointer?</li>
+      <li>What's <code>interrupt()</code> and how do you implement a "collect missing info from user" pattern?</li>
+      <li>How would you migrate an old <code>AgentExecutor</code> codebase to <code>create_agent</code>?</li>
+    </ul>
+  </details>
+
+  <div class="warn">
+    <strong>Common mistakes to avoid in interview live-coding:</strong> forgetting to <code>compile()</code> the graph,
+    routing back to <code>START</code> (not allowed — it's entry-only), missing reducers on list state fields, and
+    mutating state directly instead of returning a partial-update dict.
+  </div>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-12-eval.html">← Module 12: Eval (RAGAS)</a><a class="next" href="module-14-sdlc.html">Module 14: SDLC →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script type="application/json" id="course-config">{"storageKey": "learning-hub-genai-progress", "moduleSlugs": ["module-01-overview", "module-02-ml-foundations", "module-03-genai-foundations", "module-04-models", "module-05-python", "module-06-genai", "module-07-agentic", "module-08-llms", "module-09-rag", "module-10-advanced-rag", "module-11-banking", "module-12-eval", "module-13-langchain", "module-14-sdlc", "module-15-cloud", "module-16-databases", "module-17-copilot", "module-18-behavioral", "module-19-system-design", "module-20-questions", "module-21-cheat-sheet"]}</script>
+<script src="../assets/course.js"></script>
+</body></html>

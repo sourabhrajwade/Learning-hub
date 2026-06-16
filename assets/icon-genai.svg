@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="genai-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c8cff"/>
+      <stop offset="100%" stop-color="#4ad6c0"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="rgba(74,214,192,0.1)" stroke="rgba(74,214,192,0.35)" stroke-width="1.5"/>
+  <circle cx="24" cy="24" r="5" fill="url(#genai-bg)"/>
+  <circle cx="12" cy="16" r="3" fill="#7c8cff"/>
+  <circle cx="36" cy="16" r="3" fill="#7c8cff"/>
+  <circle cx="12" cy="32" r="3" fill="#4ad6c0"/>
+  <circle cx="36" cy="32" r="3" fill="#4ad6c0"/>
+  <path stroke="#9aa3b2" stroke-width="1.5" d="M15 17.5 21 22M33 17.5 27 22M15 30.5 21 26M33 30.5 27 26"/>
+</svg>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 5 · Security — Frontend System Design</title>
+<meta name="description" content="XSS, CSRF, CORS, auth patterns, CSP, and supply chain risks." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1115" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --text:#e6e8ef; --muted:#9aa3b2;
+    --accent:#7cc4ff; --accent2:#9d7cff; --green:#7ce0a8; --yellow:#ffd479; --red:#ff8a8a;
+    --border:#2a2f3a; --code:#0b0d12;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{background:var(--code);padding:2px 6px;border-radius:4px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;color:#e0a679}
+  pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;border:1px solid var(--border);font-size:13px;line-height:1.5}
+  pre code{background:none;padding:0;color:#dbe1ec}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;margin-right:6px}
+  .pill.basic{background:#1b3b2b;color:var(--green)}
+  .pill.inter{background:#3b3b1b;color:var(--yellow)}
+  .pill.adv{background:#3b1b2b;color:var(--red)}
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0}
+  .callout.warn{border-color:var(--yellow)} .callout.tip{border-color:var(--green)}
+  .callout strong{color:var(--accent)} .callout.warn strong{color:var(--yellow)} .callout.tip strong{color:var(--green)}
+  details.q{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:10px 0}
+  details.q summary{cursor:pointer;font-weight:600;color:var(--accent2)}
+  details.q[open]{background:var(--panel2)}
+  details.q .answer{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .walkthrough{counter-reset:step}
+  .walkthrough .step{position:relative;padding:10px 12px 10px 38px;margin:8px 0;background:var(--code);border-radius:6px;border-left:3px solid var(--accent2)}
+  .walkthrough .step::before{counter-increment:step;content:counter(step);position:absolute;left:10px;top:10px;width:20px;height:20px;background:var(--accent2);color:#0b0d12;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .walkthrough .step .label{display:block;font-weight:600;color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+  .walkthrough .step .label.script{color:var(--green)}
+  .walkthrough .step p{margin:4px 0;font-size:13.5px}
+  .script-line{font-style:italic;color:#cdd5e3;border-left:2px solid var(--green);padding-left:10px;margin:6px 0;font-size:13.5px}
+  .followup{margin-top:10px;padding:10px 12px;background:var(--panel);border-radius:6px;font-size:13px}
+  .followup strong{color:var(--yellow)}
+  .company-tags{display:inline-flex;gap:5px;flex-wrap:wrap;margin-left:8px;vertical-align:middle}
+  .ctag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;border:1px solid transparent}
+  .ctag.meta{background:#1a2540;color:#7eb6ff;border-color:#2a4570}
+  .ctag.google{background:#1f2a1c;color:#9ad48a;border-color:#3a5a32}
+  .ctag.microsoft{background:#1f2933;color:#7cd1e0;border-color:#345566}
+  .ctag.amazon{background:#332416;color:#ffb86b;border-color:#664a2c}
+  .ctag.apple{background:#2a2a2a;color:#d8d8d8;border-color:#555}
+  .ctag.netflix{background:#3a1a1f;color:#ff9aa2;border-color:#6a2a35}
+  .ctag.uber{background:#1a1a1a;color:#e0e0e0;border-color:#444}
+  .ctag.agoda{background:#2a1a3a;color:#c9a3ff;border-color:#5a3580}
+  .ctag.airbnb{background:#3a1a26;color:#ff9ab8;border-color:#6a2a48}
+  .ctag.stripe{background:#1c2a3f;color:#9ab8ff;border-color:#345878}
+  .ctag.atlassian{background:#1a2540;color:#8eb4ff;border-color:#2c4880}
+  .ctag.bytedance{background:#2a2030;color:#ff9ad1;border-color:#553560}
+  .ctag.linkedin{background:#1a2a3a;color:#8ec5ff;border-color:#2c4a70}
+  .ctag.shopify{background:#1f2e1f;color:#9ad48a;border-color:#3a5a3a}
+  .ctag.booking{background:#1a2a40;color:#7ab0ff;border-color:#2c4a78}
+  .ctag.salesforce{background:#1a2a3a;color:#7ec5ff;border-color:#2c4a70}
+  .ctag.tiktok{background:#1a1a1a;color:#ff7eb6;border-color:#553060}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel);color:var(--accent)}
+  ul.clean li{margin:4px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> FE System Design</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">FE System Design</a></h1>
+<p class="sub">Basics → Advanced · with examples &amp; interview Qs</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-foundations.html">Module 1 · Foundations</a>
+<a class="toc-chapter-link" href="module-02-architecture.html">Module 2 · Architecture</a>
+<a class="toc-chapter-link" href="module-03-performance.html">Module 3 · Performance</a>
+<a class="toc-chapter-link" href="module-04-cdns.html">Module 4 · CDNs</a>
+<a class="toc-chapter-link active" href="module-05-security.html">Module 5 · Security</a>
+<ul class="toc-sub">
+<li><a href="#m5-xss">5.1 XSS</a></li>
+<li><a href="#m5-csrf">5.2 CSRF</a></li>
+<li><a href="#m5-cors">5.3 CORS & SOP</a></li>
+<li><a href="#m5-auth">5.4 Auth (Cookies vs JWT)</a></li>
+<li><a href="#m5-csp">5.5 CSP, SRI, Headers</a></li>
+<li><a href="#m5-supply">5.6 Supply Chain</a></li>
+</ul>
+<a class="toc-chapter-link" href="module-06-scalability.html">Module 6 · Scalability</a>
+<a class="toc-chapter-link" href="module-07-case-studies.html">Module 7 · Case Studies</a>
+<a class="toc-chapter-link" href="module-08-interview-playbook.html">Module 8 · Interview Playbook</a>
+</nav>
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 8 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div></aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">Advanced</span><span class="chapter-badge">Module 5</span></div>
+  <h1 class="chapter-title">Module 5 · Security</h1>
+  <p class="chapter-subtitle">XSS, CSRF, CORS, auth patterns, CSP, and supply chain risks.</p>
+</header>
+<article class="chapter-body">
+<section id="module-5">
+<h2>Module 5 · Security (Deep Dive) <span class="pill adv">Advanced</span></h2>
+
+  <h3 id="m5-xss">5.1 Cross-Site Scripting (XSS)</h3>
+  <p>Attacker injects script that runs in the victim's origin, accessing cookies, DOM, and APIs.</p>
+  <table>
+    <tr><th>Type</th><th>Vector</th></tr>
+    <tr><td>Stored</td><td>Persisted in DB (e.g., comment) and served to other users.</td></tr>
+    <tr><td>Reflected</td><td>Echoed from URL/query into the page.</td></tr>
+    <tr><td>DOM-based</td><td>Client-side JS writes untrusted input into <code>innerHTML</code>, <code>eval</code>, etc.</td></tr>
+  </table>
+
+  <h4>Defenses</h4>
+  <ul class="clean">
+    <li><strong>Contextual output encoding</strong> — frameworks (React, Vue, Svelte) escape by default. Avoid <code>dangerouslySetInnerHTML</code> and <code>v-html</code>.</li>
+    <li><strong>Sanitize HTML</strong> from rich-text editors with DOMPurify.</li>
+    <li><strong>Content Security Policy</strong> (see 5.5).</li>
+    <li><strong>Trusted Types</strong> (Chrome) — make string-to-DOM sinks fail by default.</li>
+    <li><strong>HttpOnly cookies</strong> — JS can't read them, mitigating session theft.</li>
+  </ul>
+
+  <pre><code>// React: safe by default
+&lt;div&gt;{userInput}&lt;/div&gt;             // ✅ escaped
+&lt;div dangerouslySetInnerHTML={{ __html: userInput }}/&gt;  // ❌ XSS risk
+&lt;div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(userInput) }}/&gt; // ✅</code></pre>
+
+  <h3 id="m5-csrf">5.2 Cross-Site Request Forgery (CSRF)</h3>
+  <p>An attacker site causes the victim's authenticated browser to perform a state-changing request to your site (e.g., transfer money). Cookies are auto-attached on cross-origin requests unless protected.</p>
+
+  <h4>Defenses</h4>
+  <ul class="clean">
+    <li><code>SameSite=Lax</code> (default in modern browsers) — blocks cross-site cookies on most cross-origin requests; <code>Strict</code> for sensitive flows.</li>
+    <li><strong>CSRF tokens</strong> — synchronizer token pattern; double-submit cookie pattern.</li>
+    <li>Use <strong>custom headers</strong> (e.g., <code>X-Requested-With</code>) — browsers preflight, so they can't be forged from a plain HTML form.</li>
+    <li>Avoid GET for state changes.</li>
+  </ul>
+
+  <h3 id="m5-cors">5.3 Same-Origin Policy & CORS</h3>
+  <p>Origin = scheme + host + port. SOP blocks JS from one origin reading responses from another. CORS is a controlled relaxation: the server opts in via headers.</p>
+  <pre><code>// Server response for cross-origin allowed
+Access-Control-Allow-Origin: https://app.example.com
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: Authorization, Content-Type
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE</code></pre>
+  <div class="callout warn"><strong>Never</strong> use <code>Access-Control-Allow-Origin: *</code> together with <code>Allow-Credentials: true</code> — browsers reject it, and even if they didn't, it would be a major leak.</div>
+
+  <h3 id="m5-auth">5.4 Authentication: Cookies vs JWT in localStorage</h3>
+  <table>
+    <tr><th></th><th>HttpOnly Cookie (session)</th><th>JWT in localStorage</th></tr>
+    <tr><td>XSS</td><td>Resilient (JS can't read)</td><td>Vulnerable (any XSS = full token theft)</td></tr>
+    <tr><td>CSRF</td><td>Needs SameSite + tokens</td><td>Naturally safer (must be attached by JS)</td></tr>
+    <tr><td>Revocation</td><td>Easy (server-side session)</td><td>Hard (must check blocklist)</td></tr>
+    <tr><td>Cross-domain</td><td>Tricky</td><td>Simple (Authorization header)</td></tr>
+  </table>
+  <div class="callout tip"><strong>Recommendation:</strong> Use <code>HttpOnly; Secure; SameSite=Lax</code> cookies for session auth on first-party apps. Use short-lived access tokens + refresh in HttpOnly cookie. Avoid storing tokens in localStorage for sensitive apps.</div>
+
+  <h3 id="m5-csp">5.5 CSP, SRI, Security Headers</h3>
+  <pre><code>Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' 'nonce-rAnd0m';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: https://cdn.example.com;
+  connect-src 'self' https://api.example.com;
+  frame-ancestors 'none';
+  upgrade-insecure-requests;</code></pre>
+
+  <ul class="clean">
+    <li><strong>CSP</strong>: whitelist of allowed sources; nonce/hash for inline scripts.</li>
+    <li><strong>SRI</strong> (Subresource Integrity): <code>&lt;script src="..." integrity="sha384-..."&gt;</code> — refuses tampered third-party scripts.</li>
+    <li><strong>HSTS</strong>: <code>Strict-Transport-Security: max-age=63072000; includeSubDomains; preload</code></li>
+    <li><strong>X-Frame-Options / frame-ancestors</strong> — clickjacking defense.</li>
+    <li><strong>Referrer-Policy</strong>, <strong>Permissions-Policy</strong> — data minimization.</li>
+  </ul>
+
+  <h3 id="m5-supply">5.6 Supply Chain</h3>
+  <p>Your <code>node_modules</code> is your runtime. A malicious dependency can exfiltrate everything users type.</p>
+  <ul class="clean">
+    <li>Lockfiles + reproducible builds (<code>npm ci</code>).</li>
+    <li>Audit (<code>npm audit</code>, Snyk, Dependabot, Socket.dev).</li>
+    <li>SRI for third-party CDN scripts.</li>
+    <li>Minimize transitive deps; prefer std lib / small libs.</li>
+    <li>Run a CSP report-only mode in production to catch unexpected origins.</li>
+  </ul>
+
+  <details class="q"><summary>Q: Your blog allows user comments. Walk through the XSS risk and your defenses.</summary>
+    <div class="answer">Risk: stored XSS via comment HTML. Defense layers: (1) Server stores raw input — render with framework escaping (React) so HTML is treated as text. (2) If allowing rich text, sanitize with DOMPurify on render and ideally on save. (3) CSP with strict <code>script-src</code> and nonces. (4) HttpOnly cookies for sessions so token theft is harder. (5) Trusted Types where supported. (6) Periodic security review of any <code>dangerouslySetInnerHTML</code>.</div>
+  </details>
+  <details class="q"><summary>Q: Why is <code>postMessage</code> dangerous?</summary>
+    <div class="answer">It crosses origins. If you don't validate <code>event.origin</code> you accept commands from any site that can <code>iframe</code> or open you. Always check origin and treat the message as untrusted input — schema validate, never <code>eval</code>.</div>
+  </details>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-04-cdns.html">← Module 4: CDNs</a><a class="next" href="module-06-scalability.html">Module 6: Scalability →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script src="../assets/course.js"></script>
+</body></html>

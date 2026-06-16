@@ -7,8 +7,8 @@ A static study guide site for interview prep and deep-dive technical courses. No
 | Page | File | Description |
 |------|------|-------------|
 | **Home** | `index.html` | Landing page with cards linking to each course |
-| **Frontend System Design** | `frontend-system-design-course.html` | Browser fundamentals through architecture, performance, CDNs, security, scalability, case studies, and interview playbook |
-| **GenAI & Emerging Tech** | `interview-prep.html` | Python, Generative AI, Agentic AI, LLMs, RAG, LangChain, cloud-native patterns, and leadership topics |
+| **Frontend System Design** | `frontend-system-design/` | 8 chapter pages with sidebar TOC — architecture, performance, CDNs, security, case studies, interview playbook |
+| **GenAI & Emerging Tech** | `interview-prep/` | 21 chapter pages with sidebar TOC — Python, Generative AI, Agentic AI, LLMs, RAG, LangChain, cloud-native patterns, and leadership topics |
 
 Each course page includes a **← Learning Hub** link back to the home page.
 
@@ -16,12 +16,22 @@ Each course page includes a **← Learning Hub** link back to the home page.
 
 ```
 Learning-hub/
-├── index.html                          # Homepage
-├── frontend-system-design-course.html  # Frontend system design course
-├── interview-prep.html                 # GenAI & emerging tech interview prep
-├── robots.txt                          # Search engine crawl rules
-├── sitemap.xml                         # Page list for Google & other crawlers
-├── vercel.json                         # Vercel static site config
+├── logo.svg
+├── assets/icon-fe.svg
+├── assets/icon-genai.svg
+├── index.html
+├── assets/course.css
+├── assets/course.js
+├── frontend-system-design/             # FE course chapters
+├── frontend-system-design-course.html  # Redirect to frontend-system-design/
+├── interview-prep/                     # GenAI course chapters
+├── interview-prep.html                 # Redirect to interview-prep/
+├── interview-prep-source.html          # Source for regenerating GenAI pages
+├── scripts/split-fe-course.py
+├── scripts/split-genai-course.py
+├── robots.txt
+├── sitemap.xml
+├── vercel.json
 └── README.md
 ```
 
@@ -66,8 +76,10 @@ npx vercel --prod # production deployment
 `vercel.json` enables clean URLs on Vercel, so pages are available without the `.html` extension:
 
 - `/` → `index.html`
-- `/frontend-system-design-course` → `frontend-system-design-course.html`
-- `/interview-prep` → `interview-prep.html`
+- `/frontend-system-design` → course overview
+- `/frontend-system-design/module-01-foundations` → chapter pages
+- `/interview-prep` → GenAI course overview
+- `/interview-prep/module-01-overview` → GenAI chapter pages
 
 ## SEO
 

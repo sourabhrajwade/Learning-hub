@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 7 · Case Studies — Frontend System Design</title>
+<meta name="description" content="Real-world designs: feeds, chat, docs, video, autocomplete, and e-commerce." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1115" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --text:#e6e8ef; --muted:#9aa3b2;
+    --accent:#7cc4ff; --accent2:#9d7cff; --green:#7ce0a8; --yellow:#ffd479; --red:#ff8a8a;
+    --border:#2a2f3a; --code:#0b0d12;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{background:var(--code);padding:2px 6px;border-radius:4px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;color:#e0a679}
+  pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;border:1px solid var(--border);font-size:13px;line-height:1.5}
+  pre code{background:none;padding:0;color:#dbe1ec}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;margin-right:6px}
+  .pill.basic{background:#1b3b2b;color:var(--green)}
+  .pill.inter{background:#3b3b1b;color:var(--yellow)}
+  .pill.adv{background:#3b1b2b;color:var(--red)}
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0}
+  .callout.warn{border-color:var(--yellow)} .callout.tip{border-color:var(--green)}
+  .callout strong{color:var(--accent)} .callout.warn strong{color:var(--yellow)} .callout.tip strong{color:var(--green)}
+  details.q{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:10px 0}
+  details.q summary{cursor:pointer;font-weight:600;color:var(--accent2)}
+  details.q[open]{background:var(--panel2)}
+  details.q .answer{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .walkthrough{counter-reset:step}
+  .walkthrough .step{position:relative;padding:10px 12px 10px 38px;margin:8px 0;background:var(--code);border-radius:6px;border-left:3px solid var(--accent2)}
+  .walkthrough .step::before{counter-increment:step;content:counter(step);position:absolute;left:10px;top:10px;width:20px;height:20px;background:var(--accent2);color:#0b0d12;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .walkthrough .step .label{display:block;font-weight:600;color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+  .walkthrough .step .label.script{color:var(--green)}
+  .walkthrough .step p{margin:4px 0;font-size:13.5px}
+  .script-line{font-style:italic;color:#cdd5e3;border-left:2px solid var(--green);padding-left:10px;margin:6px 0;font-size:13.5px}
+  .followup{margin-top:10px;padding:10px 12px;background:var(--panel);border-radius:6px;font-size:13px}
+  .followup strong{color:var(--yellow)}
+  .company-tags{display:inline-flex;gap:5px;flex-wrap:wrap;margin-left:8px;vertical-align:middle}
+  .ctag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;border:1px solid transparent}
+  .ctag.meta{background:#1a2540;color:#7eb6ff;border-color:#2a4570}
+  .ctag.google{background:#1f2a1c;color:#9ad48a;border-color:#3a5a32}
+  .ctag.microsoft{background:#1f2933;color:#7cd1e0;border-color:#345566}
+  .ctag.amazon{background:#332416;color:#ffb86b;border-color:#664a2c}
+  .ctag.apple{background:#2a2a2a;color:#d8d8d8;border-color:#555}
+  .ctag.netflix{background:#3a1a1f;color:#ff9aa2;border-color:#6a2a35}
+  .ctag.uber{background:#1a1a1a;color:#e0e0e0;border-color:#444}
+  .ctag.agoda{background:#2a1a3a;color:#c9a3ff;border-color:#5a3580}
+  .ctag.airbnb{background:#3a1a26;color:#ff9ab8;border-color:#6a2a48}
+  .ctag.stripe{background:#1c2a3f;color:#9ab8ff;border-color:#345878}
+  .ctag.atlassian{background:#1a2540;color:#8eb4ff;border-color:#2c4880}
+  .ctag.bytedance{background:#2a2030;color:#ff9ad1;border-color:#553560}
+  .ctag.linkedin{background:#1a2a3a;color:#8ec5ff;border-color:#2c4a70}
+  .ctag.shopify{background:#1f2e1f;color:#9ad48a;border-color:#3a5a3a}
+  .ctag.booking{background:#1a2a40;color:#7ab0ff;border-color:#2c4a78}
+  .ctag.salesforce{background:#1a2a3a;color:#7ec5ff;border-color:#2c4a70}
+  .ctag.tiktok{background:#1a1a1a;color:#ff7eb6;border-color:#553060}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel);color:var(--accent)}
+  ul.clean li{margin:4px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> FE System Design</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">FE System Design</a></h1>
+<p class="sub">Basics → Advanced · with examples &amp; interview Qs</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-foundations.html">Module 1 · Foundations</a>
+<a class="toc-chapter-link" href="module-02-architecture.html">Module 2 · Architecture</a>
+<a class="toc-chapter-link" href="module-03-performance.html">Module 3 · Performance</a>
+<a class="toc-chapter-link" href="module-04-cdns.html">Module 4 · CDNs</a>
+<a class="toc-chapter-link" href="module-05-security.html">Module 5 · Security</a>
+<a class="toc-chapter-link" href="module-06-scalability.html">Module 6 · Scalability</a>
+<a class="toc-chapter-link active" href="module-07-case-studies.html">Module 7 · Case Studies</a>
+<ul class="toc-sub">
+<li><a href="#cs-feed">Twitter / News Feed</a></li>
+<li><a href="#cs-chat">Chat (WhatsApp/Slack)</a></li>
+<li><a href="#cs-docs">Google Docs (Collab)</a></li>
+<li><a href="#cs-netflix">Netflix (Video)</a></li>
+<li><a href="#cs-autocomplete">Autocomplete / Typeahead</a></li>
+<li><a href="#cs-ecom">E-commerce (Amazon)</a></li>
+</ul>
+<a class="toc-chapter-link" href="module-08-interview-playbook.html">Module 8 · Interview Playbook</a>
+</nav>
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 8 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div></aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">All levels</span><span class="chapter-badge">Module 7</span></div>
+  <h1 class="chapter-title">Module 7 · Case Studies</h1>
+  <p class="chapter-subtitle">Real-world designs: feeds, chat, docs, video, autocomplete, and e-commerce.</p>
+</header>
+<article class="chapter-body">
+<section id="module-7">
+<h2>Module 7 · Real-World Case Studies <span class="pill adv">Advanced</span></h2>
+
+  <h3 id="cs-feed">7.1 Twitter / News Feed</h3>
+  <p><strong>Requirements:</strong> Infinite-scroll timeline, real-time updates, like/retweet, media, &lt; 1s perceived load.</p>
+  <h4>Key decisions</h4>
+  <ul class="clean">
+    <li><strong>Pagination:</strong> cursor-based (<code>?since_id=...&max_id=...</code>). Cursors are stable under inserts; offset isn't.</li>
+    <li><strong>Virtualization</strong> for long feeds + dynamic heights (TanStack Virtual).</li>
+    <li><strong>Optimistic updates</strong> for like/retweet.</li>
+    <li><strong>WebSocket / SSE</strong> for "X new tweets" pill — don't auto-prepend; UX problem.</li>
+    <li><strong>Image strategy:</strong> low-quality placeholder (LQIP) → progressive enhancement; <code>fetchpriority="high"</code> for above-the-fold.</li>
+    <li><strong>Cache normalization:</strong> store tweets by ID once; lists store IDs only — single update propagates everywhere.</li>
+  </ul>
+  <h4>Data model (client cache)</h4>
+  <pre><code>state = {
+  tweets: { [id]: TweetEntity },
+  feeds: {
+    home:    { ids: [...], cursor: '...', loading: false },
+    profile_42: { ids: [...], cursor: '...' }
+  }
+}</code></pre>
+
+  <h3 id="cs-chat">7.2 Chat (WhatsApp / Slack)</h3>
+  <ul class="clean">
+    <li><strong>Transport:</strong> WebSocket primary, fallback to long-polling. Heartbeats for liveness.</li>
+    <li><strong>Offline-first:</strong> IndexedDB store; outbox queue for unsent messages with exponential retry.</li>
+    <li><strong>Ordering & dedup:</strong> client-generated IDs (UUID/ULID) replaced by server IDs on ack — keys stay stable.</li>
+    <li><strong>Read receipts & typing:</strong> debounced events; coalesce server-side.</li>
+    <li><strong>Reconnection:</strong> on resume, send last-known seq number; server replays missed.</li>
+    <li><strong>Scroll UX:</strong> virtualization, "scroll to bottom" only when user is near bottom; stickiness.</li>
+    <li><strong>E2E encryption</strong> (WhatsApp): keys never leave client; web client mirrors mobile via QR pairing.</li>
+  </ul>
+
+  <h3 id="cs-docs">7.3 Google Docs (Real-time Collaboration)</h3>
+  <p><strong>Core problem:</strong> two users edit simultaneously — how do edits converge?</p>
+  <ul class="clean">
+    <li><strong>OT (Operational Transform):</strong> server transforms ops against concurrent ops; used by Google Docs.</li>
+    <li><strong>CRDTs</strong> (Yjs, Automerge): operations are commutative; works peer-to-peer; popular in newer tools.</li>
+    <li><strong>Presence:</strong> awareness protocol with cursors and selections.</li>
+    <li><strong>Offline editing:</strong> CRDTs shine — merge on reconnect.</li>
+    <li><strong>Persistence:</strong> snapshot + op log; periodic compaction.</li>
+    <li><strong>Conflict-free formatting:</strong> formatting as ranges with stable identifiers.</li>
+  </ul>
+
+  <h3 id="cs-netflix">7.4 Netflix (Video Streaming UI)</h3>
+  <ul class="clean">
+    <li><strong>Adaptive Bitrate Streaming</strong> (HLS / DASH): MPD/manifest lists segments at multiple bitrates; client picks based on bandwidth + buffer.</li>
+    <li><strong>Pre-fetching:</strong> next episode metadata + thumbnails; key art preloaded for hovered tile.</li>
+    <li><strong>Skeleton + low-bitrate poster</strong> while metadata loads.</li>
+    <li><strong>Personalization at edge</strong> — cacheable shell + per-user rows JSON.</li>
+    <li><strong>Memory management:</strong> long sessions; lazy unmount off-screen rows; revoke <code>blob:</code> URLs.</li>
+    <li><strong>DRM:</strong> EME/Widevine/FairPlay/PlayReady — license server + content keys.</li>
+    <li><strong>Subtitles:</strong> WebVTT, accessibility considerations.</li>
+  </ul>
+
+  <h3 id="cs-autocomplete">7.5 Autocomplete / Typeahead</h3>
+  <p>The classic frontend system design question.</p>
+  <ul class="clean">
+    <li><strong>Debounce</strong> input (~150-300ms) so we don't fire per keystroke.</li>
+    <li><strong>Cancel in-flight requests</strong> on new keystroke (<code>AbortController</code>).</li>
+    <li><strong>Race conditions:</strong> drop responses for stale queries — track latest query id.</li>
+    <li><strong>Caching:</strong> per-prefix LRU; "abc" results contain "abcd" candidates often.</li>
+    <li><strong>Keyboard nav:</strong> ↑/↓/Enter/Esc; ARIA <code>role="combobox"</code>, <code>aria-activedescendant</code>.</li>
+    <li><strong>Trie/server side</strong> when offline-first or low latency required.</li>
+  </ul>
+  <pre><code>const ctrl = useRef&lt;AbortController&gt;();
+async function search(q: string) {
+  ctrl.current?.abort();
+  ctrl.current = new AbortController();
+  const data = await fetch(`/search?q=${encodeURIComponent(q)}`,
+    { signal: ctrl.current.signal }).then(r =&gt; r.json());
+  setResults(data);
+}</code></pre>
+
+  <h3 id="cs-ecom">7.6 E-commerce (Amazon-style)</h3>
+  <ul class="clean">
+    <li><strong>Listing pages:</strong> SSR/ISR for SEO, faceted filtering, pagination + URL state.</li>
+    <li><strong>Product detail:</strong> cached HTML shell + dynamic price/stock fragment (edge personalization).</li>
+    <li><strong>Cart:</strong> client + server source of truth; merge on login.</li>
+    <li><strong>Checkout:</strong> isolated bundle, strict CSP, idempotency keys for order submit, no third-party scripts beyond payment.</li>
+    <li><strong>Image CDN</strong>: per-device responsive variants, AVIF/WebP, lazy below-the-fold.</li>
+    <li><strong>Search:</strong> typeahead → results page; query state lives in URL.</li>
+  </ul>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-06-scalability.html">← Module 6: Scalability</a><a class="next" href="module-08-interview-playbook.html">Module 8: Interview Playbook →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script src="../assets/course.js"></script>
+</body></html>

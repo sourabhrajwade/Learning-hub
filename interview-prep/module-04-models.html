@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 4 · Model Landscape — GenAI Interview Prep</title>
+<meta name="description" content="Open vs closed models, vendors, and selection trade-offs." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1320" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1320; --panel:#161b2e; --panel2:#1d2440; --text:#e8ecf8; --muted:#a4adc8;
+    --accent:#7c8cff; --accent2:#4ad6c0; --green:#7ee08a; --yellow:#f6a96b; --red:#ff8a8a;
+    --border:#2a3357; --code:#0b0f1a;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0e19 0%,var(--bg) 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;font-size:12.5px;color:#cdd6f4}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+  .qa{display:grid;grid-template-columns:1fr;gap:10px}
+  .q{font-weight:600;color:var(--text);display:flex;gap:10px}
+  .q .badge{flex-shrink:0;background:rgba(124,140,255,0.12);color:var(--accent);border:1px solid rgba(124,140,255,0.3);padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600}
+  .a{color:var(--muted);border-left:2px solid var(--accent2);padding-left:14px;margin:0}
+  .a strong{color:var(--text)}
+  .tip{background:rgba(126,224,138,0.08);border:1px solid rgba(126,224,138,0.25);color:var(--green);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  .warn{background:rgba(246,169,107,0.08);border:1px solid rgba(246,169,107,0.25);color:var(--yellow);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  ul.clean{margin:0;padding-left:20px;color:var(--muted)}
+  ul.clean li{margin-bottom:6px}
+  ul.clean li strong{color:var(--text)}
+  .grid-2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  details{border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:600;color:var(--text);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  details>*:not(summary){margin-top:10px;color:var(--muted)}
+  .star{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;margin:12px 0}
+  .star b{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:14px;margin:14px 0}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;color:var(--muted);vertical-align:top}
+  th{background:var(--panel2);color:var(--text);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .chapter-body section h2{display:none}
+  .chapter-body section .intro{display:none}
+  .chapter-body section h2 .num{display:none}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>
+<p class="sub">Interview prep · Python · LLMs · RAG · Cloud</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-overview.html">Module 1 · Overview</a>
+<a class="toc-chapter-link" href="module-02-ml-foundations.html">Module 2 · ML Foundations</a>
+<a class="toc-chapter-link" href="module-03-genai-foundations.html">Module 3 · GenAI Foundations</a>
+<a class="toc-chapter-link active" href="module-04-models.html">Module 4 · Model Landscape</a>
+<a class="toc-chapter-link" href="module-05-python.html">Module 5 · Python</a>
+<a class="toc-chapter-link" href="module-06-genai.html">Module 6 · Generative AI</a>
+<a class="toc-chapter-link" href="module-07-agentic.html">Module 7 · Agentic AI</a>
+<a class="toc-chapter-link" href="module-08-llms.html">Module 8 · LLMs & Tooling</a>
+<a class="toc-chapter-link" href="module-09-rag.html">Module 9 · RAG Deep-Dive</a>
+<a class="toc-chapter-link" href="module-10-advanced-rag.html">Module 10 · Advanced RAG</a>
+<a class="toc-chapter-link" href="module-11-banking.html">Module 11 · Banking Project</a>
+<a class="toc-chapter-link" href="module-12-eval.html">Module 12 · Eval (RAGAS)</a>
+<a class="toc-chapter-link" href="module-13-langchain.html">Module 13 · LangChain & LangGraph</a>
+<a class="toc-chapter-link" href="module-14-sdlc.html">Module 14 · SDLC</a>
+<a class="toc-chapter-link" href="module-15-cloud.html">Module 15 · Cloud-native</a>
+<a class="toc-chapter-link" href="module-16-databases.html">Module 16 · Databases</a>
+<a class="toc-chapter-link" href="module-17-copilot.html">Module 17 · GitHub Copilot</a>
+<a class="toc-chapter-link" href="module-18-behavioral.html">Module 18 · Behavioral</a>
+<a class="toc-chapter-link" href="module-19-system-design.html">Module 19 · System Design</a>
+<a class="toc-chapter-link" href="module-20-questions.html">Module 20 · Questions to Ask</a>
+<a class="toc-chapter-link" href="module-21-cheat-sheet.html">Module 21 · Cheat Sheet</a>
+</nav>
+
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 21 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div>
+</aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">Models</span><span class="chapter-badge">Module 4</span></div>
+  <h1 class="chapter-title">Module 4 · Model Landscape</h1>
+  <p class="chapter-subtitle">Open vs closed models, vendors, and selection trade-offs.</p>
+</header>
+<article class="chapter-body">
+<section id="models">
+<h2><span class="num">L3</span> The Model Landscape: Providers, Modalities &amp; How to Choose</h2>
+  <p class="intro">
+    "Which LLM should we use?" is the most common architecture question you'll get asked. This section gives you a working map of the major providers, what multimodal means, and how to make the choice defensibly.
+  </p>
+
+  <div class="card">
+    <h3 style="margin-top:0">Model Categories — A Quick Taxonomy</h3>
+    <table>
+      <thead><tr><th>Category</th><th>What it does</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Foundation LLMs</strong></td><td>General-purpose text generation, reasoning, tool use</td><td>Claude, GPT-4, Gemini, Llama, Mistral</td></tr>
+        <tr><td><strong>Reasoning models</strong></td><td>Spend extra tokens "thinking" internally before answering — better at math, code, multi-step logic</td><td>OpenAI o1/o3, Claude with extended thinking, DeepSeek-R1, Gemini 2.0 Thinking</td></tr>
+        <tr><td><strong>Embedding models</strong></td><td>Turn text into vectors for similarity search (RAG backbone)</td><td>text-embedding-3-large, voyage-3, Cohere Embed v3, BGE-m3</td></tr>
+        <tr><td><strong>Reranking models</strong></td><td>Score (query, doc) pairs to refine retrieval</td><td>Cohere Rerank, BGE-reranker, Voyage rerank</td></tr>
+        <tr><td><strong>Multimodal models</strong></td><td>Accept and/or produce images, audio, video alongside text</td><td>GPT-4o, Claude (vision), Gemini, Llama 3.2 Vision</td></tr>
+        <tr><td><strong>Image generation</strong></td><td>Text → image</td><td>DALL·E 3, Imagen 3, Stable Diffusion, Flux, Midjourney</td></tr>
+        <tr><td><strong>Speech models</strong></td><td>Speech-to-text (ASR) and text-to-speech (TTS)</td><td>Whisper, ElevenLabs, OpenAI TTS, Deepgram</td></tr>
+        <tr><td><strong>Code-specialized</strong></td><td>Trained heavily on code; better at completion and refactoring</td><td>Codex, Claude (excellent at code), Codestral, DeepSeek-Coder</td></tr>
+        <tr><td><strong>Small / on-device</strong></td><td>Run cheaply or locally; lower capability but private and fast</td><td>Llama 3.2 1B/3B, Phi-3, Gemma, Mistral 7B</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">What is "Multimodal"?</h3>
+    <p style="color:var(--muted)">
+      A <strong>modality</strong> is a kind of input or output — text, image, audio, video. A <strong>multimodal</strong> model can natively handle more than one. The key distinction:
+    </p>
+    <ul class="clean">
+      <li><strong>Multimodal input</strong> — model can <em>see</em> images or hear audio along with text. Lets you ask "what's on this scanned mortgage form?" or "transcribe and summarize this client call."</li>
+      <li><strong>Multimodal output</strong> — model can produce non-text, e.g., generate an image, speak a response, draw a chart.</li>
+      <li><strong>Native multimodal</strong> — single model trained jointly on all modalities (GPT-4o, Gemini). Reasons across modalities (e.g., understands a chart and the surrounding text together).</li>
+      <li><strong>Pipeline multimodal</strong> — separate models stitched together (Whisper → text-LLM → TTS). More flexible, often cheaper, less coherent across modalities.</li>
+    </ul>
+    <p style="color:var(--muted)"><strong>Banking applications:</strong> reading scanned ID documents (KYC), analyzing trade confirmation PDFs with tables and stamps, transcribing and summarizing advisor calls, extracting data from cheque images, OCR-free invoice processing.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">The Major Providers — Detailed Comparison</h3>
+
+    <h4 style="margin-bottom:6px;">Anthropic (Claude)</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> Claude Opus (top capability), Claude Sonnet (workhorse), Claude Haiku (fast/cheap). Current family is 4.x.</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> Best-in-class for long-context comprehension (200k tokens), nuanced writing, code generation, tool use accuracy. Strong safety alignment. Constitutional AI training. Excellent at following complex instructions. Prompt caching at ~10% of input cost is a big lever.</li>
+      <li><strong>Weaknesses:</strong> No native image generation. Slightly behind on raw multimodal vs Gemini. Higher per-token cost than open-weight options.</li>
+      <li><strong>Best for:</strong> Enterprise assistants, code agents (Claude Code), regulated workflows where reliability and instruction-following matter, long-document analysis, RAG over large knowledge bases.</li>
+      <li><strong>Banking fit:</strong> Excellent. Strong on reasoning over policy docs, refusal behavior on out-of-scope queries, citation enforcement.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">OpenAI (GPT, o-series)</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> GPT-4.1 / GPT-4o (general), o3 / o4-mini (reasoning), GPT-4o-mini (cheap), Whisper (ASR), DALL·E 3 (image gen), TTS.</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> Broadest ecosystem and tooling, best image generation in a major API, native voice, strong reasoning models (o-series). Largest developer community → most examples and integrations. Full multimodal stack from one vendor.</li>
+      <li><strong>Weaknesses:</strong> Pricing on top models can be high. Periodic API instability. More restrictive content moderation that can block legitimate use cases. Reasoning models hide their chain-of-thought (less debuggable).</li>
+      <li><strong>Best for:</strong> Consumer-facing chatbots, voice agents, image-heavy applications, workflows that benefit from o-series reasoning (math, code, planning).</li>
+      <li><strong>Banking fit:</strong> Good, but Microsoft Azure OpenAI is the typical procurement path for enterprise (data residency, BAA-style contracts).</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Google (Gemini)</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> Gemini 2.0 Flash / Pro / Ultra, Gemini Thinking, Imagen, Veo (video).</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> Massive context window (1M+ tokens, experimental 2M). Native multimodal across text, image, audio, video — strongest of any provider on video understanding. Tight integration with Google Cloud and Workspace data. Often cheapest at the top tier.</li>
+      <li><strong>Weaknesses:</strong> Quality has historically been less consistent than Claude/GPT on hard tasks. SDK and tooling less mature. More frequent API and product reshuffles.</li>
+      <li><strong>Best for:</strong> Massive-context use cases (entire codebase or document set in one prompt), video analysis, GCP-native shops, multimodal agents.</li>
+      <li><strong>Banking fit:</strong> Strong if you're on GCP. Vertex AI gives enterprise controls. Useful for analyzing very large regulatory document corpora in single passes.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Meta (Llama)</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> Llama 3.x (8B, 70B, 405B), Llama 3.2 Vision, Llama Guard.</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> Open-weight — you can run it on your own infrastructure. Best open-source model family. Free to use commercially (with license terms). Strong fine-tuning ecosystem. Good multilingual coverage.</li>
+      <li><strong>Weaknesses:</strong> 405B model needs serious GPU infrastructure to serve. Smaller variants are noticeably below frontier. Tool-use accuracy lags top closed models. You own all the ops burden.</li>
+      <li><strong>Best for:</strong> On-prem deployments where data can't leave (regulatory or sovereignty), customized fine-tunes, cost optimization at very high volumes, privacy-sensitive workloads.</li>
+      <li><strong>Banking fit:</strong> Common for use cases where data residency or model risk management forbids third-party APIs. Often paired with a closed model for tasks where Llama isn't strong enough.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Mistral AI</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> Mistral Large, Mistral Small, Codestral (code), Mixtral (MoE), open-weight variants.</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> European provider — important for EU data sovereignty. Open and closed offerings. Strong efficiency (Mixture-of-Experts). Solid multilingual European language coverage.</li>
+      <li><strong>Weaknesses:</strong> Generally one tier below Claude/GPT/Gemini at the top end. Smaller ecosystem.</li>
+      <li><strong>Best for:</strong> EU-regulated workloads (GDPR, EU AI Act), French/German/Italian/Spanish use cases, organizations wanting a non-US vendor.</li>
+      <li><strong>Banking fit:</strong> Strong for European banks; often the political/regulatory choice over US providers.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Cohere</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> Command R / R+ (chat), Embed v3, Rerank.</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> Best-in-class embedding and reranking models — many production RAG stacks use Cohere here even with a different chat model. Enterprise focus, strong RAG-tuned models with citations baked in. Available on AWS / Azure / OCI / on-prem.</li>
+      <li><strong>Weaknesses:</strong> Chat models are good but not frontier. Smaller mindshare than the big three.</li>
+      <li><strong>Best for:</strong> Enterprise RAG (especially Embed + Rerank), workflows needing built-in citation, customers wanting deployment flexibility.</li>
+      <li><strong>Banking fit:</strong> Excellent — built specifically for enterprise; supports private deployments and is commonly used in regulated industries.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">DeepSeek</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> DeepSeek-V3, DeepSeek-R1 (reasoning), DeepSeek-Coder.</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> Strong reasoning at extremely low cost. Open-weight. R1 was the first open-weight model to approach OpenAI o1 on benchmarks.</li>
+      <li><strong>Weaknesses:</strong> Chinese provider — many Western enterprises won't use the hosted API on data-residency or geopolitical grounds. Hosted version logs queries.</li>
+      <li><strong>Best for:</strong> Cost-sensitive R&amp;D, self-hosted reasoning workloads, regions where it's an acceptable provider.</li>
+      <li><strong>Banking fit:</strong> Limited in Western banks via the hosted API. Some interest in self-hosted variants.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">xAI (Grok)</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> Grok 2, Grok Vision.</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> Real-time access to X data; less restrictive content policies; competitive on benchmarks.</li>
+      <li><strong>Weaknesses:</strong> Smaller ecosystem; less proven enterprise track record; brand baggage.</li>
+      <li><strong>Best for:</strong> Use cases needing X / social-media data; lightly-regulated experimentation.</li>
+      <li><strong>Banking fit:</strong> Rare. Most banks won't approve it for regulated workflows.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Open-Source Stack (HuggingFace ecosystem)</h4>
+    <p style="color:var(--muted)"><strong>Models:</strong> Qwen, Phi, Gemma, BGE, Nomic, thousands more.</p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> Total control, no per-token cost, full transparency, fine-tune freely, run anywhere including air-gapped environments.</li>
+      <li><strong>Weaknesses:</strong> You operate it. GPU costs, scaling, monitoring, security patching all on you. Smaller models lag frontier.</li>
+      <li><strong>Best for:</strong> Embedding/reranking (very competitive open-source), specialized fine-tunes, on-prem requirements, high-volume cheap inference.</li>
+      <li><strong>Banking fit:</strong> Common for embedding models (BGE-m3, e5-large) and small specialized tasks; less common as the primary chat model.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Image Generation Models — Text-to-Image Deep-Dive</h3>
+    <p style="color:var(--muted)">
+      Image generation models turn a text prompt into a pixel image. They are <em>not</em> LLMs — they're <strong>diffusion models</strong> (or, for some newer ones, autoregressive transformers). Worth understanding because they appear in many enterprise GenAI initiatives (marketing, KYC simulation, design assist) and have very different operational characteristics from text LLMs.
+    </p>
+
+    <h4 style="margin-bottom:6px;">How Diffusion Works (Plain English)</h4>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li>During training, the model is shown images that have been progressively corrupted with random noise.</li>
+      <li>It learns to <em>reverse</em> the noise — given a noisy image, predict what noise to remove.</li>
+      <li>At generation time, you start with pure random noise and the model "de-noises" step by step (typically 20–50 steps), guided by your text prompt via a text encoder (CLIP/T5).</li>
+      <li>After all steps, the noise has been shaped into a coherent image matching the prompt.</li>
+    </ol>
+
+    <h4 style="margin-bottom:6px;">The Major Players</h4>
+    <ul class="clean">
+      <li><strong>DALL·E 3 (OpenAI)</strong> — strong on prompt adherence and text rendering inside images. API access, content moderation built in.</li>
+      <li><strong>Imagen 3 (Google)</strong> — high photorealism, native via Vertex AI. Strong on faces and detail.</li>
+      <li><strong>Stable Diffusion (Stability AI)</strong> — open-weight. Run anywhere. Massive ecosystem of fine-tunes, LoRAs, and ControlNets. The default for self-hosted.</li>
+      <li><strong>Flux (Black Forest Labs)</strong> — recent open-weight family, currently best-in-class for open generation. Pro variant via API.</li>
+      <li><strong>Midjourney</strong> — best aesthetic quality "out of the box," strong artistic style. Discord-only historically; API increasingly available.</li>
+      <li><strong>Ideogram</strong> — specializes in correct text rendering inside images.</li>
+      <li><strong>Adobe Firefly</strong> — trained on licensed data — important for enterprise IP/legal compliance.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Important Capabilities Beyond "Text → Image"</h4>
+    <ul class="clean">
+      <li><strong>Inpainting</strong> — edit a specific region of an image while keeping the rest.</li>
+      <li><strong>Outpainting</strong> — extend an image beyond its original borders.</li>
+      <li><strong>Image-to-image</strong> — transform an existing image guided by a prompt.</li>
+      <li><strong>ControlNet</strong> — condition generation on a structural input (pose skeleton, edges, depth) to control composition precisely.</li>
+      <li><strong>LoRAs / fine-tunes</strong> — small weight overlays to teach a model a specific style, face, or product.</li>
+      <li><strong>Reference images</strong> — newer models accept a reference image to maintain identity or style across generations.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Enterprise Concerns (Especially in Banking)</h4>
+    <ul class="clean">
+      <li><strong>Copyright &amp; training data.</strong> Some providers (Adobe Firefly, Getty) use only licensed data — the right answer for regulated marketing. Open Stable Diffusion has murkier training-data lineage.</li>
+      <li><strong>Brand safety.</strong> Output filtering for nudity, violence, public figures, logos. All major providers offer this; the failure modes differ.</li>
+      <li><strong>Deepfake risk.</strong> Generating realistic faces of real people is a huge reputational risk. Most providers block public figures by name; you should add identity-detection on top.</li>
+      <li><strong>C2PA / provenance.</strong> Industry-standard metadata for "this image was AI-generated" — increasingly required for marketing, regulated comms.</li>
+      <li><strong>Cost.</strong> ~$0.04–$0.08 per image at API pricing. Self-hosted Stable Diffusion is cheaper at volume but you eat GPU costs.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Banking / Finance Applications</h4>
+    <ul class="clean">
+      <li>Marketing creative — campaign visuals, ad variants, A/B tests.</li>
+      <li>Document templates — generate illustrative diagrams for client comms.</li>
+      <li>UI mockups for digital products without a designer in the loop.</li>
+      <li>Synthetic ID document samples for KYC model training (carefully, with provenance).</li>
+      <li><em>Not</em> for: anything client-facing without legal review of the training-data provenance.</li>
+    </ul>
+
+    <div class="tip"><strong>Quick mental model:</strong> LLMs ≈ probabilistic text predictors. Diffusion models ≈ probabilistic noise removers. Different math, different failure modes, different ops.</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">VLMs (Vision-Language Models) — Multimodal RAG</h3>
+    <p style="color:var(--muted)">
+      A <strong>VLM</strong> is a model that natively understands both text and images. Same transformer architecture as an LLM, but with a vision encoder bolted in front so image patches and text tokens flow through the model together. Examples: GPT-4o, Claude (vision), Gemini, Llama 3.2 Vision, Qwen2-VL.
+    </p>
+    <p style="color:var(--muted)">
+      Why this matters for enterprise RAG: <strong>most enterprise documents are not pure text.</strong> Mortgage forms have stamps and signatures. Trade confirmations have tables. Pitchbooks have charts. KYC docs are scans. Traditional text-only RAG <em>throws all that away</em> at parse time — VLMs let you keep it.
+    </p>
+
+    <h4 style="margin-bottom:6px;">Text-Only RAG vs Multimodal (Vision) RAG</h4>
+    <table>
+      <thead><tr><th>Aspect</th><th>Text-only RAG</th><th>Vision RAG (with VLM)</th></tr></thead>
+      <tbody>
+        <tr><td>Ingest</td><td>OCR + layout parsing → text</td><td>Render each page as an image; optional text extract</td></tr>
+        <tr><td>Tables &amp; charts</td><td>Often broken or lost</td><td>Preserved — model sees them visually</td></tr>
+        <tr><td>Index</td><td>Text embeddings of chunks</td><td>Image embeddings of pages (e.g., ColPali) + optional text</td></tr>
+        <tr><td>Retrieval</td><td>Match query embedding to text chunks</td><td>Match query embedding to page images (or both)</td></tr>
+        <tr><td>Generation</td><td>LLM reads retrieved text</td><td>VLM reads retrieved page images directly</td></tr>
+        <tr><td>Cost</td><td>Lower — text is cheap</td><td>Higher — images use more tokens</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Two Architectural Patterns</h4>
+    <ul class="clean">
+      <li><strong>(1) Pre-extract pattern</strong> — at ingest, run a VLM to convert images/tables/charts to rich text descriptions, then index that text. Cheaper at query time; lossy because you fix the description up front.</li>
+      <li><strong>(2) Native vision pattern</strong> — index the page images themselves (e.g., with ColPali — a vision retriever that produces multi-vector page embeddings). At query time, retrieve pages and pass the actual page images to a VLM. Most accurate, more expensive at query time.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Key Tools &amp; Models for Multimodal RAG</h4>
+    <ul class="clean">
+      <li><strong>ColPali / ColQwen</strong> — vision retrievers that beat text pipelines on document benchmarks (DocVQA-style). They produce a <em>multi-vector</em> representation per page, with late interaction at retrieval.</li>
+      <li><strong>VLMs for generation</strong> — Claude, GPT-4o, Gemini, Qwen2-VL are all strong. Pick by capability + cost as before.</li>
+      <li><strong>Document parsers</strong> — Unstructured, LlamaParse, AWS Textract, Azure Document Intelligence, Docling — for the pre-extract pattern.</li>
+      <li><strong>Open VLMs</strong> — Llama 3.2 Vision, Qwen2-VL, InternVL — for self-hosted multimodal RAG.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">When to Use Multimodal RAG (Banking)</h4>
+    <ul class="clean">
+      <li><strong>Trade and confirmations</strong> — tables and stamps that text extraction mangles.</li>
+      <li><strong>Mortgage and loan files</strong> — multi-page scans with handwriting, signatures, pre-printed forms.</li>
+      <li><strong>Regulatory filings</strong> — dense tables, footnotes, complex layouts (10-Ks, prospectuses).</li>
+      <li><strong>Pitchbooks &amp; research</strong> — charts and diagrams contain the actual insight.</li>
+      <li><strong>KYC documents</strong> — IDs, utility bills, photos.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Caveats</h4>
+    <ul class="clean">
+      <li><strong>Cost.</strong> A single page image can be 1k–2k tokens. Retrieving 5 pages × 1.5k tokens is 7.5k input tokens per query — meaningful at scale.</li>
+      <li><strong>Latency.</strong> Vision tokens are slower to process. Plan for higher p95.</li>
+      <li><strong>Eval is harder.</strong> Faithfulness on a chart is ambiguous; build domain-specific deterministic checks (e.g., "does the cited number match the chart's value?").</li>
+      <li><strong>Hybrid usually wins.</strong> Index both page images <em>and</em> extracted text; route at query time.</li>
+    </ul>
+
+    <div class="tip"><strong>Interview point:</strong> "If the corpus is mostly clean text, stick with classic RAG. If it's PDFs with tables, charts, scans, or stamps, native vision RAG (ColPali + a VLM) is now the right default — it routinely beats heroic OCR pipelines on document benchmarks. Hybrid retrieval over both representations is the production pattern."</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Cloud-Hosted Variants &amp; Enterprise Procurement</h3>
+    <p style="color:var(--muted)">In regulated industries, you rarely buy the model directly from the provider — you go through a hyperscaler that wraps it with enterprise controls (private networking, customer-managed keys, data residency, BAA / DPA contracts, no training-on-your-data guarantees).</p>
+    <ul class="clean">
+      <li><strong>AWS Bedrock</strong> — Claude, Llama, Mistral, Cohere, Titan, Stable Diffusion in one API. The default in AWS shops.</li>
+      <li><strong>Azure OpenAI Service</strong> — GPT family with Microsoft's enterprise wrapping. Default in Microsoft shops.</li>
+      <li><strong>Google Vertex AI</strong> — Gemini, plus Anthropic and open models. Default in GCP shops.</li>
+      <li><strong>Anthropic on AWS / GCP</strong> — Claude is available natively on both, often the simplest enterprise procurement path.</li>
+      <li><strong>Databricks Mosaic AI / Snowflake Cortex</strong> — host models next to your data. Increasingly popular for regulated analytics.</li>
+    </ul>
+    <p style="color:var(--muted)"><strong>Why this matters:</strong> a model risk management (MRM) team will not sign off on calling <code>api.openai.com</code> directly from a banking workload. Going through Bedrock / Azure / Vertex with private networking and contractual non-training is usually mandatory.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">How to Choose a Model — A Decision Framework</h3>
+    <p style="color:var(--muted)">Apply these filters in order. Stop at the first one that constrains your choice meaningfully.</p>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li><strong>Compliance &amp; data residency.</strong> Where can the data go? On-prem only? EU only? This often eliminates 80% of options up front.</li>
+      <li><strong>Capability needed.</strong> Is this a frontier-reasoning task or a simple classification? Don't pay Opus prices for a job Haiku can do.</li>
+      <li><strong>Modalities.</strong> Need vision? Audio? Video? Image generation?</li>
+      <li><strong>Context window.</strong> How much do you actually need to fit? Most use cases are fine on 32k–128k.</li>
+      <li><strong>Latency budget.</strong> Real-time chat (&lt;1s first token) vs batch (&lt;30s)? Smaller models or self-hosted may be required.</li>
+      <li><strong>Cost at expected volume.</strong> Multiply tokens × $/token × QPS × seconds in a month. Numbers get scary fast — model-route cheap-first.</li>
+      <li><strong>Vendor risk.</strong> Single vendor = lock-in. Abstract behind your own interface; keep an exit plan.</li>
+      <li><strong>Evals on your data.</strong> Last and most important: run your own gold set. Benchmarks lie; your eval doesn't.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Model Routing — The Pattern That Saves Money</h3>
+    <p style="color:var(--muted)">
+      In production, you rarely use one model for everything. <strong>Model routing</strong> sends easy requests to a small/cheap model and escalates only the hard ones to a frontier model.
+    </p>
+    <ul class="clean">
+      <li><strong>Tier-by-task</strong> — classification → small model; final answer → frontier model.</li>
+      <li><strong>Confidence-based escalation</strong> — small model answers; if confidence (or a checker) is low, escalate.</li>
+      <li><strong>Fallback chain</strong> — try fastest first, fall back to slower on failure or low quality.</li>
+      <li><strong>Specialty routing</strong> — code questions → Claude/Codestral; image questions → multimodal; reasoning → o-series.</li>
+    </ul>
+    <p style="color:var(--muted)"><strong>Real-world impact:</strong> a well-tuned router can cut LLM spend by 60–80% with no measurable quality loss. This alone often pays for the engineering effort to build the abstraction.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Encoder &amp; Retrieval Models — BERT Family &amp; Beyond</h3>
+    <p style="color:var(--muted)">
+      RAG quality is often decided by the <strong>encoder stack</strong>, not the chat LLM. These are the models behind embeddings, reranking, and hybrid search — know how they relate.
+    </p>
+
+    <h4 style="margin-bottom:6px;">The BERT Family — Where It All Started</h4>
+    <p style="color:var(--muted)">
+      <strong>BERT</strong> (Bidirectional Encoder Representations from Transformers) reads text in both directions and outputs contextual token embeddings. It is an <em>encoder-only</em> model — great for understanding, not for generating text. Most modern embedding and reranking models are BERT descendants.
+    </p>
+    <table>
+      <thead><tr><th>Model</th><th>What it is</th><th>RAG role</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BERT</strong> (Google, 2018)</td><td>Original 110M/340M encoder; masked language modelling</td><td>Foundation — rarely used raw for retrieval today</td></tr>
+        <tr><td><strong>RoBERTa</strong> (Meta)</td><td>BERT retrained with better recipe; stronger representations</td><td>Base for many sentence-embedding fine-tunes</td></tr>
+        <tr><td><strong>DistilBERT</strong></td><td>40% smaller, 60% faster than BERT; ~97% performance</td><td>Fast encoder backbone for edge / high-QPS embedders</td></tr>
+        <tr><td><strong>Sentence-BERT (SBERT)</strong></td><td>Fine-tunes BERT with siamese/triplet loss so <em>sentence</em> embeddings are comparable</td><td>The breakthrough that made semantic search practical</td></tr>
+        <tr><td><strong>FinBERT</strong></td><td>BERT fine-tuned on financial corpora (Reuters TRC2)</td><td>Domain sentiment/classification; FinBERT-style embedders for finance RAG</td></tr>
+        <tr><td><strong>Legal-BERT / BioBERT</strong></td><td>Domain-specific BERT pre-training</td><td>When generic embedders miss legal/medical jargon</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Modern Embedding Models (Bi-Encoders)</h4>
+    <table>
+      <thead><tr><th>Family</th><th>Key models</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>OpenAI</strong></td><td><code>text-embedding-3-small</code>, <code>text-embedding-3-large</code></td><td>API-only; MRL support (truncate dims); strong general-purpose</td></tr>
+        <tr><td><strong>Cohere Embed</strong></td><td>Embed v3 (English/multilingual)</td><td>Enterprise RAG staple; search_query vs search_document input types</td></tr>
+        <tr><td><strong>Voyage</strong></td><td>voyage-3, voyage-finance-2</td><td>Strong on benchmarks; domain-specific finance variant</td></tr>
+        <tr><td><strong>BGE</strong> (BAAI)</td><td>bge-small, bge-base, bge-large, <strong>bge-m3</strong></td><td>Open-weight; bge-m3 = dense + sparse + multi-vector in one model</td></tr>
+        <tr><td><strong>E5</strong> (Microsoft)</td><td>e5-small, e5-base, e5-large, e5-mistral</td><td>Prefix prompts (<code>query:</code> / <code>passage:</code>); e5-mistral for high quality</td></tr>
+        <tr><td><strong>Nomic</strong></td><td>nomic-embed-text-v1.5</td><td>Open; MRL-native; good for self-hosted with dim truncation</td></tr>
+        <tr><td><strong>GTE / Jina</strong></td><td>gte-large, jina-embeddings-v3</td><td>Strong open alternatives; Jina supports long context</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Reranking &amp; Late-Interaction Models</h4>
+    <table>
+      <thead><tr><th>Type</th><th>Models</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cross-encoder</strong></td><td>Cohere Rerank v3, bge-reranker-v2-m3, ms-marco-MiniLM</td><td>Always — second stage after retrieval; biggest quality lever</td></tr>
+        <tr><td><strong>ColBERT</strong></td><td>ColBERTv2, Jina-ColBERT, RAGatouille</td><td>Late interaction when bi-encoder recall is weak but cross-encoder is too slow at scale</td></tr>
+        <tr><td><strong>Learned sparse</strong></td><td>SPLADE-v3, uniCOIL</td><td>Hybrid index — semantic term expansion with inverted-index speed</td></tr>
+        <tr><td><strong>Multimodal retriever</strong></td><td>ColPali, ColQwen</td><td>PDF/page image retrieval without OCR pipeline</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Decoder LLMs vs Encoder Models — Don't Confuse Them</h4>
+    <ul class="clean">
+      <li><strong>Encoder-only</strong> (BERT, embedders, rerankers) — read input, output vectors or scores. Used for search, classification, NER. Cannot generate text.</li>
+      <li><strong>Decoder-only</strong> (GPT, Claude, Llama) — predict next token. Used for chat, agents, generation. Embeddings from these are possible but not their primary design.</li>
+      <li><strong>Encoder-decoder</strong> (T5, BART) — seq2seq; summarization, translation. Less common in modern RAG stacks.</li>
+      <li><strong>Interview line:</strong> "My chat model is Claude; my retrieval stack is bge-m3 + Cohere Rerank — different models for different jobs."</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Small Models — When &amp; Which Ones</h3>
+    <p style="color:var(--muted)">
+      <strong>Small models</strong> (&lt;3B params for LLMs, &lt;500M for encoders) are not "worse LLMs" — they're the right tool for high-volume, low-latency, or on-prem tasks where frontier capability isn't needed.
+    </p>
+
+    <h4 style="margin-bottom:6px;">Small LLMs — Routing, Rewrite, Classification</h4>
+    <table>
+      <thead><tr><th>Model</th><th>Params</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Claude Haiku / GPT-4o-mini</strong></td><td>—</td><td>API-tier fast models: query rewrite, intent classification, simple extraction</td></tr>
+        <tr><td><strong>Llama 3.2 1B / 3B</strong></td><td>1–3B</td><td>On-device or VPC chat for routing; not for regulated final answers alone</td></tr>
+        <tr><td><strong>Phi-3-mini / Phi-3.5-mini</strong></td><td>3.8B</td><td>Strong reasoning for size; good for structured extraction on CPU/GPU</td></tr>
+        <tr><td><strong>Gemma 2 2B</strong></td><td>2B</td><td>Google open small model; efficient on single GPU</td></tr>
+        <tr><td><strong>Mistral 7B / Mixtral 8×7B</strong></td><td>7–47B</td><td>"Small" for self-hosted chat; MoE variant is fast at inference</td></tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-bottom:6px;">Small Encoders — Embedding &amp; Reranking</h4>
+    <ul class="clean">
+      <li><strong>all-MiniLM-L6-v2</strong> (22M) — 384-d; baseline for prototyping; ~50k sentences/sec on GPU.</li>
+      <li><strong>bge-small-en-v1.5</strong> (33M) — best small English embedder on MTEB; self-host for zero API cost.</li>
+      <li><strong>e5-small-v2</strong> (33M) — Microsoft; requires <code>query:</code> / <code>passage:</code> prefixes.</li>
+      <li><strong>ms-marco-MiniLM-L-6-v2</strong> (22M) — cross-encoder reranker; rerank 50 pairs in &lt;100ms on CPU.</li>
+      <li><strong>bge-reranker-base</strong> (278M) — step up when MiniLM reranker quality isn't enough.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Decision Guide</h4>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li><strong>Task is binary classification / routing?</strong> → Small LLM or even a fine-tuned DistilBERT.</li>
+      <li><strong>Task is semantic search at &gt;100 QPS?</strong> → Small bi-encoder self-hosted; validate recall on gold set.</li>
+      <li><strong>Task is reranking top-50?</strong> → ms-marco-MiniLM on CPU; upgrade to bge-reranker if metrics demand.</li>
+      <li><strong>Task is customer-facing regulated answer?</strong> → Frontier LLM (Claude Sonnet+), not a 1B model.</li>
+      <li><strong>Always:</strong> run your eval harness — a 33M embedder often beats a 7B LLM at retrieval because retrieval is an encoder job, not a generation job.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Quick Reference: Which Model for Which Job?</h3>
+    <table>
+      <thead><tr><th>Task</th><th>Pragmatic default</th></tr></thead>
+      <tbody>
+        <tr><td>Customer-facing chat (regulated)</td><td>Claude Sonnet on Bedrock or Anthropic API; route easy queries to Haiku</td></tr>
+        <tr><td>Code generation in IDE</td><td>Claude (Sonnet/Opus) or GPT-4.1; GitHub Copilot for inline</td></tr>
+        <tr><td>RAG embeddings (API)</td><td>voyage-3, text-embedding-3-large, Cohere Embed v3</td></tr>
+        <tr><td>RAG embeddings (self-hosted)</td><td>bge-m3, bge-small, e5-large, nomic-embed-text (MRL)</td></tr>
+        <tr><td>RAG reranking</td><td>Cohere Rerank v3, bge-reranker-v2, or ms-marco-MiniLM (small/fast)</td></tr>
+        <tr><td>Hybrid sparse+dense</td><td>BM25 + dense (RRF), or SPLADE + dense in Qdrant</td></tr>
+        <tr><td>Late-interaction retrieval</td><td>ColBERTv2, ColPali (multimodal pages)</td></tr>
+        <tr><td>Vector DB at scale</td><td>Qdrant (hybrid + filters), pgvector (&lt;10M), Pinecone (managed)</td></tr>
+        <tr><td>Document understanding (PDFs, scans)</td><td>Claude or Gemini for vision; Azure Document Intelligence for layout-heavy</td></tr>
+        <tr><td>Speech-to-text</td><td>Whisper (open or via OpenAI), Deepgram for production</td></tr>
+        <tr><td>Image generation</td><td>DALL·E 3, Imagen 3, or Flux for open</td></tr>
+        <tr><td>Hard reasoning (math, planning)</td><td>OpenAI o-series, Claude with extended thinking, DeepSeek-R1</td></tr>
+        <tr><td>Long-document analysis (&gt;500k tokens)</td><td>Gemini 1.5/2.0 Pro</td></tr>
+        <tr><td>On-prem / air-gapped chat</td><td>Llama 3.x 70B or Mistral Large self-hosted</td></tr>
+        <tr><td>High-volume cheap classification</td><td>Haiku, GPT-4o-mini, Mistral Small, or fine-tuned Llama 3.2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip">
+    <strong>Interview soundbite:</strong> "I don't pick a model — I pick a model strategy. A primary model for quality, a cheaper one for routing, a different family as a fallback to avoid lock-in, and a hosted-on-our-cloud variant so MRM signs off. The abstraction layer is mandatory; the specific choice is a quarterly decision as the frontier moves."
+  </div>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-03-genai-foundations.html">← Module 3: GenAI Foundations</a><a class="next" href="module-05-python.html">Module 5: Python →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script type="application/json" id="course-config">{"storageKey": "learning-hub-genai-progress", "moduleSlugs": ["module-01-overview", "module-02-ml-foundations", "module-03-genai-foundations", "module-04-models", "module-05-python", "module-06-genai", "module-07-agentic", "module-08-llms", "module-09-rag", "module-10-advanced-rag", "module-11-banking", "module-12-eval", "module-13-langchain", "module-14-sdlc", "module-15-cloud", "module-16-databases", "module-17-copilot", "module-18-behavioral", "module-19-system-design", "module-20-questions", "module-21-cheat-sheet"]}</script>
+<script src="../assets/course.js"></script>
+</body></html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 4 · CDNs — Frontend System Design</title>
+<meta name="description" content="Cache hierarchies, invalidation strategies, and edge computing." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1115" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --text:#e6e8ef; --muted:#9aa3b2;
+    --accent:#7cc4ff; --accent2:#9d7cff; --green:#7ce0a8; --yellow:#ffd479; --red:#ff8a8a;
+    --border:#2a2f3a; --code:#0b0d12;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{background:var(--code);padding:2px 6px;border-radius:4px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;color:#e0a679}
+  pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;border:1px solid var(--border);font-size:13px;line-height:1.5}
+  pre code{background:none;padding:0;color:#dbe1ec}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:600;margin-right:6px}
+  .pill.basic{background:#1b3b2b;color:var(--green)}
+  .pill.inter{background:#3b3b1b;color:var(--yellow)}
+  .pill.adv{background:#3b1b2b;color:var(--red)}
+  .callout{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0}
+  .callout.warn{border-color:var(--yellow)} .callout.tip{border-color:var(--green)}
+  .callout strong{color:var(--accent)} .callout.warn strong{color:var(--yellow)} .callout.tip strong{color:var(--green)}
+  details.q{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:10px 0}
+  details.q summary{cursor:pointer;font-weight:600;color:var(--accent2)}
+  details.q[open]{background:var(--panel2)}
+  details.q .answer{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+  .walkthrough{counter-reset:step}
+  .walkthrough .step{position:relative;padding:10px 12px 10px 38px;margin:8px 0;background:var(--code);border-radius:6px;border-left:3px solid var(--accent2)}
+  .walkthrough .step::before{counter-increment:step;content:counter(step);position:absolute;left:10px;top:10px;width:20px;height:20px;background:var(--accent2);color:#0b0d12;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .walkthrough .step .label{display:block;font-weight:600;color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+  .walkthrough .step .label.script{color:var(--green)}
+  .walkthrough .step p{margin:4px 0;font-size:13.5px}
+  .script-line{font-style:italic;color:#cdd5e3;border-left:2px solid var(--green);padding-left:10px;margin:6px 0;font-size:13.5px}
+  .followup{margin-top:10px;padding:10px 12px;background:var(--panel);border-radius:6px;font-size:13px}
+  .followup strong{color:var(--yellow)}
+  .company-tags{display:inline-flex;gap:5px;flex-wrap:wrap;margin-left:8px;vertical-align:middle}
+  .ctag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;border:1px solid transparent}
+  .ctag.meta{background:#1a2540;color:#7eb6ff;border-color:#2a4570}
+  .ctag.google{background:#1f2a1c;color:#9ad48a;border-color:#3a5a32}
+  .ctag.microsoft{background:#1f2933;color:#7cd1e0;border-color:#345566}
+  .ctag.amazon{background:#332416;color:#ffb86b;border-color:#664a2c}
+  .ctag.apple{background:#2a2a2a;color:#d8d8d8;border-color:#555}
+  .ctag.netflix{background:#3a1a1f;color:#ff9aa2;border-color:#6a2a35}
+  .ctag.uber{background:#1a1a1a;color:#e0e0e0;border-color:#444}
+  .ctag.agoda{background:#2a1a3a;color:#c9a3ff;border-color:#5a3580}
+  .ctag.airbnb{background:#3a1a26;color:#ff9ab8;border-color:#6a2a48}
+  .ctag.stripe{background:#1c2a3f;color:#9ab8ff;border-color:#345878}
+  .ctag.atlassian{background:#1a2540;color:#8eb4ff;border-color:#2c4880}
+  .ctag.bytedance{background:#2a2030;color:#ff9ad1;border-color:#553560}
+  .ctag.linkedin{background:#1a2a3a;color:#8ec5ff;border-color:#2c4a70}
+  .ctag.shopify{background:#1f2e1f;color:#9ad48a;border-color:#3a5a3a}
+  .ctag.booking{background:#1a2a40;color:#7ab0ff;border-color:#2c4a78}
+  .ctag.salesforce{background:#1a2a3a;color:#7ec5ff;border-color:#2c4a70}
+  .ctag.tiktok{background:#1a1a1a;color:#ff7eb6;border-color:#553060}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel);color:var(--accent)}
+  ul.clean li{margin:4px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> FE System Design</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">FE System Design</a></h1>
+<p class="sub">Basics → Advanced · with examples &amp; interview Qs</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-foundations.html">Module 1 · Foundations</a>
+<a class="toc-chapter-link" href="module-02-architecture.html">Module 2 · Architecture</a>
+<a class="toc-chapter-link" href="module-03-performance.html">Module 3 · Performance</a>
+<a class="toc-chapter-link active" href="module-04-cdns.html">Module 4 · CDNs</a>
+<ul class="toc-sub">
+<li><a href="#m4-what">4.1 What & Why</a></li>
+<li><a href="#m4-cache">4.2 Cache Hierarchies</a></li>
+<li><a href="#m4-invalid">4.3 Invalidation Strategies</a></li>
+<li><a href="#m4-edge">4.4 Edge Computing</a></li>
+</ul>
+<a class="toc-chapter-link" href="module-05-security.html">Module 5 · Security</a>
+<a class="toc-chapter-link" href="module-06-scalability.html">Module 6 · Scalability</a>
+<a class="toc-chapter-link" href="module-07-case-studies.html">Module 7 · Case Studies</a>
+<a class="toc-chapter-link" href="module-08-interview-playbook.html">Module 8 · Interview Playbook</a>
+</nav>
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 8 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div></aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">Advanced</span><span class="chapter-badge">Module 4</span></div>
+  <h1 class="chapter-title">Module 4 · CDNs</h1>
+  <p class="chapter-subtitle">Cache hierarchies, invalidation strategies, and edge computing.</p>
+</header>
+<article class="chapter-body">
+<section id="module-4">
+<h2>Module 4 · CDNs (Deep Dive) <span class="pill adv">Advanced</span></h2>
+
+  <h3 id="m4-what">4.1 What & Why</h3>
+  <p>A <strong>Content Delivery Network</strong> is a globally distributed network of edge servers (PoPs — Points of Presence) that cache and serve content close to users. Goals: reduce latency, offload origin, improve availability, and provide a security layer (DDoS, WAF, bot management).</p>
+
+  <h4>How it works</h4>
+  <ol>
+    <li>User makes request; DNS (often Anycast) routes to the nearest PoP.</li>
+    <li>Edge checks its cache. <em>Hit</em> → served in ~10-30ms. <em>Miss</em> → fetches from regional shield → origin.</li>
+    <li>Response is cached based on rules (TTL, cache key, headers).</li>
+  </ol>
+
+  <p><strong>Major players:</strong> Cloudflare, Fastly, Akamai, AWS CloudFront, Google Cloud CDN, Vercel/Netlify (built on Cloudflare/AWS).</p>
+
+  <h3 id="m4-cache">4.2 Cache Hierarchies & Headers</h3>
+  <pre><code>Browser ──► Edge PoP ──► Regional Shield ──► Origin
+   │            │              │                │
+   └ memory     └ SSD cache    └ Aggregates     └ Source of truth
+     +Service     (per region)   misses
+     Worker</code></pre>
+
+  <h4>Cache headers that matter</h4>
+  <table>
+    <tr><th>Header</th><th>Effect</th></tr>
+    <tr><td><code>Cache-Control: public, max-age=31536000, immutable</code></td><td>Hashed assets; cache forever in browser & CDN.</td></tr>
+    <tr><td><code>Cache-Control: s-maxage=60, stale-while-revalidate=600</code></td><td>CDN caches 60s; serves stale up to 10 min while refetching.</td></tr>
+    <tr><td><code>Cache-Control: private, no-store</code></td><td>Sensitive data; never cached.</td></tr>
+    <tr><td><code>ETag / Last-Modified</code></td><td>Conditional revalidation (304 Not Modified).</td></tr>
+    <tr><td><code>Vary: Accept-Encoding, Accept-Language</code></td><td>Cache key includes these headers.</td></tr>
+    <tr><td><code>Surrogate-Control</code></td><td>CDN-specific TTL, separate from browser.</td></tr>
+  </table>
+
+  <div class="callout tip"><strong>Pattern (immutable assets):</strong> Filename includes a content hash (<code>app.4f9a2c.js</code>). Set <code>max-age=31536000, immutable</code>. New deploys produce new filenames, sidestepping invalidation entirely.</div>
+
+  <h3 id="m4-invalid">4.3 Invalidation Strategies</h3>
+  <p>Cache invalidation is famously hard. Three primary approaches:</p>
+  <ol>
+    <li><strong>TTL-based:</strong> Set short TTL; staleness bounded by time. Simple, but adds origin load.</li>
+    <li><strong>Purge:</strong> API call (<code>PURGE /path</code> or by surrogate key) invalidates the URL globally. Fastly purges in ~150ms.</li>
+    <li><strong>Surrogate keys (cache tags):</strong> tag each response with keys like <code>product:42</code>; purge by key when product 42 changes — more granular than URL.</li>
+  </ol>
+
+  <h4>Stale-while-revalidate (SWR)</h4>
+  <pre><code>Cache-Control: max-age=10, stale-while-revalidate=60</code></pre>
+  <p>For 10s, response is fresh. From 10s-70s, edge serves stale instantly while async-fetching fresh. After 70s, blocking fetch. Great for recommendation widgets, "trending" lists, etc.</p>
+
+  <h3 id="m4-edge">4.4 Edge Computing</h3>
+  <p>Modern CDNs run code at the edge: Cloudflare Workers (V8 isolates), Fastly Compute@Edge (WASM), Vercel Edge Functions. Use cases:</p>
+  <ul class="clean">
+    <li><strong>A/B testing & feature flags</strong> at the edge — no client round-trip to a flag service.</li>
+    <li><strong>Personalization</strong> while keeping HTML cacheable (HTML rewriting / ESI).</li>
+    <li><strong>Geo routing & redirects</strong> — send EU users to <code>/eu</code> bucket.</li>
+    <li><strong>Edge SSR / streaming</strong> — render closer to the user.</li>
+    <li><strong>Auth/token verification</strong> before reaching origin.</li>
+    <li><strong>Image transformation</strong> (Cloudflare Images, Imgix-style on the fly).</li>
+  </ul>
+
+  <details class="q"><summary>Q: A user reports they see a stale price on the product page after a price update. Diagnose.</summary>
+    <div class="answer">Possible layers caching: browser disk cache, service worker, CDN edge, regional shield, Next.js ISR cache, origin response cache. Check (a) the URL's response headers (<code>cf-cache-status</code>, <code>x-cache</code>), (b) whether your purge included the surrogate key/path, (c) edge KV/data cache TTL, (d) browser cache age. Fix: add a versioned URL or use surrogate-key purge on price update.</div>
+  </details>
+  <details class="q"><summary>Q: How do you cache personalized HTML?</summary>
+    <div class="answer">Don't cache the personalized parts. Options: (1) cache shell HTML, hydrate personalized regions client-side; (2) Edge Side Includes (ESI) — cacheable shell with dynamic fragments composed at the edge; (3) HTML rewriting at the edge using Cloudflare's HTMLRewriter; (4) split into two requests — cached static + fast personalized JSON. (5) Use <code>Vary</code> sparingly — wide vary keys (e.g., on user-id) destroy hit rates.</div>
+  </details>
+  <details class="q"><summary>Q: Why is Anycast DNS used by CDNs?</summary>
+    <div class="answer">Anycast advertises the same IP from many PoPs; BGP routes the user to the topologically nearest one. Result: low-latency DNS + automatic failover when a PoP goes down, without DNS changes.</div>
+  </details>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-03-performance.html">← Module 3: Performance</a><a class="next" href="module-05-security.html">Module 5: Security →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script src="../assets/course.js"></script>
+</body></html>

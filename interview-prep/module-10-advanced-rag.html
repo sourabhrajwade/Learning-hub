@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 10 · Advanced RAG — GenAI Interview Prep</title>
+<meta name="description" content="Hybrid search, re-ranking, query transformation, and agents." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1320" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1320; --panel:#161b2e; --panel2:#1d2440; --text:#e8ecf8; --muted:#a4adc8;
+    --accent:#7c8cff; --accent2:#4ad6c0; --green:#7ee08a; --yellow:#f6a96b; --red:#ff8a8a;
+    --border:#2a3357; --code:#0b0f1a;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0e19 0%,var(--bg) 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;font-size:12.5px;color:#cdd6f4}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+  .qa{display:grid;grid-template-columns:1fr;gap:10px}
+  .q{font-weight:600;color:var(--text);display:flex;gap:10px}
+  .q .badge{flex-shrink:0;background:rgba(124,140,255,0.12);color:var(--accent);border:1px solid rgba(124,140,255,0.3);padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600}
+  .a{color:var(--muted);border-left:2px solid var(--accent2);padding-left:14px;margin:0}
+  .a strong{color:var(--text)}
+  .tip{background:rgba(126,224,138,0.08);border:1px solid rgba(126,224,138,0.25);color:var(--green);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  .warn{background:rgba(246,169,107,0.08);border:1px solid rgba(246,169,107,0.25);color:var(--yellow);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  ul.clean{margin:0;padding-left:20px;color:var(--muted)}
+  ul.clean li{margin-bottom:6px}
+  ul.clean li strong{color:var(--text)}
+  .grid-2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  details{border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:600;color:var(--text);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  details>*:not(summary){margin-top:10px;color:var(--muted)}
+  .star{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;margin:12px 0}
+  .star b{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:14px;margin:14px 0}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;color:var(--muted);vertical-align:top}
+  th{background:var(--panel2);color:var(--text);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .chapter-body section h2{display:none}
+  .chapter-body section .intro{display:none}
+  .chapter-body section h2 .num{display:none}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>
+<p class="sub">Interview prep · Python · LLMs · RAG · Cloud</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-overview.html">Module 1 · Overview</a>
+<a class="toc-chapter-link" href="module-02-ml-foundations.html">Module 2 · ML Foundations</a>
+<a class="toc-chapter-link" href="module-03-genai-foundations.html">Module 3 · GenAI Foundations</a>
+<a class="toc-chapter-link" href="module-04-models.html">Module 4 · Model Landscape</a>
+<a class="toc-chapter-link" href="module-05-python.html">Module 5 · Python</a>
+<a class="toc-chapter-link" href="module-06-genai.html">Module 6 · Generative AI</a>
+<a class="toc-chapter-link" href="module-07-agentic.html">Module 7 · Agentic AI</a>
+<a class="toc-chapter-link" href="module-08-llms.html">Module 8 · LLMs & Tooling</a>
+<a class="toc-chapter-link" href="module-09-rag.html">Module 9 · RAG Deep-Dive</a>
+<a class="toc-chapter-link active" href="module-10-advanced-rag.html">Module 10 · Advanced RAG</a>
+<a class="toc-chapter-link" href="module-11-banking.html">Module 11 · Banking Project</a>
+<a class="toc-chapter-link" href="module-12-eval.html">Module 12 · Eval (RAGAS)</a>
+<a class="toc-chapter-link" href="module-13-langchain.html">Module 13 · LangChain & LangGraph</a>
+<a class="toc-chapter-link" href="module-14-sdlc.html">Module 14 · SDLC</a>
+<a class="toc-chapter-link" href="module-15-cloud.html">Module 15 · Cloud-native</a>
+<a class="toc-chapter-link" href="module-16-databases.html">Module 16 · Databases</a>
+<a class="toc-chapter-link" href="module-17-copilot.html">Module 17 · GitHub Copilot</a>
+<a class="toc-chapter-link" href="module-18-behavioral.html">Module 18 · Behavioral</a>
+<a class="toc-chapter-link" href="module-19-system-design.html">Module 19 · System Design</a>
+<a class="toc-chapter-link" href="module-20-questions.html">Module 20 · Questions to Ask</a>
+<a class="toc-chapter-link" href="module-21-cheat-sheet.html">Module 21 · Cheat Sheet</a>
+</nav>
+
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 21 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div>
+</aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">RAG</span><span class="chapter-badge">Module 10</span></div>
+  <h1 class="chapter-title">Module 10 · Advanced RAG</h1>
+  <p class="chapter-subtitle">Hybrid search, re-ranking, query transformation, and agents.</p>
+</header>
+<article class="chapter-body">
+<section id="arag">
+<h2><span class="num">5b</span> Advanced RAG Techniques</h2>
+  <p class="intro">When naive RAG plateaus, these are the levers. Know them by name and know <em>when</em> each helps.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">Study Notes — The Advanced RAG Toolkit</h3>
+    <table>
+      <thead><tr><th>Technique</th><th>What it does</th><th>When it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Hybrid Search</strong></td><td>Combine dense (semantic) + sparse (BM25) retrieval, fuse with RRF</td><td>Domains with jargon, IDs, product codes, abbreviations</td></tr>
+        <tr><td><strong>Query Rewriting</strong></td><td>LLM reformulates the user's vague question into a better search query</td><td>Conversational queries: "what about for joint accounts?"</td></tr>
+        <tr><td><strong>Multi-query / Fan-out</strong></td><td>Generate N variants of the query, retrieve for each, merge results</td><td>Ambiguous questions, broad recall needs</td></tr>
+        <tr><td><strong>HyDE</strong></td><td>Hypothetical Doc Embeddings — LLM drafts a fake answer, embed THAT, retrieve similar real docs</td><td>Question and doc style differ a lot</td></tr>
+        <tr><td><strong>Reranking</strong></td><td>Cross-encoder (e.g., Cohere Rerank, BGE-reranker) re-scores top-50 to pick top-5</td><td>Almost always helps. Biggest single quality lever after hybrid.</td></tr>
+        <tr><td><strong>Contextual Retrieval</strong> (Anthropic)</td><td>Prepend a 1–2 sentence doc-level context to each chunk before embedding</td><td>Long docs where chunks are ambiguous out of context. ~50% retrieval lift in published benchmarks.</td></tr>
+        <tr><td><strong>Parent-doc / Small-to-Big</strong></td><td>Retrieve on small chunks (precise), then expand to larger parent chunk for the LLM</td><td>Need precise retrieval but rich context for generation</td></tr>
+        <tr><td><strong>Sentence-window</strong></td><td>Retrieve a sentence, then expand window of N sentences around it</td><td>Highly granular docs (legal, regulatory)</td></tr>
+        <tr><td><strong>Metadata filtering</strong></td><td>Hard filters on date, region, doc-type, ACL before similarity search</td><td>Always — both for relevance and security</td></tr>
+        <tr><td><strong>Self-RAG / CRAG</strong></td><td>Model decides whether retrieval is needed, grades retrieved docs, retries if bad</td><td>Mixed query types (some need retrieval, some don't)</td></tr>
+        <tr><td><strong>GraphRAG</strong> (Microsoft)</td><td>Build a knowledge graph from docs; retrieve subgraph + community summaries</td><td>Multi-hop questions, "tell me about X across all reports"</td></tr>
+        <tr><td><strong>Agentic RAG</strong></td><td>Agent plans retrievals, calls tools, iterates until it has enough info</td><td>Complex, multi-step research questions</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ====== BASICS ====== -->
+  <div class="card">
+    <h3 style="margin-top:0">Basics — Dense Vectors, Sparse Vectors &amp; Reranking</h3>
+    <p style="color:var(--muted)">Before hybrid search or ColBERT, you need a clear picture of what gets stored in the index and how the two-stage retrieve → rerank pipeline works.</p>
+
+    <h4 style="margin-bottom:6px;">Dense Vectors</h4>
+    <p style="color:var(--muted)">
+      A <strong>dense vector</strong> is a fixed-length array of floats (typically 384–3072 dimensions) where <em>every dimension carries signal</em>. A bi-encoder embedding model (e.g., <code>text-embedding-3-large</code>, <code>bge-m3</code>) reads a chunk of text and outputs one vector that summarizes its meaning. At query time you embed the question the same way and find the nearest vectors by <strong>cosine similarity</strong> or <strong>dot product</strong>.
+    </p>
+    <ul class="clean">
+      <li><strong>Strengths:</strong> semantic matching — "5-year fixed mortgage" matches "five-year fixed-rate home loan" even with no shared keywords.</li>
+      <li><strong>Weaknesses:</strong> misses exact IDs, product codes, acronyms, rare proper nouns. One vector per chunk = coarse representation.</li>
+      <li><strong>Index:</strong> stored in a vector DB or <code>pgvector</code>; searched with ANN algorithms (HNSW, IVF) for speed at scale.</li>
+      <li><strong>Typical dims:</strong> 384 (small models), 768 (BERT-era), 1024 (BGE-large), 1536 (OpenAI), 3072 (OpenAI large).</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Sparse Vectors</h4>
+    <p style="color:var(--muted)">
+      A <strong>sparse vector</strong> is mostly zeros — only a few dimensions are non-zero, each tied to a vocabulary term (or learned feature). Classic keyword search (BM25, TF-IDF) is sparse retrieval without neural embeddings: "mortgage" and "ISA" hit specific term dimensions.
+    </p>
+    <ul class="clean">
+      <li><strong>BM25</strong> — inverted-index keyword ranking. Fast, explainable, great for SKUs, policy numbers, legal citations.</li>
+      <li><strong>Learned sparse</strong> (SPLADE, uniCOIL) — a transformer expands text into a sparse weight vector over the vocabulary. Gets semantic expansion ("car" → also weights "vehicle") while staying sparse and fast on inverted indexes.</li>
+      <li><strong>Why hybrid?</strong> Dense and sparse fail in opposite ways. Fuse both with <strong>Reciprocal Rank Fusion (RRF)</strong> or weighted score blending.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Reranking — The Two-Stage Pattern</h4>
+    <p style="color:var(--muted)">
+      <strong>Stage 1 (retrieval):</strong> cast a wide net — top-50 or top-100 candidates via fast bi-encoder similarity, BM25, or hybrid. <strong>Stage 2 (reranking):</strong> a slower, more accurate model scores each (query, document) pair and reorders to top-5 for the LLM.
+    </p>
+    <ul class="clean">
+      <li><strong>Bi-encoder</strong> — embed query and doc separately; similarity = dot product. O(n) over the corpus. Used for first pass.</li>
+      <li><strong>Cross-encoder reranker</strong> — feed query + doc together through one transformer; outputs a single relevance score. O(k) over candidates only. Much more accurate.</li>
+      <li><strong>Cost trade-off:</strong> reranking 50 docs adds ~100–300ms but is often the single biggest quality jump after hybrid search.</li>
+      <li><strong>Examples:</strong> Cohere Rerank v3, <code>bge-reranker-v2-m3</code>, Voyage rerank, <code>ms-marco-MiniLM-L-6-v2</code> (small/fast).</li>
+    </ul>
+  </div>
+
+  <!-- ====== INTERMEDIATE ====== -->
+  <div class="card">
+    <h3 style="margin-top:0">Intermediate — ColBERT, MRL &amp; Hybrid Retrieval</h3>
+    <p style="color:var(--muted)">Once basics work, these techniques improve recall and efficiency without jumping to a full custom stack.</p>
+
+    <h4 style="margin-bottom:6px;">ColBERT — Late Interaction Retrieval</h4>
+    <p style="color:var(--muted)">
+      <strong>ColBERT</strong> (Contextualized Late Interaction over BERT) sits between bi-encoders and cross-encoders. Instead of one vector per document, it stores a <strong>multi-vector</strong> representation — one embedding per token. At query time, each query token finds its best-matching doc token; scores are aggregated via <strong>MaxSim</strong> (sum of max similarities per query token).
+    </p>
+    <ul class="clean">
+      <li><strong>Why it helps:</strong> finer-grained matching than a single pooled vector, but still indexable (unlike a full cross-encoder over the whole corpus).</li>
+      <li><strong>Variants:</strong> ColBERTv2 (compressed token embeddings), Jina-ColBERT, ColQwen (multimodal pages).</li>
+      <li><strong>Trade-off:</strong> more storage per doc (many vectors vs one), more complex indexing. Often used as a reranker or on smaller corpora.</li>
+      <li><strong>Interview line:</strong> "Bi-encoder for speed, ColBERT for late interaction, cross-encoder for final rerank."</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">MRL — Matryoshka Representation Learning</h4>
+    <p style="color:var(--muted)">
+      <strong>MRL</strong> trains embeddings so the <em>first N dimensions</em> of a vector are still meaningful when you truncate. A 3072-d embedding from <code>text-embedding-3-large</code> can be cut to 1536 or 512 dims with modest quality loss — like Russian nesting dolls where inner layers still work.
+    </p>
+    <ul class="clean">
+      <li><strong>Storage savings:</strong> store 512-d instead of 3072-d → ~6× less disk and RAM.</li>
+      <li><strong>Latency:</strong> smaller vectors = faster distance computation and smaller HNSW graphs.</li>
+      <li><strong>Multi-resolution:</strong> same model, different dims per use case — 1536 for quality-critical, 256 for high-volume dedup.</li>
+      <li><strong>Models with MRL:</strong> OpenAI embedding-3 family, Nomic Embed, some BGE variants. Always validate truncation on your eval set.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Hybrid + Rerank Stack (Intermediate)</h4>
+    <table>
+      <thead><tr><th>Step</th><th>Technique</th><th>Typical config</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Metadata pre-filter</td><td>ACL, region, date range</td></tr>
+        <tr><td>2</td><td>Dense retrieval</td><td>top-50 via HNSW cosine</td></tr>
+        <tr><td>3</td><td>Sparse retrieval</td><td>top-50 via BM25 or SPLADE</td></tr>
+        <tr><td>4</td><td>RRF fusion</td><td>merge → top-30 unique chunks</td></tr>
+        <tr><td>5</td><td>Cross-encoder rerank</td><td>score all 30 → top-5</td></tr>
+        <tr><td>6</td><td>LLM generation</td><td>answer with citations</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ====== ADVANCED ====== -->
+  <div class="card">
+    <h3 style="margin-top:0">Advanced — Qdrant, Learned Sparse, Small Models &amp; Production Tuning</h3>
+    <p style="color:var(--muted)">Production-grade retrieval stacks where vector DB choice, model size, and index configuration matter as much as algorithm choice.</p>
+
+    <h4 style="margin-bottom:6px;">Qdrant — Vector DB Deep-Dive</h4>
+    <p style="color:var(--muted)">
+      <strong>Qdrant</strong> is a Rust-native vector database built for filtered hybrid search at scale. Strong choice when you outgrow <code>pgvector</code> or need native sparse + dense in one engine.
+    </p>
+    <ul class="clean">
+      <li><strong>Collections &amp; points</strong> — a collection holds points; each point has an ID, one or more named vectors, and a JSON <strong>payload</strong> (metadata).</li>
+      <li><strong>Named vectors</strong> — store <code>dense</code> (1536-d) and <code>sparse</code> (SPLADE) on the same point; query both in one request.</li>
+      <li><strong>Payload filtering</strong> — apply ACL/region/date filters <em>inside</em> the HNSW search (pre-filter or post-filter). Critical for banking ACL enforcement.</li>
+      <li><strong>HNSW tuning</strong> — <code>m</code> (edges per node), <code>ef_construct</code> (build quality), <code>ef</code> (search recall). Higher = better recall, more RAM and slower queries.</li>
+      <li><strong>Quantization</strong> — scalar or product quantization compresses vectors (e.g., 4× RAM reduction) with configurable accuracy trade-off.</li>
+      <li><strong>Multitenancy</strong> — shard by tenant; use payload indexes on hot filter fields (<code>tenant_id</code>, <code>region</code>).</li>
+      <li><strong>When to pick Qdrant over pgvector:</strong> &gt;10M vectors, need hybrid sparse+dense natively, heavy metadata filtering, dedicated ops team. Stay on pgvector if you're &lt;5M docs and already on Postgres.</li>
+    </ul>
+<pre><code># Qdrant hybrid query (conceptual)
+client.query_points(
+    collection_name="policies",
+    prefetch=[
+        {"query": dense_vector, "using": "dense", "limit": 50},
+        {"query": sparse_vector, "using": "sparse", "limit": 50},
+    ],
+    query=models.FusionQuery(fusion=models.Fusion.RRF),
+    query_filter=models.Filter(must=[
+        models.FieldCondition(key="region", match=models.MatchValue(value="UK")),
+        models.FieldCondition(key="acl_group", match=models.MatchAny(any=user_groups)),
+    ]),
+    limit=5,
+)
+</code></pre>
+
+    <h4 style="margin-bottom:6px;">Learned Sparse Vectors (SPLADE) — Advanced Hybrid</h4>
+    <p style="color:var(--muted)">
+      <strong>SPLADE</strong> (and successors like SPLADE-v3, uniCOIL) train a transformer to output sparse term weights. You get BM25-like inverted-index speed with neural term expansion. Qdrant, Elasticsearch, and OpenSearch all support sparse vector fields. Pair with dense in RRF for state-of-the-art hybrid on BEIR-style benchmarks.
+    </p>
+
+    <h4 style="margin-bottom:6px;">ColBERT in Production</h4>
+    <ul class="clean">
+      <li><strong>Indexing:</strong> store token embeddings per chunk (often 100–300 vectors × 128-d each after compression in ColBERTv2).</li>
+      <li><strong>Retrieval:</strong> MaxSim scoring — for each query token, find max dot-product with any doc token, sum across query tokens.</li>
+      <li><strong>Placement:</strong> use as a second-stage retriever after dense top-200, or as a reranker before cross-encoder. Rarely the only retrieval method at &gt;1M docs without dedicated infra (RAGatouille, Vespa).</li>
+      <li><strong>Multimodal:</strong> ColPali / ColQwen apply the same late-interaction idea to page images — strong for layout-heavy PDFs.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Small Models — Embedding &amp; Reranking at the Edge</h4>
+    <p style="color:var(--muted)">
+      Not every stage needs a frontier model. <strong>Small models</strong> (sub-500M params) run on CPU or a single GPU, cut latency and cost, and work well for high-QPS retrieval tiers.
+    </p>
+    <table>
+      <thead><tr><th>Model</th><th>Size</th><th>Dims</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>all-MiniLM-L6-v2</strong></td><td>22M</td><td>384</td><td>Fast baseline bi-encoder; good for prototyping and low-latency search</td></tr>
+        <tr><td><strong>bge-small-en-v1.5</strong></td><td>33M</td><td>384</td><td>Strong small English embedder; beats MiniLM on MTEB</td></tr>
+        <tr><td><strong>e5-small-v2</strong></td><td>33M</td><td>384</td><td>Microsoft E5 family; prefix queries with <code>query:</code> / docs with <code>passage:</code></td></tr>
+        <tr><td><strong>nomic-embed-text-v1.5</strong></td><td>137M</td><td>768 (MRL → 256)</td><td>Open, MRL-native; truncate dims for storage savings</td></tr>
+        <tr><td><strong>ms-marco-MiniLM-L-6-v2</strong></td><td>22M</td><td>—</td><td>Cross-encoder reranker; ~50ms for 50 pairs on CPU</td></tr>
+        <tr><td><strong>bge-reranker-base</strong></td><td>278M</td><td>—</td><td>Better rerank quality than MiniLM; still self-hostable</td></tr>
+        <tr><td><strong>Phi-3-mini / Llama 3.2 1B</strong></td><td>1–3B</td><td>—</td><td>On-device query rewrite, classification, routing — not for final answers</td></tr>
+      </tbody>
+    </table>
+    <ul class="clean">
+      <li><strong>Pattern:</strong> small embedder for index + small reranker for top-50 → frontier LLM for generation. Cuts embedding API cost to zero if self-hosted.</li>
+      <li><strong>When small isn't enough:</strong> multilingual, domain jargon (finance/legal), or low recall on eval — step up to <code>bge-m3</code>, <code>voyage-3</code>, or domain-tuned models (FinBERT-style fine-tunes).</li>
+      <li><strong>Quantization for small models:</strong> ONNX + INT8 on CPU serves 100+ embed QPS on a modest instance.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">MRL in Production — Practical Checklist</h4>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li>Embed at full dimension (e.g., 1536) during indexing.</li>
+      <li>Run recall@k eval at 1536, 768, 512, 256 — find the knee of the curve.</li>
+      <li>Re-index at chosen dim OR truncate at query time if model supports MRL.</li>
+      <li>Re-tune HNSW <code>ef</code> — lower dims sometimes need higher <code>ef</code> to compensate.</li>
+      <li>Document the chosen dim in <code>index_version</code> metadata for reproducibility.</li>
+    </ol>
+  </div>
+
+  <div class="tip">
+    <strong>Real-world stack you'll most often deploy:</strong> Hybrid search (BM25 + dense) → metadata filter → top-50 → cross-encoder rerank → top-5 → LLM with citations. That alone beats 90% of "naive RAG" implementations.
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q1</span> Explain Contextual Retrieval and why it works.</div>
+    <p class="a">
+      Standard chunking embeds each chunk in isolation — but a chunk like "the rate is 4.5%" is meaningless without
+      knowing it's about a 30-year fixed mortgage in the 2024 product guide. <strong>Contextual Retrieval</strong>
+      uses an LLM (cheaply, with prompt caching on the full doc) to generate a short situating context for each chunk
+      and prepends it before embedding and BM25 indexing. The chunk now retrieves correctly because its embedding
+      reflects its true meaning. Anthropic reported ~49% reduction in retrieval failures combined with reranking.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q2</span> When would you use GraphRAG over vector RAG?</div>
+    <p class="a">
+      GraphRAG shines on <strong>global, multi-hop questions</strong> — "summarize the top risks across all 200 audit
+      reports" or "how is entity X connected to entity Y across these documents?" Vector RAG retrieves <em>local</em>
+      semantic neighbors and struggles with these. GraphRAG extracts entities/relations into a graph, clusters into
+      communities, and pre-summarizes each community. Cost is much higher up front (LLM calls per document for
+      extraction), so use it when query patterns justify it.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q3</span> What's reranking and why is it worth the latency?</div>
+    <p class="a">
+      Embedding similarity is a <strong>bi-encoder</strong> — query and doc embedded independently. Fast but loses
+      cross-attention nuance. A <strong>cross-encoder reranker</strong> takes (query, doc) pairs together and outputs a
+      relevance score, capturing fine-grained interaction. Pattern: retrieve top-50 fast (bi-encoder), rerank to top-5
+      (cross-encoder). Adds 100–300ms but often the single biggest quality jump in the pipeline.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q4</span> What's HyDE and when does it help?</div>
+    <p class="a">
+      HyDE (Hypothetical Document Embeddings): the LLM <em>generates a hypothetical answer</em> to the question, then
+      you embed and retrieve based on that synthetic answer rather than the original question. Helps when the question
+      and the document corpus use very different language — short questions vs. long technical docs. Adds an LLM call
+      to the critical path, so weigh latency.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q5</span> Dense vs sparse vectors — when do you need both?</div>
+    <p class="a">
+      <strong>Dense</strong> vectors capture semantic meaning — paraphrases, synonyms, conceptual similarity. <strong>Sparse</strong>
+      vectors (BM25 or learned SPLADE) capture lexical overlap — product codes, legal references, acronyms, exact names.
+      In banking RAG you almost always need both: dense finds "early repayment charge" when the user says "pay off mortgage
+      early fee"; sparse finds "SKU-88421" or "FCA CONC 5.2.1R". Fuse with RRF; don't rely on dense alone.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q6</span> Explain ColBERT and how it differs from bi-encoder and cross-encoder.</div>
+    <p class="a">
+      A <strong>bi-encoder</strong> pools the whole document into one vector — fast but coarse. A <strong>cross-encoder</strong>
+      runs query and doc through shared attention — accurate but too slow for millions of docs. <strong>ColBERT</strong> stores
+      one vector per <em>token</em> in the document and scores via <strong>MaxSim</strong>: each query token matches its
+      best doc token, scores are summed. You get token-level interaction without scoring every (query, doc) pair at index
+      time. Typical pattern: bi-encoder top-200 → ColBERT rescore → cross-encoder rerank top-5.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q7</span> What is MRL and why would you truncate embedding dimensions?</div>
+    <p class="a">
+      <strong>Matryoshka Representation Learning (MRL)</strong> trains embeddings so lower-dimensional prefixes remain
+      useful. Truncating 1536-d → 512-d cuts storage and speeds up HNSW search with ~5–15% recall loss (model-dependent).
+      Use it when you have millions of vectors and RAM/disk is the bottleneck, or when you want one model serving both
+      a high-quality tier (full dims) and a fast dedup tier (256-d). Always measure on your gold set — don't truncate blindly.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q8</span> Why Qdrant over pgvector or Pinecone?</div>
+    <p class="a">
+      <strong>pgvector</strong> wins when you're &lt;5–10M vectors, already on Postgres, and want one database.
+      <strong>Qdrant</strong> wins when you need native <strong>hybrid sparse+dense</strong> on the same point, heavy
+      payload filtering inside HNSW, quantization at scale, or &gt;10M vectors with dedicated indexing. <strong>Pinecone</strong>
+      wins when you want fully managed with minimal ops. For regulated banking: Qdrant self-hosted or Qdrant Cloud with
+      private networking gives you ACL payload filters and audit-friendly point-level metadata.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q9</span> When do small embedding/reranking models beat frontier APIs?</div>
+    <p class="a">
+      Small models (<code>bge-small</code>, <code>all-MiniLM</code>, <code>ms-marco-MiniLM</code> reranker) win on
+      <strong>cost, latency, and data residency</strong> — self-host on CPU, no per-token bill, data never leaves your VPC.
+      They lose on multilingual coverage, domain jargon, and absolute recall. Rule: start with a small open model +
+      your eval set; if recall@10 on the gold set is &gt;85%, ship it. If not, step up to <code>bge-m3</code> or
+      <code>voyage-3</code> for embeddings and <code>bge-reranker-v2</code> or Cohere Rerank for the rerank stage.
+      Use small LLMs (Phi-3-mini, Haiku) only for routing/rewrite — not final regulated answers.
+    </p>
+  </div>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-09-rag.html">← Module 9: RAG Deep-Dive</a><a class="next" href="module-11-banking.html">Module 11: Banking Project →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script type="application/json" id="course-config">{"storageKey": "learning-hub-genai-progress", "moduleSlugs": ["module-01-overview", "module-02-ml-foundations", "module-03-genai-foundations", "module-04-models", "module-05-python", "module-06-genai", "module-07-agentic", "module-08-llms", "module-09-rag", "module-10-advanced-rag", "module-11-banking", "module-12-eval", "module-13-langchain", "module-14-sdlc", "module-15-cloud", "module-16-databases", "module-17-copilot", "module-18-behavioral", "module-19-system-design", "module-20-questions", "module-21-cheat-sheet"]}</script>
+<script src="../assets/course.js"></script>
+</body></html>

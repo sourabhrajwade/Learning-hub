@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 9 · RAG Deep-Dive — GenAI Interview Prep</title>
+<meta name="description" content="Retrieval-augmented generation architecture and patterns." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1320" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1320; --panel:#161b2e; --panel2:#1d2440; --text:#e8ecf8; --muted:#a4adc8;
+    --accent:#7c8cff; --accent2:#4ad6c0; --green:#7ee08a; --yellow:#f6a96b; --red:#ff8a8a;
+    --border:#2a3357; --code:#0b0f1a;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0e19 0%,var(--bg) 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;font-size:12.5px;color:#cdd6f4}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+  .qa{display:grid;grid-template-columns:1fr;gap:10px}
+  .q{font-weight:600;color:var(--text);display:flex;gap:10px}
+  .q .badge{flex-shrink:0;background:rgba(124,140,255,0.12);color:var(--accent);border:1px solid rgba(124,140,255,0.3);padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600}
+  .a{color:var(--muted);border-left:2px solid var(--accent2);padding-left:14px;margin:0}
+  .a strong{color:var(--text)}
+  .tip{background:rgba(126,224,138,0.08);border:1px solid rgba(126,224,138,0.25);color:var(--green);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  .warn{background:rgba(246,169,107,0.08);border:1px solid rgba(246,169,107,0.25);color:var(--yellow);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  ul.clean{margin:0;padding-left:20px;color:var(--muted)}
+  ul.clean li{margin-bottom:6px}
+  ul.clean li strong{color:var(--text)}
+  .grid-2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  details{border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:600;color:var(--text);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  details>*:not(summary){margin-top:10px;color:var(--muted)}
+  .star{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;margin:12px 0}
+  .star b{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:14px;margin:14px 0}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;color:var(--muted);vertical-align:top}
+  th{background:var(--panel2);color:var(--text);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .chapter-body section h2{display:none}
+  .chapter-body section .intro{display:none}
+  .chapter-body section h2 .num{display:none}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>
+<p class="sub">Interview prep · Python · LLMs · RAG · Cloud</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-overview.html">Module 1 · Overview</a>
+<a class="toc-chapter-link" href="module-02-ml-foundations.html">Module 2 · ML Foundations</a>
+<a class="toc-chapter-link" href="module-03-genai-foundations.html">Module 3 · GenAI Foundations</a>
+<a class="toc-chapter-link" href="module-04-models.html">Module 4 · Model Landscape</a>
+<a class="toc-chapter-link" href="module-05-python.html">Module 5 · Python</a>
+<a class="toc-chapter-link" href="module-06-genai.html">Module 6 · Generative AI</a>
+<a class="toc-chapter-link" href="module-07-agentic.html">Module 7 · Agentic AI</a>
+<a class="toc-chapter-link" href="module-08-llms.html">Module 8 · LLMs & Tooling</a>
+<a class="toc-chapter-link active" href="module-09-rag.html">Module 9 · RAG Deep-Dive</a>
+<a class="toc-chapter-link" href="module-10-advanced-rag.html">Module 10 · Advanced RAG</a>
+<a class="toc-chapter-link" href="module-11-banking.html">Module 11 · Banking Project</a>
+<a class="toc-chapter-link" href="module-12-eval.html">Module 12 · Eval (RAGAS)</a>
+<a class="toc-chapter-link" href="module-13-langchain.html">Module 13 · LangChain & LangGraph</a>
+<a class="toc-chapter-link" href="module-14-sdlc.html">Module 14 · SDLC</a>
+<a class="toc-chapter-link" href="module-15-cloud.html">Module 15 · Cloud-native</a>
+<a class="toc-chapter-link" href="module-16-databases.html">Module 16 · Databases</a>
+<a class="toc-chapter-link" href="module-17-copilot.html">Module 17 · GitHub Copilot</a>
+<a class="toc-chapter-link" href="module-18-behavioral.html">Module 18 · Behavioral</a>
+<a class="toc-chapter-link" href="module-19-system-design.html">Module 19 · System Design</a>
+<a class="toc-chapter-link" href="module-20-questions.html">Module 20 · Questions to Ask</a>
+<a class="toc-chapter-link" href="module-21-cheat-sheet.html">Module 21 · Cheat Sheet</a>
+</nav>
+
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 21 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div>
+</aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">RAG</span><span class="chapter-badge">Module 9</span></div>
+  <h1 class="chapter-title">Module 9 · RAG Deep-Dive</h1>
+  <p class="chapter-subtitle">Retrieval-augmented generation architecture and patterns.</p>
+</header>
+<article class="chapter-body">
+<section id="rag">
+<h2><span class="num">5a</span> RAG Deep-Dive (Study Notes + Interview Q&A)</h2>
+  <p class="intro">RAG = Retrieval-Augmented Generation. The model is given <em>fresh, authoritative context</em> at query time so it can answer questions about data it was never trained on. This is the single most common GenAI pattern in enterprise.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">Study Notes — The 5 Stages of RAG</h3>
+    <ul class="clean">
+      <li><strong>1. Ingestion</strong> — pull documents from sources (SharePoint, Confluence, S3, DBs). Strip noise (headers, footers, boilerplate). Convert PDFs/HTML/DOCX to clean text. Attach <strong>metadata</strong> (source, author, date, ACL).</li>
+      <li><strong>2. Chunking</strong> — split documents into retrievable units. Too small → loss of context. Too large → noisy retrieval and wasted tokens. Typical: <strong>500–1000 tokens with 10–20% overlap</strong>. Prefer <strong>semantic chunking</strong> (split on headings/paragraphs) over fixed-size.</li>
+      <li><strong>3. Embedding &amp; Indexing</strong> — convert each chunk into a dense vector (e.g., <code>text-embedding-3-large</code>, <code>voyage-3</code>, <code>bge-m3</code>) and store in a vector DB (pgvector, Pinecone, Weaviate, Qdrant, OpenSearch). Index metadata for filtering.</li>
+      <li><strong>4. Retrieval</strong> — embed the query, find top-k similar chunks (k=4–10 typical). Apply metadata filters (e.g., only docs the user can see). <strong>Hybrid retrieval</strong> = dense (semantic) + sparse (BM25 keyword) merged with Reciprocal Rank Fusion (RRF).</li>
+      <li><strong>5. Generation</strong> — stuff retrieved chunks into the prompt as context, instruct the LLM to answer using only that context, and to cite sources. Return answer + citations.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Key Concepts to Memorize</h3>
+    <table>
+      <thead><tr><th>Term</th><th>Plain English</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Embedding</strong></td><td>A list of numbers (e.g., 1536 floats) that represents the <em>meaning</em> of a piece of text. Similar meaning → similar vectors.</td></tr>
+        <tr><td><strong>Cosine similarity</strong></td><td>Angle between two vectors. 1.0 = identical meaning, 0 = unrelated. Default similarity metric for retrieval.</td></tr>
+        <tr><td><strong>BM25</strong></td><td>Classic keyword-based ranking (TF-IDF on steroids). Catches exact-match terms that embeddings miss (e.g., product codes, IDs).</td></tr>
+        <tr><td><strong>Top-k</strong></td><td>How many chunks you retrieve. Higher k = more context but more noise &amp; cost.</td></tr>
+        <tr><td><strong>Reranker</strong></td><td>A second model (cross-encoder) that re-scores the top-k for relevance. Slower but much more accurate than pure embedding similarity.</td></tr>
+        <tr><td><strong>Dense vector</strong></td><td>Fixed-length float array (e.g., 1536-d) from a bi-encoder; every dimension carries signal. Used for semantic ANN search.</td></tr>
+        <tr><td><strong>Sparse vector</strong></td><td>Mostly-zero vector over vocabulary terms (BM25, SPLADE). Catches exact keywords and learned term expansions.</td></tr>
+        <tr><td><strong>ColBERT</strong></td><td>Late-interaction retriever: one vector per token, scored via MaxSim. Between bi-encoder speed and cross-encoder accuracy.</td></tr>
+        <tr><td><strong>MRL</strong></td><td>Matryoshka embeddings — truncate to fewer dimensions (e.g., 1536→512) with modest quality loss; saves storage and latency.</td></tr>
+        <tr><td><strong>Chunk overlap</strong></td><td>Repeating the last N tokens of one chunk at the start of the next, so context isn't lost at boundaries.</td></tr>
+        <tr><td><strong>Grounding</strong></td><td>The answer is derived from the retrieved context, not the model's parametric memory.</td></tr>
+        <tr><td><strong>Faithfulness</strong></td><td>Does every claim in the answer come from the retrieved context? (Anti-hallucination metric.)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q1</span> Why use RAG instead of just fine-tuning the model on your data?</div>
+    <p class="a">
+      RAG separates <strong>knowledge from reasoning</strong>. Fine-tuning bakes facts into weights — they go stale, are
+      hard to update, can't enforce ACLs, and can't be cited. RAG keeps facts in a queryable store: update a doc and
+      the next query sees it; remove a doc and the model forgets it. You get <strong>freshness, attributability, and
+      access control</strong> for free. Fine-tune for <em>style and format</em>; RAG for <em>knowledge</em>.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q2</span> Walk me through chunking strategies and how to choose.</div>
+    <p class="a">
+      <strong>Fixed-size</strong> (e.g., 800 tokens, 100 overlap) — simple, fast, but cuts mid-sentence.
+      <strong>Recursive</strong> — splits on natural separators (paragraph → sentence → word) to stay under a size cap;
+      good default. <strong>Semantic</strong> — splits where embedding similarity drops; expensive but high quality for
+      heterogeneous docs. <strong>Document-aware</strong> — split by headings for Markdown, by rows for tables, by
+      function for code. Rule of thumb: <strong>start recursive @ 800/100, measure retrieval quality, only get fancier if
+      metrics demand it.</strong>
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q3</span> Naive RAG often fails — what are the top failure modes?</div>
+    <p class="a">
+      <strong>(1) Bad retrieval</strong> — the right chunk isn't in top-k. Caused by poor chunking, weak embeddings, or
+      query/doc vocabulary mismatch. <strong>(2) Lost in the middle</strong> — LLMs ignore context buried in long prompts.
+      <strong>(3) Hallucination despite context</strong> — model answers from training data instead of provided context.
+      <strong>(4) No-answer cases</strong> — model fabricates rather than saying "I don't know." <strong>(5) Stale index</strong> —
+      docs updated but vectors not re-computed. <strong>(6) ACL leaks</strong> — user sees content they shouldn't because
+      filters weren't applied.
+    </p>
+  </div>
+
+  <div class="card qa">
+    <div class="q"><span class="badge">Q4</span> Code: a minimal RAG pipeline.</div>
+<pre><code>from anthropic import Anthropic
+import psycopg2  # with pgvector extension
+
+client = Anthropic()
+
+def retrieve(query: str, k: int = 5):
+    q_vec = embed(query)  # your embedding fn
+    rows = db.execute(
+        """SELECT content, source FROM chunks
+           WHERE acl_check(user_id, doc_id)
+           ORDER BY embedding &lt;=&gt; %s LIMIT %s""",
+        (q_vec, k),
+    ).fetchall()
+    return rows
+
+def answer(query: str, user_id: str) -> str:
+    chunks = retrieve(query)
+    context = "\n\n".join(f"[{i+1}] {c}" for i, (c, _) in enumerate(chunks))
+    sources = [s for _, s in chunks]
+
+    msg = client.messages.create(
+        model="claude-opus-4-7",
+        max_tokens=800,
+        system=("Answer ONLY from the context. Cite sources as [1], [2]. "
+                "If the context doesn't contain the answer, say 'I don't know.'"),
+        messages=[{"role": "user",
+                   "content": f"Context:\n{context}\n\nQuestion: {query}"}],
+    )
+    return msg.content[0].text, sources
+</code></pre>
+  </div>
+
+  <details>
+    <summary>More RAG questions</summary>
+    <ul class="clean">
+      <li>How do you handle tables and figures in PDFs?</li>
+      <li>How do you decide between pgvector, Qdrant, and Pinecone?</li>
+      <li>What's the difference between a bi-encoder, ColBERT, and a cross-encoder?</li>
+      <li>Dense vs sparse vectors — when do you need hybrid search?</li>
+      <li>What is MRL and when would you truncate embedding dimensions?</li>
+      <li>When do small embedding models beat frontier APIs?</li>
+      <li>How do you keep the index in sync with source systems?</li>
+      <li>How do you handle multilingual content?</li>
+    </ul>
+  </details>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-08-llms.html">← Module 8: LLMs & Tooling</a><a class="next" href="module-10-advanced-rag.html">Module 10: Advanced RAG →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script type="application/json" id="course-config">{"storageKey": "learning-hub-genai-progress", "moduleSlugs": ["module-01-overview", "module-02-ml-foundations", "module-03-genai-foundations", "module-04-models", "module-05-python", "module-06-genai", "module-07-agentic", "module-08-llms", "module-09-rag", "module-10-advanced-rag", "module-11-banking", "module-12-eval", "module-13-langchain", "module-14-sdlc", "module-15-cloud", "module-16-databases", "module-17-copilot", "module-18-behavioral", "module-19-system-design", "module-20-questions", "module-21-cheat-sheet"]}</script>
+<script src="../assets/course.js"></script>
+</body></html>

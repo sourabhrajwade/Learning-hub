@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Module 3 · GenAI Foundations — GenAI Interview Prep</title>
+<meta name="description" content="Transformers, tokens, prompting, and how LLMs work." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0f1320" />
+<link rel="icon" href="../logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="../logo.svg" />
+<link rel="stylesheet" href="../assets/course.css" />
+<style>
+  :root{
+    --bg:#0f1320; --panel:#161b2e; --panel2:#1d2440; --text:#e8ecf8; --muted:#a4adc8;
+    --accent:#7c8cff; --accent2:#4ad6c0; --green:#7ee08a; --yellow:#f6a96b; --red:#ff8a8a;
+    --border:#2a3357; --code:#0b0f1a;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0e19 0%,var(--bg) 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+  body{font-size:1rem;padding-bottom:48px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h3{font-size:19px;margin:24px 0 8px;color:var(--text)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:8px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;font-size:12.5px;color:#cdd6f4}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+  .qa{display:grid;grid-template-columns:1fr;gap:10px}
+  .q{font-weight:600;color:var(--text);display:flex;gap:10px}
+  .q .badge{flex-shrink:0;background:rgba(124,140,255,0.12);color:var(--accent);border:1px solid rgba(124,140,255,0.3);padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600}
+  .a{color:var(--muted);border-left:2px solid var(--accent2);padding-left:14px;margin:0}
+  .a strong{color:var(--text)}
+  .tip{background:rgba(126,224,138,0.08);border:1px solid rgba(126,224,138,0.25);color:var(--green);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  .warn{background:rgba(246,169,107,0.08);border:1px solid rgba(246,169,107,0.25);color:var(--yellow);border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+  ul.clean{margin:0;padding-left:20px;color:var(--muted)}
+  ul.clean li{margin-bottom:6px}
+  ul.clean li strong{color:var(--text)}
+  .grid-2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  details{border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:600;color:var(--text);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  details>*:not(summary){margin-top:10px;color:var(--muted)}
+  .star{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;margin:12px 0}
+  .star b{color:var(--accent)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:14px;margin:14px 0}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;color:var(--muted);vertical-align:top}
+  th{background:var(--panel2);color:var(--text);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .chapter-body section h2{display:none}
+  .chapter-body section .intro{display:none}
+  .chapter-body section h2 .num{display:none}
+  .site-footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:10px 16px;background:var(--panel);text-align:center;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .site-footer-bar strong{color:var(--accent)}
+  .site-footer-bar a{color:var(--muted);text-decoration:none;font-weight:500}
+  .site-footer-bar a:hover{color:var(--accent);text-decoration:underline}
+  .site-footer-bar .footer-sep{color:var(--border)}
+  .site-footer-bar .footer-author{color:inherit}
+  .site-footer-bar .footer-author strong{color:var(--accent)}
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr} pre{overflow-x:auto;-webkit-overflow-scrolling:touch} th,td{word-break:break-word}}
+</style>
+</head>
+<body>
+<div class="course-topbar">
+  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="Learning Hub" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
+  <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
+</div>
+<div class="course-overlay" id="course-overlay"></div>
+<div class="course-shell">
+<aside class="course-sidebar" id="course-sidebar">
+<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>
+<div class="course-brand">
+<h1><a href="index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>
+<p class="sub">Interview prep · Python · LLMs · RAG · Cloud</p>
+</div>
+<span class="toc-label">Table of Contents</span>
+<nav class="toc-panel">
+<a class="toc-chapter-link" href="module-01-overview.html">Module 1 · Overview</a>
+<a class="toc-chapter-link" href="module-02-ml-foundations.html">Module 2 · ML Foundations</a>
+<a class="toc-chapter-link active" href="module-03-genai-foundations.html">Module 3 · GenAI Foundations</a>
+<a class="toc-chapter-link" href="module-04-models.html">Module 4 · Model Landscape</a>
+<a class="toc-chapter-link" href="module-05-python.html">Module 5 · Python</a>
+<a class="toc-chapter-link" href="module-06-genai.html">Module 6 · Generative AI</a>
+<a class="toc-chapter-link" href="module-07-agentic.html">Module 7 · Agentic AI</a>
+<a class="toc-chapter-link" href="module-08-llms.html">Module 8 · LLMs & Tooling</a>
+<a class="toc-chapter-link" href="module-09-rag.html">Module 9 · RAG Deep-Dive</a>
+<a class="toc-chapter-link" href="module-10-advanced-rag.html">Module 10 · Advanced RAG</a>
+<a class="toc-chapter-link" href="module-11-banking.html">Module 11 · Banking Project</a>
+<a class="toc-chapter-link" href="module-12-eval.html">Module 12 · Eval (RAGAS)</a>
+<a class="toc-chapter-link" href="module-13-langchain.html">Module 13 · LangChain & LangGraph</a>
+<a class="toc-chapter-link" href="module-14-sdlc.html">Module 14 · SDLC</a>
+<a class="toc-chapter-link" href="module-15-cloud.html">Module 15 · Cloud-native</a>
+<a class="toc-chapter-link" href="module-16-databases.html">Module 16 · Databases</a>
+<a class="toc-chapter-link" href="module-17-copilot.html">Module 17 · GitHub Copilot</a>
+<a class="toc-chapter-link" href="module-18-behavioral.html">Module 18 · Behavioral</a>
+<a class="toc-chapter-link" href="module-19-system-design.html">Module 19 · System Design</a>
+<a class="toc-chapter-link" href="module-20-questions.html">Module 20 · Questions to Ask</a>
+<a class="toc-chapter-link" href="module-21-cheat-sheet.html">Module 21 · Cheat Sheet</a>
+</nav>
+
+<div class="course-progress" id="course-progress">
+  <div class="course-progress-header">
+    <span class="course-progress-label">Course Progress</span>
+    <span class="course-progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="course-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+    <div class="course-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="course-progress-meta" id="progress-meta">0 of 21 modules completed</span>
+  <button type="button" class="course-progress-clear" id="progress-clear">Clear progress</button>
+</div>
+</aside>
+<main class="course-main">
+<header class="chapter-header">
+  <div class="chapter-badges"><span class="chapter-badge">Foundations</span><span class="chapter-badge">Module 3</span></div>
+  <h1 class="chapter-title">Module 3 · GenAI Foundations</h1>
+  <p class="chapter-subtitle">Transformers, tokens, prompting, and how LLMs work.</p>
+</header>
+<article class="chapter-body">
+<section id="genai-foundations">
+<h2><span class="num">L2</span> GenAI Foundations: How LLMs Actually Work</h2>
+  <p class="intro">
+    Before talking about RAG or agents, you need a working mental model of what an LLM is doing. This section explains tokens, embeddings, attention, context windows, sampling, and why "hallucination" is structural — not a bug.
+  </p>
+
+  <div class="card">
+    <h3 style="margin-top:0">Tokens — The Atom of LLMs</h3>
+    <p style="color:var(--muted)">
+      LLMs don't see words or characters — they see <strong>tokens</strong>. A token is a chunk of text, usually 3–4 characters. "Hello world" might be 2 tokens; "incomprehensibility" might be 4. The vocabulary is fixed (~100k tokens for modern models).
+    </p>
+    <p style="color:var(--muted)">
+      Why it matters: <strong>you pay per token</strong>, context windows are sized in tokens, and rare words / non-English / code use more tokens than you'd expect. A rule of thumb: <strong>1 token ≈ 0.75 words</strong> in English.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Embeddings — Meaning as Geometry</h3>
+    <p style="color:var(--muted)">
+      Every token (and every chunk of text) gets converted into a list of numbers — a <strong>vector</strong>, typically 768 to 4096 dimensions. The clever bit: <em>similar meanings end up near each other in this space</em>.
+    </p>
+    <ul class="clean">
+      <li>"king" and "queen" are close.</li>
+      <li>"king" - "man" + "woman" ≈ "queen" (the famous example).</li>
+      <li>"5-year fixed mortgage" and "five-year fixed-rate home loan" are close even though they share few words.</li>
+    </ul>
+    <p style="color:var(--muted)">This is what makes <strong>semantic search</strong> work — and it's the foundation of RAG. We're not matching keywords; we're matching <em>meaning</em>.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">The Transformer &amp; Attention (Plain English)</h3>
+    <p style="color:var(--muted)">
+      A transformer is a neural network that processes a sequence of tokens. Its key innovation is <strong>self-attention</strong>: at every layer, every token computes how relevant every other token is to it, and combines information accordingly.
+    </p>
+    <p style="color:var(--muted)">
+      Imagine reading the sentence "The bank approved the loan because <em>it</em> was creditworthy." When you encounter "it," your brain instantly looks back to figure out what "it" refers to. Attention does the same thing mathematically — and across <em>all</em> tokens at once, in parallel. That parallelism is why transformers train so fast on GPUs.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">What "Generation" Actually Is</h3>
+    <p style="color:var(--muted)">
+      An LLM does <strong>one thing</strong>: given the tokens so far, predict a probability distribution over the next token. To generate a paragraph, it does this thousands of times in a loop, feeding each chosen token back as input.
+    </p>
+    <ul class="clean">
+      <li><strong>Greedy decoding</strong> — always pick the highest-probability token. Deterministic but boring.</li>
+      <li><strong>Temperature</strong> — knob that controls randomness. 0 = greedy. 1 = use the raw probabilities. &gt;1 = more random/creative. For factual banking work: temperature 0 or close to it.</li>
+      <li><strong>Top-p (nucleus)</strong> — sample only from the smallest set of tokens whose probabilities sum to <em>p</em> (e.g., 0.9). Cuts off the long tail of unlikely tokens.</li>
+      <li><strong>Top-k</strong> — sample from only the top k most likely tokens.</li>
+    </ul>
+    <p style="color:var(--muted)">Crucial implication: the model has no internal "is this true?" check. It's predicting plausible next tokens. <strong>Plausibility ≠ truth.</strong> That's why hallucination is structural, not a bug — and why RAG and grounding matter so much.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Context Window — The LLM's Working Memory</h3>
+    <p style="color:var(--muted)">
+      The <strong>context window</strong> is how many tokens the model can "see" at once: system prompt + chat history + retrieved docs + the new user message + the response so far. Modern models: 200k tokens (Claude), 1M (Gemini), 128k (GPT-4).
+    </p>
+    <ul class="clean">
+      <li>The model has <strong>no memory</strong> beyond the context window — every API call is stateless.</li>
+      <li>"Conversation memory" is just resending prior turns each call.</li>
+      <li>Cost and latency both scale with context length — bigger isn't always better.</li>
+      <li><strong>Lost-in-the-middle</strong>: models pay most attention to the start and end of context. Bury a critical fact at token 50,000 and the model may ignore it.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">How LLMs Are Trained (3 Stages)</h3>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li><strong>Pre-training</strong> — predict the next token across trillions of tokens of internet text. This is where almost all the world knowledge comes from. Costs $10M–$100M+ in compute. Result: a "base model" that completes text but isn't yet helpful.</li>
+      <li><strong>Supervised fine-tuning (SFT)</strong> — show the model thousands of high-quality (instruction, response) pairs to teach it to follow instructions and behave like an assistant.</li>
+      <li><strong>RLHF / RLAIF</strong> — humans (or another AI) rate pairs of responses, and the model is updated to prefer the higher-rated style. This is what makes models polite, refusal-aware, and aligned to a usage policy.</li>
+    </ol>
+    <p style="color:var(--muted)">When you call Claude or GPT-4, you're talking to the post-RLHF model. The base model still exists under the hood but is rarely exposed.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Why LLMs Hallucinate (And What to Do About It)</h3>
+    <p style="color:var(--muted)">
+      A hallucination is a confident statement that's false. It happens because the model is optimizing for <em>plausible next tokens</em>, not for truth. If the training data didn't cover something, the model will still produce <em>something</em> that looks right — it doesn't know what it doesn't know.
+    </p>
+    <p style="color:var(--muted)">Mitigations (in order of impact):</p>
+    <ul class="clean">
+      <li><strong>RAG</strong> — give the model the actual source material so it doesn't have to guess.</li>
+      <li><strong>Citation enforcement</strong> — force the model to cite which retrieved chunk supports each claim.</li>
+      <li><strong>Refusal training</strong> — instruct the model to say "I don't know" when the context doesn't contain the answer.</li>
+      <li><strong>Lower temperature</strong> — for factual tasks, run at temperature 0.</li>
+      <li><strong>Verification step</strong> — a second pass that checks the answer against the source.</li>
+      <li><strong>Faithfulness eval</strong> — measure hallucination rate continuously in production.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Prompt Engineering — The Useful Bits</h3>
+    <ul class="clean">
+      <li><strong>Be specific.</strong> "Summarize" → "Summarize in 3 bullets, max 15 words each, focused on financial risk."</li>
+      <li><strong>Show, don't tell.</strong> Few-shot: include 2–5 examples of input → desired output. Often more effective than long instructions.</li>
+      <li><strong>Structure the output.</strong> Ask for JSON, a table, or a fixed schema. Easier to parse and validate downstream.</li>
+      <li><strong>Chain-of-thought.</strong> "Think step by step before answering" — measurably improves reasoning on hard problems.</li>
+      <li><strong>System prompt = identity + rules.</strong> User prompt = the task. Keep them separated.</li>
+      <li><strong>Place key instructions at the end</strong> of long prompts (recency bias).</li>
+      <li><strong>Don't argue with the model.</strong> If a prompt tweak doesn't fix behavior, change the architecture (add a tool, add retrieval, add validation) — don't keep adding "DO NOT HALLUCINATE" in caps.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Prompt Caching — The Cost Lever Most People Miss</h3>
+    <p style="color:var(--muted)">
+      Modern providers (Anthropic, OpenAI) let you cache parts of the prompt that don't change — typically the system prompt and any large reference docs. Cached tokens cost <strong>~10% of normal price</strong> and are much faster on subsequent calls.
+    </p>
+    <p style="color:var(--muted)">
+      Anthropic's Contextual Retrieval technique relies on this: you can run an LLM over a 100k-token document chunk-by-chunk cheaply because the document itself is cached. Without prompt caching it'd be ruinously expensive.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Tool Calling (Function Calling) — Giving the LLM Hands</h3>
+    <p style="color:var(--muted)">
+      A vanilla LLM can only produce text. <strong>Tool calling</strong> (also called "function calling") gives it the ability to <em>request</em> that your code execute a function and return the result — turning a text generator into something that can read databases, hit APIs, run calculations, or kick off workflows.
+    </p>
+    <p style="color:var(--muted)"><strong>Important:</strong> the LLM does NOT execute the tool itself. It outputs a structured request like <em>"call get_balance with account_id='ACC-123'"</em> — your code runs the function and feeds the result back into the next LLM call.</p>
+
+    <h4 style="margin-bottom:6px;">The Tool-Call Loop</h4>
+<pre><code>1. You define tools (name, description, JSON schema for arguments).
+2. You send: user message + tool definitions to the LLM.
+3. LLM responds in one of two ways:
+     (a) Plain text answer  → done.
+     (b) Tool-use request   → "call get_balance({account_id: 'ACC-123'})"
+4. Your code executes the requested tool.
+5. You append the tool result to the conversation and call the LLM again.
+6. LLM either calls another tool or produces the final answer.
+7. Repeat until done.
+</code></pre>
+
+    <h4 style="margin-bottom:6px;">What Makes a Good Tool</h4>
+    <ul class="clean">
+      <li><strong>Clear, specific name.</strong> <code>lookup_mortgage_rate</code> beats <code>get_data</code>.</li>
+      <li><strong>Rich description.</strong> The LLM picks tools by reading descriptions — vague descriptions = wrong tool calls.</li>
+      <li><strong>Strict argument schema.</strong> Use types and descriptions on every parameter. Validate before executing.</li>
+      <li><strong>Atomic.</strong> One tool = one logical action. Don't make a "do_everything" tool — the LLM can't reason about it.</li>
+      <li><strong>Idempotent where possible.</strong> Tools may be retried; reads are safe to retry, writes need idempotency keys.</li>
+      <li><strong>Honest errors.</strong> Return <em>"product code 'XYZ' not found"</em>, not a 500. The model uses error text to recover.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Tool Calling — Minimal Example</h4>
+<pre><code>from anthropic import Anthropic
+client = Anthropic()
+
+tools = [{
+    "name": "get_account_balance",
+    "description": "Return the current balance for a customer account in GBP.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "account_id": {"type": "string", "description": "Account ID, e.g. 'ACC-1234'."}
+        },
+        "required": ["account_id"],
+    },
+}]
+
+def get_account_balance(account_id: str) -> dict:
+    return {"account_id": account_id, "balance": 12450.77, "currency": "GBP"}
+
+messages = [{"role": "user", "content": "What's the balance on account ACC-1234?"}]
+
+while True:
+    resp = client.messages.create(
+        model="claude-opus-4-7", max_tokens=1024, tools=tools, messages=messages,
+    )
+    messages.append({"role": "assistant", "content": resp.content})
+
+    if resp.stop_reason != "tool_use":
+        break  # final answer
+
+    # Execute every tool the model asked for
+    tool_results = []
+    for block in resp.content:
+        if block.type == "tool_use":
+            result = get_account_balance(**block.input)
+            tool_results.append({
+                "type": "tool_result", "tool_use_id": block.id,
+                "content": str(result),
+            })
+    messages.append({"role": "user", "content": tool_results})
+
+print(resp.content[0].text)
+</code></pre>
+
+    <h4 style="margin-bottom:6px;">Patterns &amp; Pitfalls</h4>
+    <ul class="clean">
+      <li><strong>Parallel tool calls.</strong> Modern models can request multiple tools in one turn — execute them concurrently for latency wins.</li>
+      <li><strong>Tool injection.</strong> Tool results are untrusted input. A malicious doc returned by a search tool could try to rewrite the system prompt. Treat tool output like user input — never execute instructions inside it.</li>
+      <li><strong>Schema drift.</strong> If a tool's signature changes, in-flight conversations break. Version your tools.</li>
+      <li><strong>Loops.</strong> Without a hop limit, a confused model can call tools forever. Cap iterations (e.g., <code>recursion_limit=12</code> in LangGraph).</li>
+      <li><strong>Hallucinated tools.</strong> Models sometimes invent tools that don't exist. Hard-validate the tool name before executing.</li>
+      <li><strong>Forced tool use.</strong> You can require the model to call a specific tool with <code>tool_choice</code>. Useful for structured extraction.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Tool Calling vs Structured Output vs RAG</h4>
+    <table>
+      <thead><tr><th>Pattern</th><th>Use when</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Structured output</strong></td><td>You want the LLM to fill a fixed schema from the input it already has. No external action.</td></tr>
+        <tr><td><strong>Tool calling</strong></td><td>The LLM needs <em>fresh</em> data, to do math, or to take an action. Dynamic.</td></tr>
+        <tr><td><strong>RAG</strong></td><td>You always need to ground in a knowledge base; you control retrieval, not the model. Predictable.</td></tr>
+        <tr><td><strong>Agentic RAG</strong></td><td>Combine: model decides <em>when</em> and <em>how</em> to retrieve via a search tool. Most flexible, most expensive.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Code Interpreter — Letting the LLM Run Code</h3>
+    <p style="color:var(--muted)">
+      A <strong>code interpreter</strong> (also called "code execution" or "code sandbox") is a special tool that gives the LLM a sandboxed Python environment where it can write code, execute it, see the output, and iterate. It's a single tool with a huge effect on capability.
+    </p>
+    <p style="color:var(--muted)">
+      Why it matters: LLMs are bad at <em>doing</em> math but good at <em>writing</em> the math. A vanilla LLM might fluff "23,481 × 1.0875 across 12 monthly payments" — but if it can write Python and see the result, it nails it every time. Same for sorting, filtering, regex, statistics, parsing JSON/CSV, generating charts.
+    </p>
+
+    <h4 style="margin-bottom:6px;">What It's Good For</h4>
+    <ul class="clean">
+      <li><strong>Numerical work</strong> — interest calculations, amortization schedules, fee breakdowns, statistics over a dataset.</li>
+      <li><strong>Data wrangling</strong> — clean a CSV, pivot a table, filter rows, join two files.</li>
+      <li><strong>Chart generation</strong> — produce matplotlib/seaborn charts and return as images.</li>
+      <li><strong>Code transformation</strong> — refactor a snippet, run it to verify, return both code and output.</li>
+      <li><strong>File processing</strong> — extract from PDFs, parse Excel, regex over logs.</li>
+      <li><strong>Verification</strong> — write a quick test to check whether the model's own reasoning was correct.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">How It Works (Provider Implementations)</h4>
+    <ul class="clean">
+      <li><strong>OpenAI</strong> — built-in <code>code_interpreter</code> tool in the Assistants/Responses API. Sandboxed Python, ephemeral file workspace, automatic.</li>
+      <li><strong>Anthropic</strong> — exposes a code execution tool you can enable; Claude writes code, the platform runs it, results return as a tool result.</li>
+      <li><strong>Roll-your-own</strong> — define a <code>run_python</code> tool that executes inside a hardened sandbox (Docker container, gVisor, Firecracker, or services like E2B / Modal). You own the security boundary.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Security — The Non-Negotiables</h4>
+    <ul class="clean">
+      <li><strong>Sandbox isolation</strong> — never run model-written code on a host with real credentials, network, or filesystem.</li>
+      <li><strong>No outbound network</strong> by default; allowlist if needed.</li>
+      <li><strong>Resource caps</strong> — CPU, memory, wall-clock time, output size.</li>
+      <li><strong>Ephemeral filesystem</strong> — destroyed at the end of the session.</li>
+      <li><strong>Input scrubbing</strong> — model-written code can be a prompt-injection vector if a malicious doc says "...and now write code that exfiltrates X." Treat it as untrusted by default.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Banking Examples</h4>
+    <ul class="clean">
+      <li><strong>Quote builder</strong> — RM asks "what would the monthly repayment be on £350k over 25 years at our current 5y fixed rate?" The model fetches the rate via a tool, then runs the math via code interpreter, returning a breakdown.</li>
+      <li><strong>Portfolio analyser</strong> — uploaded CSV of holdings → code interpreter computes exposures, top concentrations, and a chart.</li>
+      <li><strong>Reconciliation helper</strong> — two extracts, find mismatches, output the diff with a sample.</li>
+    </ul>
+
+    <div class="tip"><strong>Interview point:</strong> "I add code interpreter when the workflow needs precision arithmetic, data manipulation, or visualization. It pairs well with RAG — RAG fetches the facts, code interpreter does the computation. But the sandbox security model has to be airtight before MRM signs off."</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Skills — Packaging Instructions and Capabilities</h3>
+    <p style="color:var(--muted)">
+      A <strong>Skill</strong> is a reusable bundle of instructions, examples, and optional resources (scripts, templates, references) that an agent loads <em>only when relevant</em> to the current task. Think of it as a folder of "how to do X" that the model pulls into context on demand instead of stuffing every possible instruction into the system prompt.
+    </p>
+    <p style="color:var(--muted)">Skills are core to Claude Code, the Claude Agent SDK, and Anthropic's Skills product — but the pattern applies to any agent framework. The idea: keep the system prompt small and stable; let the agent <em>discover</em> the right skill for the task.</p>
+
+    <h4 style="margin-bottom:6px;">Anatomy of a Skill</h4>
+<pre><code>skills/
+└── refund-policy/
+    ├── SKILL.md           ← name, when-to-use trigger, instructions
+    ├── examples/
+    │   ├── partial.md
+    │   └── full-refund.md
+    ├── scripts/
+    │   └── calculate_refund.py
+    └── references/
+        └── policy-2026.pdf
+</code></pre>
+
+    <p style="color:var(--muted)"><code>SKILL.md</code> always starts with frontmatter:</p>
+<pre><code>---
+name: refund-policy
+description: Use when a customer requests a refund or chargeback.
+  Covers eligibility, timelines, and approval thresholds.
+---
+
+# Refund Policy Skill
+
+## When to use
+- Customer mentions refund, chargeback, money back, ...
+- Claim disputes against a completed transaction.
+
+## Steps
+1. Verify the transaction status with `lookup_transaction`.
+2. Check eligibility against rules in references/policy-2026.pdf.
+3. If amount &lt; £500, draft refund confirmation. If ≥ £500, escalate to manager.
+
+## Examples
+See examples/partial.md and examples/full-refund.md.
+</code></pre>
+
+    <h4 style="margin-bottom:6px;">How a Skill Gets Used</h4>
+    <ol style="color:var(--muted); padding-left:20px;">
+      <li>At session start, the agent harness loads <em>only the metadata</em> (name + description) of every available skill — cheap.</li>
+      <li>When the user asks something, the agent reads the descriptions and decides "this looks like a refund question."</li>
+      <li>The agent invokes the skill, which loads the full <code>SKILL.md</code> into context — instructions, examples, and pointers to scripts/references.</li>
+      <li>The agent follows the skill, calling tools or reading references as the skill directs.</li>
+    </ol>
+
+    <h4 style="margin-bottom:6px;">Skills vs Tools vs RAG vs System Prompt</h4>
+    <table>
+      <thead><tr><th>Mechanism</th><th>What it carries</th><th>Lifetime</th></tr></thead>
+      <tbody>
+        <tr><td><strong>System prompt</strong></td><td>Identity + always-applicable rules</td><td>Every turn — keep it small</td></tr>
+        <tr><td><strong>Skill</strong></td><td>Task-specific instructions, examples, references — <em>plus</em> when to use them</td><td>Loaded on demand for the relevant turn</td></tr>
+        <tr><td><strong>Tool</strong></td><td>An executable function (code that runs)</td><td>Available every turn; called when needed</td></tr>
+        <tr><td><strong>RAG context</strong></td><td>Snippets from a knowledge base</td><td>Injected per query based on similarity</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--muted)"><strong>Mental model:</strong> <em>Tools are verbs (actions). Skills are playbooks (how-tos). RAG is reference material (facts).</em> A mature agent uses all three: it follows a skill, which tells it to call certain tools, which retrieve from a RAG store.</p>
+
+    <h4 style="margin-bottom:6px;">Why Skills Beat a Mega System Prompt</h4>
+    <ul class="clean">
+      <li><strong>Context efficiency.</strong> Skills only load when relevant — no paying for refund instructions on a mortgage question.</li>
+      <li><strong>Modularity.</strong> Each skill owns its domain. SMEs can update one skill without touching the rest.</li>
+      <li><strong>Versioning.</strong> Skills live in git; rollouts and rollbacks are diffs.</li>
+      <li><strong>Discoverability.</strong> Adding capability = adding a skill folder. No prompt-engineering tax.</li>
+      <li><strong>Composability.</strong> Skills can reference other skills (<code>[[other-skill]]</code>). Capability grows like a library, not a monolith.</li>
+    </ul>
+
+    <h4 style="margin-bottom:6px;">Banking Example — Skill Library for the Client Pathways Assistant</h4>
+<pre><code>skills/
+├── kyc-verification/        # AML/KYC checks during onboarding
+├── product-recommendation/  # match products to client segment
+├── complaint-handling/      # FCA-compliant complaint flow
+├── rate-quotation/          # produce a rate quote with disclaimers
+├── escalation-rules/        # when and to whom to escalate
+└── disclosure-templates/    # regulatory disclosures by product/region
+</code></pre>
+    <p style="color:var(--muted)">A relationship-manager query about a complaint loads <code>complaint-handling</code>; a rate question loads <code>rate-quotation</code>. The system prompt stays a few hundred tokens and never has to know about every domain up front.</p>
+
+    <div class="tip"><strong>Interview soundbite:</strong> "Skills are how I keep agent system prompts from rotting into 5,000-line monsters. The agent discovers the right playbook for the task at hand — and SMEs maintain those playbooks like documentation, in version control."</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Bringing It Together — Mental Map</h3>
+<pre><code>Text
+  │
+  ├── tokenize ──&gt; tokens (numbers from a 100k vocab)
+  │                         │
+  │                         ├── embed ──&gt; vectors (similarity = meaning)
+  │                         │              │
+  │                         │              └── used for RAG retrieval
+  │                         │
+  │                         └── feed into transformer
+  │                                       │
+  │                                       ├── attention layers (every token
+  │                                       │   sees every other token)
+  │                                       │
+  │                                       └── output: probability over
+  │                                           next token
+  │                                                    │
+  └── sample (temperature, top-p) ──&gt; chosen token ──&gt; append &amp; repeat
+
+
+How an agent extends this:
+
+  System prompt + Skills (loaded on demand)
+       │
+       ▼
+  LLM call ──&gt; either text answer  OR  tool-use request
+                                            │
+                                            ▼
+                               your code runs the tool
+                                            │
+                                            ▼
+                              result fed back into next LLM call
+                                            │
+                                            └── loop until done
+</code></pre>
+  </div>
+
+  <div class="warn">
+    <strong>If you remember nothing else:</strong> LLMs are next-token predictors with a context window and no memory. They have no truth check. Everything we build around them — RAG, agents, evals, guardrails — exists to make a probabilistic next-token machine behave reliably enough for production.
+  </div>
+</section>
+</article>
+<nav class="chapter-nav"><a href="module-02-ml-foundations.html">← Module 2: ML Foundations</a><a class="next" href="module-04-models.html">Module 4: Model Landscape →</a></nav>
+</main>
+</div>
+
+<footer class="site-footer-bar">
+  <span>Created with ❤️ by <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer" class="footer-author"><strong>Sourabh Rajwade</strong></a></span>
+  <span class="footer-sep">·</span>
+  <a href="https://x.com/RajwadeSourabh" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+  <span class="footer-sep">·</span>
+  <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+</footer>
+<script type="application/json" id="course-config">{"storageKey": "learning-hub-genai-progress", "moduleSlugs": ["module-01-overview", "module-02-ml-foundations", "module-03-genai-foundations", "module-04-models", "module-05-python", "module-06-genai", "module-07-agentic", "module-08-llms", "module-09-rag", "module-10-advanced-rag", "module-11-banking", "module-12-eval", "module-13-langchain", "module-14-sdlc", "module-15-cloud", "module-16-databases", "module-17-copilot", "module-18-behavioral", "module-19-system-design", "module-20-questions", "module-21-cheat-sheet"]}</script>
+<script src="../assets/course.js"></script>
+</body></html>
