@@ -56,11 +56,18 @@
     }
   }
 
-  function slugFromPath() {
-    var path = window.location.pathname;
-    var file = path.split("/").pop() || "";
+  function slugFromHref(href) {
+    var clean = (href || "").split("?")[0].split("#")[0];
+    var file = clean.split("/").filter(Boolean).pop() || "";
     if (file.endsWith(".html")) file = file.slice(0, -5);
-    if (file === "index") return null;
+    return file;
+  }
+
+  function slugFromPath() {
+    var parts = window.location.pathname.split("/").filter(Boolean);
+    var file = parts[parts.length - 1] || "";
+    if (file.endsWith(".html")) file = file.slice(0, -5);
+    if (!file || file === "index") return null;
     return MODULE_SLUGS.indexOf(file) !== -1 ? file : null;
   }
 
@@ -161,14 +168,12 @@
     if (bar) bar.setAttribute("aria-valuenow", String(pct));
 
     document.querySelectorAll(".toc-chapter-link").forEach(function (link) {
-      var href = link.getAttribute("href") || "";
-      var slug = href.replace(".html", "");
+      var slug = slugFromHref(link.getAttribute("href") || "");
       link.classList.toggle("completed", completed.indexOf(slug) !== -1);
     });
 
     document.querySelectorAll(".course-index-card").forEach(function (card) {
-      var href = card.getAttribute("href") || "";
-      var slug = href.replace(".html", "");
+      var slug = slugFromHref(card.getAttribute("href") || "");
       card.classList.toggle("completed", completed.indexOf(slug) !== -1);
     });
   }

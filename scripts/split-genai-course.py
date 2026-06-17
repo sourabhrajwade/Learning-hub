@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Split interview-prep.html into multi-page GenAI course."""
+"""Split genai-source.html into multi-page GenAI course."""
 
 import json
 import re
@@ -7,8 +7,9 @@ from pathlib import Path
 from typing import List, Optional
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "interview-prep-source.html"
-OUT = ROOT / "interview-prep"
+SOURCE = ROOT / "genai-source.html"
+OUT = ROOT / "genai"
+COURSE_PREFIX = "/genai"
 
 CHAPTERS = [
     {"slug": "module-01-overview", "section_ids": ["overview"], "num": 1, "title": "Overview", "subtitle": "Role overview and what interviewers look for at AVP level.", "badge": "Start here"},
@@ -40,9 +41,9 @@ COURSE_CONFIG = {
     "moduleSlugs": MODULE_SLUGS,
 }
 
-STYLE_BLOCK = """<link rel="icon" href="../logo.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="../logo.svg" />
-<link rel="stylesheet" href="../assets/course.css" />
+STYLE_BLOCK = """<link rel="icon" href="/logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/logo.svg" />
+<link rel="stylesheet" href="/assets/course.css" />
 <style>
   :root{
     --bg:#0f1320; --panel:#161b2e; --panel2:#1d2440; --text:#e8ecf8; --muted:#a4adc8;
@@ -105,8 +106,9 @@ FOOTER = """
   <span class="footer-sep">·</span>
   <a href="https://www.linkedin.com/in/sourabh-rajwade-60b5a2b9/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
 </footer>
+<script src="/assets/analytics.js"></script>
 <script type="application/json" id="course-config">""" + json.dumps(COURSE_CONFIG) + """</script>
-<script src="../assets/course.js"></script>
+<script src="/assets/course.js"></script>
 </body></html>"""
 
 
@@ -130,10 +132,10 @@ def extract_subsections(content: str) -> List[tuple]:
 def render_sidebar(active_slug: str, chapter_subs: Optional[List[tuple]] = None) -> str:
     parts = [
         '<aside class="course-sidebar" id="course-sidebar">',
-        '<a href="../index.html" class="hub-link"><img src="../logo.svg" alt="" class="hub-logo" width="24" height="24" /> Learning Hub</a>',
+        '<a href="/" class="hub-link"><img src="/logo.svg" alt="Learning Hub" class="hub-logo" width="24" height="24" /> Learning Hub</a>',
         '<div class="course-brand">',
-        '<h1><a href="index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>',
-        '<p class="sub">Interview prep · Python · LLMs · RAG · Cloud</p>',
+        f'<h1><a href="{COURSE_PREFIX}/index.html" style="color:inherit;text-decoration:none">GenAI &amp; Emerging Tech</a></h1>',
+        '<p class="sub">Basics → Advanced · Python · LLMs · RAG · Cloud</p>',
         "</div>",
         '<span class="toc-label">Table of Contents</span>',
         '<nav class="toc-panel">',
@@ -141,7 +143,7 @@ def render_sidebar(active_slug: str, chapter_subs: Optional[List[tuple]] = None)
     for ch in CHAPTERS:
         active = " active" if ch["slug"] == active_slug else ""
         parts.append(
-            f'<a class="toc-chapter-link{active}" href="{ch["slug"]}.html">Module {ch["num"]} · {ch["title"]}</a>'
+            f'<a class="toc-chapter-link{active}" href="{COURSE_PREFIX}/{ch["slug"]}.html">Module {ch["num"]} · {ch["title"]}</a>'
         )
         if ch["slug"] == active_slug and chapter_subs:
             parts.append('<ul class="toc-sub">')
@@ -168,11 +170,11 @@ def render_sidebar(active_slug: str, chapter_subs: Optional[List[tuple]] = None)
 def render_chapter_page(ch: dict, body: str, subs: List[tuple], prev_ch: Optional[dict], next_ch: Optional[dict]) -> str:
     nav = ['<nav class="chapter-nav">']
     if prev_ch:
-        nav.append(f'<a href="{prev_ch["slug"]}.html">← Module {prev_ch["num"]}: {prev_ch["title"]}</a>')
+        nav.append(f'<a href="{COURSE_PREFIX}/{prev_ch["slug"]}.html">← Module {prev_ch["num"]}: {prev_ch["title"]}</a>')
     else:
         nav.append("<span></span>")
     if next_ch:
-        nav.append(f'<a class="next" href="{next_ch["slug"]}.html">Module {next_ch["num"]}: {next_ch["title"]} →</a>')
+        nav.append(f'<a class="next" href="{COURSE_PREFIX}/{next_ch["slug"]}.html">Module {next_ch["num"]}: {next_ch["title"]} →</a>')
     nav.append("</nav>")
 
     if len(ch["section_ids"]) == 1:
@@ -193,7 +195,7 @@ def render_chapter_page(ch: dict, body: str, subs: List[tuple], prev_ch: Optiona
 </head>
 <body>
 <div class="course-topbar">
-  <a class="course-topbar-brand" href="index.html"><img src="../logo.svg" alt="" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
+  <a class="course-topbar-brand" href="{COURSE_PREFIX}/index.html"><img src="/logo.svg" alt="Learning Hub" width="28" height="28" /> GenAI &amp; Emerging Tech</a>
   <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Contents</button>
 </div>
 <div class="course-overlay" id="course-overlay"></div>
@@ -218,7 +220,7 @@ def render_index() -> str:
     cards = []
     for ch in CHAPTERS:
         cards.append(
-            f"""<a class="course-index-card" href="{ch['slug']}.html">
+            f"""<a class="course-index-card" href="{COURSE_PREFIX}/{ch['slug']}.html">
   <span class="num">Module {ch['num']}</span>
   <h2>{ch['title']}</h2>
   <p>{ch['subtitle']}</p>
@@ -237,7 +239,7 @@ def render_index() -> str:
 </head>
 <body>
 <div class="course-topbar">
-  <a class="course-topbar-brand" href="../index.html"><img src="../logo.svg" alt="" width="28" height="28" /> Learning Hub</a>
+  <a class="course-topbar-brand" href="/"><img src="/logo.svg" alt="Learning Hub" width="28" height="28" /> Learning Hub</a>
   <button type="button" class="toc-toggle" id="toc-toggle" aria-label="Open table of contents">☰ Chapters</button>
 </div>
 <div class="course-overlay" id="course-overlay"></div>

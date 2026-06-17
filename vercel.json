@@ -1,4 +1,41 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/genai",
+      "destination": "/genai",
+      "permanent": true
+    },
+    {
+      "source": "/genai.html",
+      "destination": "/genai",
+      "permanent": true
+    },
+    {
+      "source": "/genai/:path*",
+      "destination": "/genai/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/frontend-system-design-course.html",
+      "destination": "/frontend-system-design",
+      "permanent": true
+    },
+    {
+      "source": "/frontend-system-design-course",
+      "destination": "/frontend-system-design",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/frontend-system-design",
+      "destination": "/frontend-system-design/index.html"
+    },
+    {
+      "source": "/genai",
+      "destination": "/genai/index.html"
+    }
+  ]
 }
