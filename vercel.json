@@ -3,17 +3,17 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/genai",
+      "source": "/interview-prep",
       "destination": "/genai",
       "permanent": true
     },
     {
-      "source": "/genai.html",
+      "source": "/interview-prep.html",
       "destination": "/genai",
       "permanent": true
     },
     {
-      "source": "/genai/:path*",
+      "source": "/interview-prep/:path*",
       "destination": "/genai/:path*",
       "permanent": true
     },
